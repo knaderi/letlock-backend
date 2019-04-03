@@ -9,25 +9,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.landedexperts.letlock.noec2.answer.ConsumeAnswer;
+import com.landedexperts.letlock.noec2.answer.AddressAnswer;
 import com.landedexperts.letlock.noec2.database.ConnectionFactory;
 import com.landedexperts.letlock.noec2.session.SessionManager;
 
 @RestController
-public class ConsumeStartOneFileTransferController {
+public class FileTransferSetReceiverAddressController {
 
 	@RequestMapping(
 		method = RequestMethod.POST,
-		value = "/consume_start_one_file_transfer",
+		value = "/file_transfer_set_receiver_address",
 		produces = {"application/JSON"}
 	)
-	public ConsumeAnswer consumeStartOneFileTransfer(
+	public AddressAnswer consumeStartOneFileTransfer(
 			@RequestParam( value="token", defaultValue="" ) String token,
-			@RequestParam( value="wallet_address", defaultValue="" ) String wallet_address,
-			@RequestParam( value="receiver_login_name", defaultValue="" ) String receiver_login_name
+			@RequestParam( value="file_transfer_uuid", defaultValue="" ) String file_transfer_uuid,
+			@RequestParam( value="wallet_address", defaultValue="" ) String wallet_address
 	) throws Exception
 	{
-		String fileTransferUuid = "";
 		String walletAddressUuid = "";
 		String errorMessage = "";
 
@@ -40,14 +39,13 @@ public class ConsumeStartOneFileTransferController {
 				connection = ConnectionFactory.newConnection();
 				stmt = connection.createStatement();
 				rs = stmt.executeQuery(
-					"SELECT * FROM \"user\".consume_start_one_file_transfer("
+					"SELECT * FROM gochain.file_transfer_set_receiver_address("
 						+ userId.toString() + ","
-						+ "DECODE('" + wallet_address + "', 'hex'),"
-						+ "'" + receiver_login_name + "'"
+						+ "'" + file_transfer_uuid + "',"
+						+ "DECODE('" + wallet_address + "', 'hex')"
 						+ ")"
 				);
 				while(rs.next()) {
-					fileTransferUuid = rs.getString("_file_transfer_uuid");
 					walletAddressUuid = rs.getString("_wallet_address_uuid");
 					errorMessage = rs.getString("_error_message");
 				}
@@ -62,6 +60,6 @@ public class ConsumeStartOneFileTransferController {
 			}
 		}
 
-		return new ConsumeAnswer(fileTransferUuid, walletAddressUuid, errorMessage);
+		return new AddressAnswer(walletAddressUuid, errorMessage);
 	}
 }
