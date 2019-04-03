@@ -37,7 +37,8 @@ public class OrderCreateController {
 			try {
 				connection = ConnectionFactory.newConnection();
 				stmt = connection.createStatement();
-				rs = stmt.executeQuery("SELECT * FROM payment.order_create(" + userId.toString() + ",ARRAY" + order_detail + "::payment.tp_order_detail_parameter[])");
+				String sql = "SELECT * FROM payment.order_create(" + userId.toString() + ",ARRAY" + order_detail + "::payment.tp_order_detail_parameter[])";
+				rs = stmt.executeQuery(sql);
 				while(rs.next()) {
 					orderId = rs.getInt("_order_id");
 					errorMessage = rs.getString("_error_message");
