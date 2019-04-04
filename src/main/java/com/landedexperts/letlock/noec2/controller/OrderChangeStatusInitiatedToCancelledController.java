@@ -22,8 +22,8 @@ public class OrderChangeStatusInitiatedToCancelledController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer orderChangeStatusInitiatedToCancelled(
-			@RequestParam( value="token", defaultValue="" ) String token,
-			@RequestParam( value="order_id", defaultValue="" ) String order_id
+			@RequestParam( value="token" ) String token,
+			@RequestParam( value="order_id" ) String order_id
 	) throws Exception
 	{
 		Boolean result = false;

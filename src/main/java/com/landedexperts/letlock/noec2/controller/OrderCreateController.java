@@ -22,8 +22,8 @@ public class OrderCreateController {
 		produces = {"application/JSON"}
 	)
 	public OrderAnswer order_create(
-			@RequestParam( value="token", defaultValue="" ) String token,
-			@RequestParam( value="order_detail", defaultValue="" ) String order_detail
+			@RequestParam( value="token" ) String token,
+			@RequestParam( value="order_detail" ) String order_detail
 	) throws Exception
 	{
 		Integer orderId = -1;

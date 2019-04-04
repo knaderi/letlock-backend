@@ -17,7 +17,7 @@ public class LogoutController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer order_create(
-			@RequestParam( value="token", defaultValue="" ) String token
+			@RequestParam( value="token" ) String token
 	) throws Exception
 	{
 		SessionManager.cleanSession(token);

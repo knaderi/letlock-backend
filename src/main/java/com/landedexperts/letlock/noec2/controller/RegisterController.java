@@ -21,8 +21,8 @@ public class RegisterController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer register(
-		@RequestParam( value="loginName", defaultValue="" ) String loginName,
-		@RequestParam( value="password", defaultValue="" ) String password
+		@RequestParam( value="loginName" ) String loginName,
+		@RequestParam( value="password" ) String password
 	) throws Exception
 	{
 		Boolean result = false;

@@ -15,9 +15,9 @@ public class SessionManager {
 	}
 
 	/*
-	 * Generates a new session for the user
+	 * Generates a new session token for the user
 	 */
-	public static String generateSession(int userId) {
+	public static String generateSessionToken(int userId) {
 		/* Generate the token */
 		byte[] binStuff = new byte[128];
 		SessionManager.random.nextBytes(binStuff);

@@ -21,7 +21,7 @@ public class IsLoginNameAvailableController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer isLoginNameAvailable(
-		@RequestParam( value="loginName", defaultValue="" ) String loginName
+		@RequestParam( value="loginName" ) String loginName
 	) throws Exception
 	{
 		Boolean result = false;

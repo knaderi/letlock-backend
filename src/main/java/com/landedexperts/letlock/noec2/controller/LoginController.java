@@ -22,8 +22,8 @@ public class LoginController {
 		produces = {"application/JSON"}
 	)
 	public SessionTokenAnswer login(
-		@RequestParam( value="loginName", defaultValue="" ) String loginName,
-		@RequestParam( value="password", defaultValue="" ) String password
+		@RequestParam( value="loginName" ) String loginName,
+		@RequestParam( value="password" ) String password
 	) throws Exception
 	{
 		Integer userId = -1;
@@ -52,7 +52,7 @@ public class LoginController {
 
 		String token = "";
 		if(userId > 0) {
-			token = SessionManager.generateSession(userId);
+			token = SessionManager.generateSessionToken(userId);
 		}
 
 		return new SessionTokenAnswer(token, error_message);

@@ -21,10 +21,10 @@ public class FileTransferSetReceiverAddressController {
 		value = "/file_transfer_set_receiver_address",
 		produces = {"application/JSON"}
 	)
-	public AddressAnswer consumeStartOneFileTransfer(
-			@RequestParam( value="token", defaultValue="" ) String token,
-			@RequestParam( value="file_transfer_uuid", defaultValue="" ) String file_transfer_uuid,
-			@RequestParam( value="wallet_address", defaultValue="" ) String wallet_address
+	public AddressAnswer fileTransferSetReceiverAddress(
+			@RequestParam( value="token" ) String token,
+			@RequestParam( value="file_transfer_uuid" ) String file_transfer_uuid,
+			@RequestParam( value="wallet_address" ) String wallet_address
 	) throws Exception
 	{
 		String walletAddressUuid = "";

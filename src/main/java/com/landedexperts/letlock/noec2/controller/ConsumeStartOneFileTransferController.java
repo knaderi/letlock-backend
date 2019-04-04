@@ -22,9 +22,9 @@ public class ConsumeStartOneFileTransferController {
 		produces = {"application/JSON"}
 	)
 	public ConsumeAnswer consumeStartOneFileTransfer(
-			@RequestParam( value="token", defaultValue="" ) String token,
-			@RequestParam( value="wallet_address", defaultValue="" ) String wallet_address,
-			@RequestParam( value="receiver_login_name", defaultValue="" ) String receiver_login_name
+			@RequestParam( value="token" ) String token,
+			@RequestParam( value="wallet_address" ) String wallet_address,
+			@RequestParam( value="receiver_login_name" ) String receiver_login_name
 	) throws Exception
 	{
 		String fileTransferUuid = "";

@@ -14,16 +14,16 @@ import com.landedexperts.letlock.noec2.database.ConnectionFactory;
 import com.landedexperts.letlock.noec2.session.SessionManager;
 
 @RestController
-public class OrderChangeStatusCancelledToInitiatedController {
+public class OrderDetailDeleteController {
 
 	@RequestMapping(
 		method = RequestMethod.POST,
-		value = "/order_change_status_cancelled_to_initiated",
+		value = "/order_detail_delete",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer orderChangeStatusCancelledToInitiated(
-			@RequestParam( value="token" ) String token,
-			@RequestParam( value="order_id" ) String order_id
+	public BooleanAnswer orderDetailDelete(
+		@RequestParam( value="token" ) String token,
+		@RequestParam( value="order_detail_id" ) String order_detail_id
 	) throws Exception
 	{
 		Boolean result = false;
@@ -37,7 +37,11 @@ public class OrderChangeStatusCancelledToInitiatedController {
 			try {
 				connection = ConnectionFactory.newConnection();
 				stmt = connection.createStatement();
-				rs = stmt.executeQuery("SELECT * FROM payment.order_change_status_cancelled_to_initiated(" + userId.toString() + "," + order_id + ")");
+				String sql = "SELECT * FROM payment.order_detail_delete("
+						+ userId.toString() + ","
+						+ order_detail_id
+						+ ")";
+				rs = stmt.executeQuery(sql);
 				while(rs.next()) {
 					result = rs.getString("_error_code").equals("NO_ERROR");
 					errorMessage = rs.getString("_error_message");

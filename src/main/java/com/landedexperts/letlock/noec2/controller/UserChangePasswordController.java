@@ -21,9 +21,9 @@ public class UserChangePasswordController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer userChangePassword(
-		@RequestParam( value="loginName", defaultValue="" ) String loginName,
-		@RequestParam( value="oldPassword", defaultValue="" ) String oldPassword,
-		@RequestParam( value="newPassword", defaultValue="" ) String newPassword
+		@RequestParam( value="loginName" ) String loginName,
+		@RequestParam( value="oldPassword" ) String oldPassword,
+		@RequestParam( value="newPassword" ) String newPassword
 	) throws Exception
 	{
 		Boolean result = false;
