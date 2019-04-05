@@ -17,10 +17,13 @@ public class AskFundsController {
 	)
 	public BooleanAnswer askFunds(
 			@RequestParam( value="file_transfer_uuid" ) String file_transfer_uuid,
-			@RequestParam( value="signed_transaction_hex" ) String signed_transaction_hex 
+			@RequestParam( value="signed_transaction_hex" ) String signed_transaction_hex,
+			@RequestParam( value="step" ) String step
 	) throws Exception
 	{
 		Boolean result = false;
+
+
 
 		return new BooleanAnswer(result, "");
 	}
