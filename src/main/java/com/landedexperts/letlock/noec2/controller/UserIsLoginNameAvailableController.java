@@ -13,14 +13,14 @@ import com.landedexperts.letlock.noec2.answer.BooleanAnswer;
 import com.landedexperts.letlock.noec2.database.ConnectionFactory;
 
 @RestController
-public class IsLoginNameAvailableController {
+public class UserIsLoginNameAvailableController {
 
 	@RequestMapping(
 		method = RequestMethod.POST,
-		value = "/is_login_name_available",
+		value = "/user_is_login_name_available",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer isLoginNameAvailable(
+	public BooleanAnswer userIsLoginNameAvailable(
 		@RequestParam( value="loginName" ) String loginName
 	) throws Exception
 	{
@@ -33,7 +33,7 @@ public class IsLoginNameAvailableController {
 		try {
 			connection = ConnectionFactory.newConnection();
 			stmt = connection.createStatement();
-			rs = stmt.executeQuery("SELECT * FROM \"user\".is_login_name_available('" + loginName + "')");
+			rs = stmt.executeQuery("SELECT * FROM \"user\".user_is_login_name_available('" + loginName + "')");
 			while(rs.next()) {
 				result = rs.getBoolean("_result");
 				error_message = rs.getString("_error_message");
