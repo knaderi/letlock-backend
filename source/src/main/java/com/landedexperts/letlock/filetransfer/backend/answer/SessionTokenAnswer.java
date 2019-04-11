@@ -1,19 +1,25 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
 public class SessionTokenAnswer {
-	private String token;
-	private String message;
+	private final String token;
+	private final String errorCode;
+	private final String errorMessage;
 
-	public SessionTokenAnswer(String token, String message) {
-		this.token = token;
-		this.message = message;
+	public SessionTokenAnswer(final String token, final String errorCode, final String errorMessage) {
+		this.token = token != null ? token : "";
+		this.errorCode = errorCode != null ? errorCode : "";
+		this.errorMessage = errorMessage != null ? errorMessage : "";
 	}
 
 	public String getToken() {
 		return this.token;
 	}
 
-	public String getMessage() {
-		return this.message;
+	public String getErrorCode() {
+		return this.errorCode;
+	}
+
+	public String getErrorMessage() {
+		return this.errorMessage;
 	}
 }

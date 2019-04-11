@@ -29,7 +29,7 @@ public class OrderChangeStatusInitiatedToCancelledController {
 		Boolean result = false;
 		String errorMessage = "";
 
-		Integer userId = SessionManager.getUserId(token);
+		Integer userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
 			Connection connection = null;
 			Statement stmt = null;

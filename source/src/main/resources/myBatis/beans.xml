@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
+		<property name="serverName" value="localhost"/>
+		<property name="portNumber" value="5432"/>
+		<property name="databaseName" value="letlock_filetransfer"/>
+		<property name="user" value="letlock_backend"/>
+		<property name="password" value="Ai#~eq:*|G?|b%t[qJBh8f6["/>
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<bean id="baseMapper" class="org.mybatis.spring.mapper.MapperFactoryBean" abstract="true" lazy-init="true">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	</bean>
+
+	<bean id="loginMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.request.mapper.LoginMapper"/>
+	</bean>
+</beans>

@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.noec2;
+package com.landedexperts.letlock.filetransfer.backend;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class LetlockFiletransferBackendNoec2ApplicationTests {
+public class LetlockFiletransferBackendApplicationTests {
 
 	@Test
 	public void contextLoads() {

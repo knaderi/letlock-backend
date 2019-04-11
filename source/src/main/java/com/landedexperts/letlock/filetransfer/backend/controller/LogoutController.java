@@ -20,7 +20,7 @@ public class LogoutController {
 			@RequestParam( value="token" ) String token
 	) throws Exception
 	{
-		SessionManager.cleanSession(token);
+		SessionManager.getInstance().cleanSession(token);
 		return new BooleanAnswer(true, "");
 	}
 }

@@ -1,16 +1,13 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
+import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
-import com.landedexperts.letlock.filetransfer.backend.database.ConnectionFactory;
 
 @RestController
 public class RegisterController {
@@ -25,6 +22,19 @@ public class RegisterController {
 		@RequestParam( value="password" ) String password
 	) throws Exception
 	{
+		PGSimpleDataSource ds = new PGSimpleDataSource();
+		ds.setServerName("localhost");
+		ds.setPortNumber(5432);
+		ds.setDatabaseName("letlock_filetransfer");
+		ds.setUser("letlock_backend");
+		ds.setPassword("Ai#~eq:*|G?|b%t[qJBh8f6[");
+
+		JdbcTemplate stuff = new JdbcTemplate(ds);
+
+		stuff.execute("SELECT * FROM \"user\".user_insert('" + loginName + "','" + password + "')");
+
+		return new BooleanAnswer(false, "");
+/*
 		Boolean result = false;
 		String error_message = "";
 
@@ -52,5 +62,6 @@ public class RegisterController {
 		}
 
 		return new BooleanAnswer(result, error_message);
+*/
 	}
 }
