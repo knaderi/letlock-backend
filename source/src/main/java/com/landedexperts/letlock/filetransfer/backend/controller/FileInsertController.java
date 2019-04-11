@@ -72,6 +72,6 @@ public class FileInsertController {
 			}
 		}
 
-		return new BooleanAnswer(result, errorMessage);
+		return new BooleanAnswer(result, "", errorMessage);
 	}
 }

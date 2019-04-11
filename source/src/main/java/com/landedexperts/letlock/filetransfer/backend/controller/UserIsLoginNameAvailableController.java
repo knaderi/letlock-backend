@@ -48,6 +48,6 @@ public class UserIsLoginNameAvailableController {
 			if( connection != null ) { connection.close(); }
 		}
 
-		return new BooleanAnswer(result, error_message);
+		return new BooleanAnswer(result, "", error_message);
 	}
 }

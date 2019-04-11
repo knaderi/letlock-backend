@@ -1,19 +1,12 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class BooleanAnswer {
+public class BooleanAnswer extends ErrorCodeMessage {
 	private final boolean result;
-	private final String message;
 
-	public BooleanAnswer( boolean result, String message ) {
+	public BooleanAnswer(boolean result, String errorCode, String errorMessage) {
+		super(errorCode, errorMessage);
 		this.result = result;
-		this.message = message;
 	}
 
-	public String getResult() {
-		return (result ? "Success" : "Failed");
-	}
-
-	public String getMessage() {
-		return message;
-	}
+	public boolean getResult() { return result; }
 }

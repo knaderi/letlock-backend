@@ -24,7 +24,15 @@
 		<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
 	</bean>
 
-	<bean id="loginMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.request.mapper.LoginMapper"/>
+	<bean id="userMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.UserMapper"/>
+	</bean>
+
+	<bean id="orderMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderMapper"/>
+	</bean>
+
+	<bean id="orderDetailMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderDetailMapper"/>
 	</bean>
 </beans>

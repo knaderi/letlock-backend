@@ -1,14 +1,12 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class OrderAnswer {
-	private int orderId;
-	private String message;
+public class OrderAnswer extends ErrorCodeMessage {
+	private final int orderId;
 
-	public OrderAnswer(int orderId, String message) {
+	public OrderAnswer(int orderId, String errorCode, String errorMessage) {
+		super(errorCode, errorMessage);
 		this.orderId = orderId;
-		this.message = message;
 	}
 
-	public int getOrderId() {return this.orderId; }
-	public String getMessage() {return this.message;}
+	public int getOrderId() { return this.orderId; }
 }

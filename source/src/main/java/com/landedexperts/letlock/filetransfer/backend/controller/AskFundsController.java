@@ -25,6 +25,6 @@ public class AskFundsController {
 
 
 
-		return new BooleanAnswer(result, "");
+		return new BooleanAnswer(result, "", "");
 	}
 }

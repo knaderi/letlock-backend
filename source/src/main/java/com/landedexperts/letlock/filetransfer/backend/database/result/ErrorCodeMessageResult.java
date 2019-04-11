@@ -1,16 +1,6 @@
-package com.landedexperts.letlock.filetransfer.backend.database.request.result;
+package com.landedexperts.letlock.filetransfer.backend.database.result;
 
-public class Login {
-	private Integer userId;
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
-
+public class ErrorCodeMessageResult {
 	private String errorCode;
 
 	public String getErrorCode() {

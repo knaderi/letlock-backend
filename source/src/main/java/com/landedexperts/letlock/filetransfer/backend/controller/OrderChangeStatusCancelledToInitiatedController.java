@@ -55,6 +55,6 @@ public class OrderChangeStatusCancelledToInitiatedController {
 			}
 		}
 
-		return new BooleanAnswer(result, errorMessage);
+		return new BooleanAnswer(result, "", errorMessage);
 	}
 }
