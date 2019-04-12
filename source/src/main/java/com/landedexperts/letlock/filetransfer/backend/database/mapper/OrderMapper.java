@@ -15,10 +15,10 @@ public interface OrderMapper {
 	@Select("SELECT"
 			+ " _error_code AS errorCode, _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_initiated_to_cancelled( #{ userId }, #{ orderId } )")
-	ErrorCodeMessageResult changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("userId") int orderId);
+	ErrorCodeMessageResult changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
 
 	@Select("SELECT"
 			+ " _error_code AS errorCode, _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_cancelled_to_initiated( #{ userId }, #{ orderId } )")
-	ErrorCodeMessageResult changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("userId") int orderId);
+	ErrorCodeMessageResult changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
 }
