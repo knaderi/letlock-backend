@@ -13,8 +13,11 @@ import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 public interface FileMapper {
 	@Select(
 		"SELECT"
-			+ " _file_id AS id, _error_code AS errorCode, _error_message AS errorMessage"
-			+ " FROM \"storage\".file_insert( #{ userId }, #{ fileTransferUuid }, #{ pathname }, #{ expires } )")
+			+ " _file_id AS id,"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM \"storage\".file_insert( #{ userId }, #{ fileTransferUuid }, #{ pathname }, #{ expires } )"
+	)
 	IdResult fileInsert(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid,
@@ -24,8 +27,11 @@ public interface FileMapper {
 
 	@Select(
 		"SELECT"
-			+ " _result AS value, _error_code AS errorCode, _error_message AS errorMessage"
-			+ " FROM \"storage\".file_is_allowed_to_download( #{ userId }, #{ fileTransferUuid } )")
+			+ " _result AS value,"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM \"storage\".file_is_allowed_to_download( #{ userId }, #{ fileTransferUuid } )"
+	)
 	BooleanResult fileIsAllowedToDownload(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
@@ -33,8 +39,10 @@ public interface FileMapper {
 
 	@Select(
 		"SELECT"
-			+ " _error_code AS errorCode, _error_message AS errorMessage"
-			+ " FROM \"storage\".file_set_downloaded( #{ userId }, #{ fileTransferUuid } )")
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM \"storage\".file_set_downloaded( #{ userId }, #{ fileTransferUuid } )"
+	)
 	ErrorCodeMessageResult fileSetDownloaded(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
@@ -42,8 +50,10 @@ public interface FileMapper {
 
 	@Select(
 		"SELECT"
-			+ " _error_code AS errorCode, _error_message AS errorMessage"
-			+ " FROM \"storage\".file_delete( #{ userId }, #{ fileTransferUuid } )")
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM \"storage\".file_delete( #{ userId }, #{ fileTransferUuid } )"
+	)
 	ErrorCodeMessageResult fileDelete(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid

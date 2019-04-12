@@ -9,44 +9,56 @@ import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeM
 import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 
 public interface UserMapper {
-	@Select("SELECT"
+	@Select(
+		"SELECT"
 			+ " _result AS value,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"user\".user_is_login_name_available( #{ loginName } )")
+			+ " FROM \"user\".user_is_login_name_available( #{ loginName } )"
+	)
 	BooleanAnswer isLoginNameAvailable(@Param("loginName") String loginName);
 
-	@Select("SELECT"
+	@Select(
+		"SELECT"
 			+ " _user_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"user\".user_insert( #{loginName}, #{password} )")
+			+ " FROM \"user\".user_insert( #{loginName}, #{password} )"
+	)
 	IdResult register(@Param("loginName") String loginName, @Param("password") String password);
 
-	@Select("SELECT"
+	@Select(
+		"SELECT"
 			+ " _hashing_algo AS hashingAlgo,"
 			+ " _encoding_algo AS encodingAlgo,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"user\".user_get_password_algo( #{loginName} )")
+			+ " FROM \"user\".user_get_password_algo( #{loginName} )"
+	)
 	AlgoResult userGetPasswordAlgo(@Param("loginName") String loginName);
 
-	@Select("SELECT"
+	@Select(
+		"SELECT"
 			+ " _user_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"user\".login( #{loginName}, #{password} )")
+			+ " FROM \"user\".login( #{loginName}, #{password} )"
+	)
 	IdResult login(@Param("loginName") String loginName, @Param("password") String password);
 
-	@Select("SELECT"
+	@Select(
+		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"user\".user_change_password( #{ loginName } , #{ oldPassword } , #{ newPassword } )")
+			+ " FROM \"user\".user_change_password( #{ loginName } , #{ oldPassword } , #{ newPassword } )"
+	)
 	ErrorCodeMessageResult changePassword(@Param("loginName") String loginName, @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword);
 
-	@Select("SELECT"
+	@Select(
+		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"user\".user_change_status( #{ userId } , #{ status } )")
+			+ " FROM \"user\".user_change_status( #{ userId } , #{ status } )"
+	)
 	ErrorCodeMessageResult changeStatus(@Param("userId") int userId, @Param("status") String status);
 }

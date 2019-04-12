@@ -7,11 +7,13 @@ import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeM
 import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 
 public interface OrderDetailMapper {
-	@Select("SELECT"
+	@Select(
+		"SELECT"
 			+ " _order_detail_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.order_detail_add( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )")
+			+ " FROM payment.order_detail_add( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )"
+	)
 	IdResult orderDetailAdd(
 		@Param("userId") int userId,
 		@Param("orderId") int orderId,
@@ -19,16 +21,24 @@ public interface OrderDetailMapper {
 		@Param("quantity") short quantity
 	);
 
-	@Select("SELECT _error_code AS errorCode, _error_message AS errorMessage"
-			+ " FROM payment.order_detail_update( #{ userId }, #{ orderDetailId }, #{ quantity } )")
+	@Select(
+		"SELECT"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM payment.order_detail_update( #{ userId }, #{ orderDetailId }, #{ quantity } )"
+	)
 	ErrorCodeMessageResult orderDetailUpdate(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId,
 		@Param("quantity") short quantity
 	);
 
-	@Select("SELECT _error_code AS errorCode, _error_message AS errorMessage"
-			+ " FROM payment.order_detail_delete( #{ userId }, #{ orderDetailId } )")
+	@Select(
+		"SELECT"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM payment.order_detail_delete( #{ userId }, #{ orderDetailId } )"
+	)
 	ErrorCodeMessageResult orderDetailDelete(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId
