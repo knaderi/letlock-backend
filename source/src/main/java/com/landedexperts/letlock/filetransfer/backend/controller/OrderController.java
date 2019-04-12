@@ -10,7 +10,7 @@ import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
 import com.landedexperts.letlock.filetransfer.backend.answer.OrderAnswer;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.OrderResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -24,7 +24,7 @@ public class OrderController {
 		produces = {"application/JSON"}
 	)
 	public OrderAnswer order_create(
-		@RequestParam( value="token" ) String token
+		@RequestParam( value="token" ) final String token
 	) throws Exception
 	{
 		int orderId = -1;
@@ -33,9 +33,9 @@ public class OrderController {
 
 		int userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
-			OrderResult answer = orderMapper.orderCreate(userId);
+			IdResult answer = orderMapper.orderCreate(userId);
 
-			orderId = answer.getOrderId();
+			orderId = answer.getId();
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();
 		}
@@ -49,8 +49,8 @@ public class OrderController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer orderChangeStatusInitiatedToCancelled(
-			@RequestParam( value="token" ) String token,
-			@RequestParam( value="order_id" ) int orderId
+			@RequestParam( value="token" ) final String token,
+			@RequestParam( value="order_id" ) final int orderId
 	) throws Exception
 	{
 		Boolean result = false;
@@ -76,8 +76,8 @@ public class OrderController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer orderChangeStatusCancelledToInitiated(
-			@RequestParam( value="token" ) String token,
-			@RequestParam( value="order_id" ) int orderId
+			@RequestParam( value="token" ) final String token,
+			@RequestParam( value="order_id" ) final int orderId
 	) throws Exception
 	{
 		Boolean result = false;

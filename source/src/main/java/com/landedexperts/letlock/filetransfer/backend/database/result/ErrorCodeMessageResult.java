@@ -7,7 +7,7 @@ public class ErrorCodeMessageResult {
 		return errorCode;
 	}
 
-	public void setErrorCode(String errorCode) {
+	public void setErrorCode(final String errorCode) {
 		this.errorCode = errorCode;
 	}
 
@@ -17,7 +17,7 @@ public class ErrorCodeMessageResult {
 		return errorMessage;
 	}
 
-	public void setErrorMessage(String errorMessage) {
+	public void setErrorMessage(final String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 }

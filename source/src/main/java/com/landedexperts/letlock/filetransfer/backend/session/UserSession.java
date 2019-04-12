@@ -11,7 +11,7 @@ public class UserSession {
 	private int userId;
 	private Date expires;
 
-	public UserSession(int userId) {
+	public UserSession(final int userId) {
 		this.userId = userId;
 		this.expires = UserSession.newExpire();
 	}

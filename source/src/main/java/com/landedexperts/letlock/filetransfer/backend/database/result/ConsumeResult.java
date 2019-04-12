@@ -9,8 +9,8 @@ public class ConsumeResult extends ErrorCodeMessageResult {
 		return fileTransferUuid;
 	}
 
-	public void setFileTransferUuid(UUID fileTransferUuid) {
-		this.fileTransferUuid = fileTransferUuid;
+	public void setFileTransferUuid(final String fileTransferUuid) {
+		this.fileTransferUuid = fileTransferUuid != null ? UUID.fromString(fileTransferUuid) : null;
 	}
 
 	private UUID walletAddressUuid;
@@ -19,7 +19,7 @@ public class ConsumeResult extends ErrorCodeMessageResult {
 		return walletAddressUuid;
 	}
 
-	public void setWalletAddressUuid(UUID walletAddressUuid) {
-		this.walletAddressUuid = walletAddressUuid;
+	public void setWalletAddressUuid(final String walletAddressUuid) {
+		this.walletAddressUuid = walletAddressUuid != null ? UUID.fromString(walletAddressUuid) : null;
 	}
 }

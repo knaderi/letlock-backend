@@ -15,8 +15,8 @@ public class SessionManager {
 		return singleInstance;
 	}
 
-	private Random random;
-	private Map<String, UserSession> sessionTokens;
+	private final Random random;
+	private final Map<String, UserSession> sessionTokens;
 
 	private SessionManager() {
 		random = new Random();
@@ -26,7 +26,7 @@ public class SessionManager {
 	/*
 	 * Generates a new session token for the user
 	 */
-	public String generateSessionToken(int userId) {
+	public String generateSessionToken(final int userId) {
 		/* Generate the token */
 		byte[] randomBytes = new byte[128];
 		random.nextBytes(randomBytes);
@@ -53,14 +53,14 @@ public class SessionManager {
 	/*
 	 * Remove the user session associated with the token
 	 */
-	public void cleanSession(String token) {
+	public void cleanSession(final String token) {
 		sessionTokens.remove(token);
 	}
 
 	/*
 	 * Tells whether the token is active
 	 */
-	public boolean isActive(String token) {
+	public boolean isActive(final String token) {
 		boolean result = false;
 		if( sessionTokens.containsKey(token) ) {
 			result = sessionTokens.get(token).isActive();
@@ -88,7 +88,7 @@ public class SessionManager {
 	/*
 	 * Extend the lifetime of the token
 	 */
-	public void extendToken(String token) {
+	public void extendToken(final String token) {
 		if(isActive(token)) {
 			sessionTokens.get(token).extend();
 		}

@@ -10,8 +10,7 @@ import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
 import com.landedexperts.letlock.filetransfer.backend.answer.SessionTokenAnswer;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.LoginResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.RegisterResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -21,15 +20,33 @@ public class UserController {
 
 	@RequestMapping(
 		method = RequestMethod.POST,
+		value = "/user_is_login_name_available",
+		produces = {"application/JSON"}
+	)
+	public BooleanAnswer userIsLoginNameAvailable(
+		@RequestParam( value="loginName" ) final String loginName
+	) throws Exception
+	{
+		BooleanAnswer answer = userMapper.isLoginNameAvailable( loginName );
+
+		boolean result = answer.getResult();
+		String errorCode = answer.getErrorCode();
+		String errorMessage = answer.getErrorMessage();
+
+		return new BooleanAnswer(result, errorCode, errorMessage);
+	}
+
+	@RequestMapping(
+		method = RequestMethod.POST,
 		value = "/register",
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer register(
-		@RequestParam( value="loginName" ) String loginName,
-		@RequestParam( value="password" ) String password
+		@RequestParam( value="loginName" ) final String loginName,
+		@RequestParam( value="password" ) final String password
 	) throws Exception
 	{
-		RegisterResult answer = userMapper.register(loginName, password);
+		IdResult answer = userMapper.register(loginName, password);
 
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
@@ -45,13 +62,13 @@ public class UserController {
 		produces = {"application/JSON"}
 	)
 	public SessionTokenAnswer login(
-		@RequestParam( value="loginName" ) String loginName,
-		@RequestParam( value="password" ) String password
+		@RequestParam( value="loginName" ) final String loginName,
+		@RequestParam( value="password" ) final String password
 	) throws Exception
 	{
-		LoginResult answer = userMapper.login(loginName, password);
+		IdResult answer = userMapper.login(loginName, password);
 
-		int userId = answer.getUserId();
+		int userId = answer.getId();
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
 
@@ -69,9 +86,9 @@ public class UserController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer userChangePassword(
-		@RequestParam( value="loginName" ) String loginName,
-		@RequestParam( value="oldPassword" ) String oldPassword,
-		@RequestParam( value="newPassword" ) String newPassword
+		@RequestParam( value="loginName" ) final String loginName,
+		@RequestParam( value="oldPassword" ) final String oldPassword,
+		@RequestParam( value="newPassword" ) final String newPassword
 	) throws Exception
 	{
 		ErrorCodeMessageResult answer = userMapper.changePassword( loginName, oldPassword, newPassword );
@@ -89,28 +106,10 @@ public class UserController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer logout(
-			@RequestParam( value="token" ) String token
+			@RequestParam( value="token" ) final String token
 	) throws Exception
 	{
 		SessionManager.getInstance().cleanSession(token);
 		return new BooleanAnswer(true, "NO_ERROR", "");
-	}
-
-	@RequestMapping(
-		method = RequestMethod.POST,
-		value = "/user_is_login_name_available",
-		produces = {"application/JSON"}
-	)
-	public BooleanAnswer userIsLoginNameAvailable(
-		@RequestParam( value="loginName" ) String loginName
-	) throws Exception
-	{
-		BooleanAnswer answer = userMapper.isLoginNameAvailable( loginName );
-
-		boolean result = answer.getResult();
-		String errorCode = answer.getErrorCode();
-		String errorMessage = answer.getErrorMessage();
-
-		return new BooleanAnswer(result, errorCode, errorMessage);
 	}
 }

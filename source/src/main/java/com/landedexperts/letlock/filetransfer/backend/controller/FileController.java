@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.result.FileResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -29,9 +29,9 @@ public class FileController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer fileInsert(
-		@RequestParam( value="token" ) String token,
-		@RequestParam( value="file_transfer_uuid" ) UUID fileTransferUuid,
-		@RequestParam( value="file" ) MultipartFile file
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
+		@RequestParam( value="file" ) final MultipartFile file
 	) throws Exception
 	{
 		Boolean result = false;
@@ -46,7 +46,7 @@ public class FileController {
 			// Set the expiring date
 			Date expires = new Date((new Date()).getTime() + FileController.fileLifeSpan);
 
-			FileResult answer = fileMapper.fileInsert(userId, fileTransferUuid, pathname, expires);
+			IdResult answer = fileMapper.fileInsert(userId, fileTransferUuid, pathname, expires);
 
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();

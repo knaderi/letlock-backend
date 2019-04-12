@@ -10,7 +10,7 @@ import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
 import com.landedexperts.letlock.filetransfer.backend.answer.OrderDetailAnswer;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderDetailMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.OrderDetailResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -24,10 +24,10 @@ public class OrderDetailController {
 		produces = {"application/JSON"}
 	)
 	public OrderDetailAnswer orderDetailAdd(
-		@RequestParam( value="token" ) String token,
-		@RequestParam( value="order_id" ) int orderId,
-		@RequestParam( value="product_id" ) int productId,
-		@RequestParam( value="quantity" ) short quantity
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="order_id" ) final int orderId,
+		@RequestParam( value="product_id" ) final int productId,
+		@RequestParam( value="quantity" ) final short quantity
 	) throws Exception
 	{
 		int orderDetailId = -1;
@@ -36,9 +36,9 @@ public class OrderDetailController {
 
 		int userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
-			OrderDetailResult answer = orderDetailMapper.orderDetailAdd(userId, orderId, productId, quantity);
+			IdResult answer = orderDetailMapper.orderDetailAdd(userId, orderId, productId, quantity);
 
-			orderDetailId = answer.getOrderDetailId();
+			orderDetailId = answer.getId();
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();
 		}
@@ -52,9 +52,9 @@ public class OrderDetailController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer orderDetailUpdate(
-		@RequestParam( value="token" ) String token,
-		@RequestParam( value="order_detail_id" ) int orderDetailId,
-		@RequestParam( value="quantity" ) short quantity
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="order_detail_id" ) final int orderDetailId,
+		@RequestParam( value="quantity" ) final short quantity
 	) throws Exception
 	{
 		boolean result = false;
@@ -79,8 +79,8 @@ public class OrderDetailController {
 		produces = {"application/JSON"}
 	)
 	public BooleanAnswer orderDetailDelete(
-		@RequestParam( value="token" ) String token,
-		@RequestParam( value="order_detail_id" ) int orderDetailId
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="order_detail_id" ) final int orderDetailId
 	) throws Exception
 	{
 		boolean result = false;
