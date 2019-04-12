@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class SessionTokenAnswer extends ErrorCodeMessage {
+public class SessionTokenAnswer extends ErrorCodeMessageAnswer {
 	private final String token;
 
 	public SessionTokenAnswer(final String token, final String errorCode, final String errorMessage) {

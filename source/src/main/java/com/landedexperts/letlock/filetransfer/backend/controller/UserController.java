@@ -34,7 +34,7 @@ public class UserController {
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
 
-		Boolean result = errorCode.equals("NO_ERROR");
+		boolean result = errorCode.equals("NO_ERROR");
 
 		return new BooleanAnswer(result, errorCode, errorMessage);
 	}
@@ -51,7 +51,7 @@ public class UserController {
 	{
 		LoginResult answer = userMapper.login(loginName, password);
 
-		Integer userId = answer.getUserId();
+		int userId = answer.getUserId();
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
 
@@ -78,7 +78,7 @@ public class UserController {
 
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
-		Boolean result = errorCode.equals("NO_ERROR");
+		boolean result = errorCode.equals("NO_ERROR");
 
 		return new BooleanAnswer(result, errorCode, errorMessage);
 	}
@@ -94,5 +94,23 @@ public class UserController {
 	{
 		SessionManager.getInstance().cleanSession(token);
 		return new BooleanAnswer(true, "NO_ERROR", "");
+	}
+
+	@RequestMapping(
+		method = RequestMethod.POST,
+		value = "/user_is_login_name_available",
+		produces = {"application/JSON"}
+	)
+	public BooleanAnswer userIsLoginNameAvailable(
+		@RequestParam( value="loginName" ) String loginName
+	) throws Exception
+	{
+		BooleanAnswer answer = userMapper.isLoginNameAvailable( loginName );
+
+		boolean result = answer.getResult();
+		String errorCode = answer.getErrorCode();
+		String errorMessage = answer.getErrorMessage();
+
+		return new BooleanAnswer(result, errorCode, errorMessage);
 	}
 }

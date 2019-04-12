@@ -35,4 +35,12 @@
 	<bean id="orderDetailMapper" parent="baseMapper">
 		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderDetailMapper"/>
 	</bean>
+
+	<bean id="fileTransferMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper"/>
+	</bean>
+
+	<bean id="fileMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper"/>
+	</bean>
 </beans>

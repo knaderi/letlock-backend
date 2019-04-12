@@ -1,13 +1,13 @@
 package com.landedexperts.letlock.filetransfer.backend.database.result;
 
 public class OrderResult extends ErrorCodeMessageResult {
-	private Integer orderId;
+	private int orderId;
 
-	public Integer getOrderId() {
+	public int getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(Integer orderId) {
+	public void setOrderId(int orderId) {
 		this.orderId = orderId;
 	}
 }

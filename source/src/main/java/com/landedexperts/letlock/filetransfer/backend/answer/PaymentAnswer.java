@@ -1,10 +1,10 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
 public class PaymentAnswer {
-	private int paymentId;
-	private String message;
+	private final int paymentId;
+	private final String message;
 
-	public PaymentAnswer(int paymentId, String message) {
+	public PaymentAnswer(final int paymentId, final String message) {
 		this.paymentId = paymentId;
 		this.message = message;
 	}

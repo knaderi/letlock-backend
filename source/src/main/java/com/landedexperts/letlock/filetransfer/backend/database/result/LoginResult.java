@@ -1,13 +1,13 @@
 package com.landedexperts.letlock.filetransfer.backend.database.result;
 
 public class LoginResult extends ErrorCodeMessageResult {
-	private Integer userId;
+	private int userId;
 
-	public Integer getUserId() {
+	public int getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 }

@@ -4,7 +4,7 @@ public class AddressAnswer {
 	private final String address;
 	private final String message;
 
-	public AddressAnswer( String address, String message ) {
+	public AddressAnswer( final String address, final String message ) {
 		this.address = address;
 		this.message = message;
 	}
