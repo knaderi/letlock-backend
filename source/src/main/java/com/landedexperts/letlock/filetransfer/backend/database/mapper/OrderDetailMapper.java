@@ -7,7 +7,10 @@ import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeM
 import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
 
 public interface OrderDetailMapper {
-	@Select("SELECT _order_detail_id AS id, _error_code AS errorCode, _error_message AS errorMessage"
+	@Select("SELECT"
+			+ " _order_detail_id AS id,"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_detail_add( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )")
 	IdResult orderDetailAdd(
 		@Param("userId") int userId,
