@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "Register",
+			"name": "Register Alice",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -47,7 +47,48 @@
 			"response": []
 		},
 		{
-			"name": "Login",
+			"name": "Register Bob",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "{{BobLoginName}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{BobPassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Alice",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -88,7 +129,84 @@
 			"response": []
 		},
 		{
+			"name": "Login Bob",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "{{BobLoginName}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{BobPassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Order create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/order_create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"order_create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order detail add",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -108,21 +226,118 @@
 							"type": "text"
 						},
 						{
-							"key": "order_detail",
-							"value": "[ (1, 10), (1, 6), (1, 1) ]",
+							"key": "order_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "product_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "quantity",
+							"value": "42",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/order_create",
+					"raw": "http://localhost:3000/order_detail_add",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"order_create"
+						"order_detail_add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order detail update",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "order_detail_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "quantity",
+							"value": "256",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/order_detail_update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"order_detail_update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order detail delete",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "order_detail_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/order_detail_delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"order_detail_delete"
 					]
 				}
 			},
@@ -205,6 +420,98 @@
 					"port": "3000",
 					"path": [
 						"order_change_status_cancelled_to_initiated"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Consume start file transfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "wallet_address",
+							"value": "{{AliceWalletAddress}}",
+							"type": "text"
+						},
+						{
+							"key": "receiver_login_name",
+							"value": "{{BobLoginName}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/consume_start_file_transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"consume_start_file_transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set receiver address",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{BobSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "file_transfer_uuid",
+							"value": "{{FileTransferUuid}}",
+							"type": "text"
+						},
+						{
+							"key": "wallet_address",
+							"value": "{{BobWalletAddress}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/file_transfer_set_receiver_address",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"file_transfer_set_receiver_address"
 					]
 				}
 			},
