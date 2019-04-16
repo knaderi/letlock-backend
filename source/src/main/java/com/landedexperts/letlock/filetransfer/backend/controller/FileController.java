@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.landedexperts.letlock.filetransfer.backend.answer.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController

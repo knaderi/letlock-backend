@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.landedexperts.letlock.filetransfer.backend.answer.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.answer.ConsumeResponse;
-import com.landedexperts.letlock.filetransfer.backend.answer.FileTransferReadResponse;
-import com.landedexperts.letlock.filetransfer.backend.answer.UuidResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ConsumeVO;
-import com.landedexperts.letlock.filetransfer.backend.database.result.FileTransferReadVO;
-import com.landedexperts.letlock.filetransfer.backend.database.result.GochainAddressVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.ConsumeVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
+import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.ConsumeResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.FileTransferReadResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.UuidResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController

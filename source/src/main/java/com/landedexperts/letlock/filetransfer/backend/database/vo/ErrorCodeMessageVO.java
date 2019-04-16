@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.filetransfer.backend.database.result;
+package com.landedexperts.letlock.filetransfer.backend.database.vo;
 
 public class ErrorCodeMessageVO {
 	private String errorCode;

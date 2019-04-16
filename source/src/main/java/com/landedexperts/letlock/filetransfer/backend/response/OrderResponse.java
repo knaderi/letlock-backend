@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.filetransfer.backend.answer;
+package com.landedexperts.letlock.filetransfer.backend.response;
 
 public class OrderResponse extends ErrorCodeMessageResponse {
 	private final int orderId;

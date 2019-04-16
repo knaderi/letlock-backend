@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.filetransfer.backend.database.result;
+package com.landedexperts.letlock.filetransfer.backend.database.vo;
 
 public class BooleanVO extends ErrorCodeMessageVO {
 	private boolean value;

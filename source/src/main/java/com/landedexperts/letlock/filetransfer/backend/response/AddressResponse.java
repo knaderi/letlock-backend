@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.filetransfer.backend.answer;
+package com.landedexperts.letlock.filetransfer.backend.response;
 
 public class AddressResponse {
 	private final String address;

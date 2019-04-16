@@ -3,10 +3,10 @@ package com.landedexperts.letlock.filetransfer.backend.database.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.result.AlgoVO;
-import com.landedexperts.letlock.filetransfer.backend.database.result.BooleanVO;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.AlgoVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 
 public interface UserMapper {
 	@Select(
