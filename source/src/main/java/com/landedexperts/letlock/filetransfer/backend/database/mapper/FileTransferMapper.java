@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import com.landedexperts.letlock.filetransfer.backend.database.result.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.result.ConsumeVO;
 import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.FileTransferReadVO;
 import com.landedexperts.letlock.filetransfer.backend.database.result.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
 
@@ -25,6 +26,31 @@ public interface FileTransferMapper {
 		@Param("walletAddress") String walletAddress,
 		@Param("receiverLoginName") String receiverLoginName
 	);
+
+	@Select(
+		"SELECT"
+			+ " _sender_login_name AS senderLoginName,"
+			+ " CAST( _sender_wallet_address_uuid AS text ) AS senderWalletAddressUuid,"
+			+ " _sender_wallet_address AS senderWalletAddress,"
+			+ " _receiver_login_name AS receiverLoginName,"
+			+ " CAST( _receiver_wallet_address_uuid AS text ) AS receiverWalletAddressUuid,"
+			+ " _receiver_wallet_address AS receiverWalletAddress,"
+			+ " _smart_contract_address AS smartContractAddress,"
+			+ " _funding_1_rec_pubkey_status AS funding1RecPubkeyStatus,"
+			+ " _funding_1_rec_pubkey_transaction_hash AS funding1RecPubkeyTransactionHash,"
+			+ " _funding_2_send_docinfo_status AS funding2SendDocinfoStatus,"
+			+ " _funding_2_send_docinfo_transaction_hash AS funding2SendDocinfoTransactionHash,"
+			+ " _funding_3_rec_final_status AS funding3RecFinalStatus,"
+			+ " _funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,"
+			+ " _file_transfer_create_dt AS fileTransferCreate,"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM gochain.file_transfer_read( #{ userId }, #{ fileTransferUuid } )"
+	)
+	FileTransferReadVO fileTransferRead(
+		@Param("userId") int userId,
+		@Param("fileTransferUuid") UUID fileTransferUuid
+	); 
 
 	@Select(
 		"SELECT"
