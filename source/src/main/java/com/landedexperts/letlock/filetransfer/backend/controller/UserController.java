@@ -6,11 +6,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
-import com.landedexperts.letlock.filetransfer.backend.answer.SessionTokenAnswer;
+import com.landedexperts.letlock.filetransfer.backend.answer.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.answer.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.UserMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.BooleanVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -23,17 +24,17 @@ public class UserController {
 		value = "/user_is_login_name_available",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer userIsLoginNameAvailable(
+	public BooleanResponse userIsLoginNameAvailable(
 		@RequestParam( value="loginName" ) final String loginName
 	) throws Exception
 	{
-		BooleanAnswer answer = userMapper.isLoginNameAvailable( loginName );
+		BooleanVO answer = userMapper.isLoginNameAvailable( loginName );
 
-		boolean result = answer.getResult();
+		boolean result = answer.getValue();
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
 
-		return new BooleanAnswer(result, errorCode, errorMessage);
+		return new BooleanResponse(result, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -41,19 +42,19 @@ public class UserController {
 		value = "/register",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer register(
+	public BooleanResponse register(
 		@RequestParam( value="loginName" ) final String loginName,
 		@RequestParam( value="password" ) final String password
 	) throws Exception
 	{
-		IdResult answer = userMapper.register(loginName, password);
+		IdVO answer = userMapper.register(loginName, password);
 
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
 
 		boolean result = errorCode.equals("NO_ERROR");
 
-		return new BooleanAnswer(result, errorCode, errorMessage);
+		return new BooleanResponse(result, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -61,12 +62,12 @@ public class UserController {
 		value = "/login",
 		produces = {"application/JSON"}
 	)
-	public SessionTokenAnswer login(
+	public SessionTokenResponse login(
 		@RequestParam( value="loginName" ) final String loginName,
 		@RequestParam( value="password" ) final String password
 	) throws Exception
 	{
-		IdResult answer = userMapper.login(loginName, password);
+		IdVO answer = userMapper.login(loginName, password);
 
 		int userId = answer.getId();
 		String errorCode = answer.getErrorCode();
@@ -77,7 +78,7 @@ public class UserController {
 			token = SessionManager.getInstance().generateSessionToken(userId);
 		}
 
-		return new SessionTokenAnswer(token, errorCode, errorMessage);
+		return new SessionTokenResponse(token, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -85,19 +86,19 @@ public class UserController {
 		value = "/user_change_password",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer userChangePassword(
+	public BooleanResponse userChangePassword(
 		@RequestParam( value="loginName" ) final String loginName,
 		@RequestParam( value="oldPassword" ) final String oldPassword,
 		@RequestParam( value="newPassword" ) final String newPassword
 	) throws Exception
 	{
-		ErrorCodeMessageResult answer = userMapper.changePassword( loginName, oldPassword, newPassword );
+		ErrorCodeMessageVO answer = userMapper.changePassword( loginName, oldPassword, newPassword );
 
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
 		boolean result = errorCode.equals("NO_ERROR");
 
-		return new BooleanAnswer(result, errorCode, errorMessage);
+		return new BooleanResponse(result, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -105,11 +106,11 @@ public class UserController {
 		value = "/logout",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer logout(
+	public BooleanResponse logout(
 			@RequestParam( value="token" ) final String token
 	) throws Exception
 	{
 		SessionManager.getInstance().cleanSession(token);
-		return new BooleanAnswer(true, "NO_ERROR", "");
+		return new BooleanResponse(true, "NO_ERROR", "");
 	}
 }

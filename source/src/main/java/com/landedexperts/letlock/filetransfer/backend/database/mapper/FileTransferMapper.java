@@ -5,11 +5,11 @@ import java.util.UUID;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.result.BooleanResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ConsumeResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.GochainAddressResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.BooleanVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ConsumeVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.GochainAddressVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
 
 public interface FileTransferMapper {
 	@Select(
@@ -20,7 +20,7 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM \"user\".consume_start_file_transfer( #{ userId } , DECODE( #{ walletAddress } , 'hex'), #{ receiverLoginName } )"
 	)
-	ConsumeResult consumeStartFileTransfer(
+	ConsumeVO consumeStartFileTransfer(
 		@Param("userId") int userId,
 		@Param("walletAddress") String walletAddress,
 		@Param("receiverLoginName") String receiverLoginName
@@ -33,7 +33,7 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.file_transfer_set_receiver_address( #{ userId } , #{ fileTransferUuid } , DECODE( #{ walletAddress } , 'hex'))"
 	)
-	GochainAddressResult setReceiverAddress(
+	GochainAddressVO setReceiverAddress(
 		@Param("userId") int userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("walletAddress") String walletAddress
@@ -46,7 +46,7 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.file_transfer_is_step_available( #{ fileTransferUuid }, #{ walletAddress }, #{ step } )"
 	)
-	BooleanResult fileTransferIsStepAvailable(
+	BooleanVO fileTransferIsStepAvailable(
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("walletAddress") String walletAddress,
 		@Param("step") String step
@@ -59,7 +59,7 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.file_transfer_is_step_pending( #{ fileTransferUuid }, #{ walletAddress }, #{ step } )"
 	)
-	BooleanResult fileTransferIsStepPending(
+	BooleanVO fileTransferIsStepPending(
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("walletAddress") String walletAddress,
 		@Param("step") String step
@@ -71,7 +71,7 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.file_transfer_set_contract_address( #{ fileTransferUuid }, #{ fileTransferAddress } )"
 	)
-	ErrorCodeMessageResult fileTransferSetContractAddress(
+	ErrorCodeMessageVO fileTransferSetContractAddress(
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("fileTransferAddress") String fileTransferAddress
 	);
@@ -80,13 +80,13 @@ public interface FileTransferMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_set_transfer_step_pending("
+			+ " FROM gochain.file_transfer_set_funding_step_pending("
 				+ " #{ fileTransferUuid },"
 				+ " DECODE( #{ walletAddress }, 'hex'),"
 				+ " #{ step }"
 			+ " )"
 	)
-	ErrorCodeMessageResult fileTransferSetTransferStepPending(
+	ErrorCodeMessageVO fileTransferSetTransferStepPending(
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("walletAddress") String walletAddress,
 		@Param("step") String step
@@ -97,14 +97,14 @@ public interface FileTransferMapper {
 			+ " _transfer_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_set_transfer_step_completed("
+			+ " FROM gochain.file_transfer_set_funding_step_completed("
 				+ " #{ fileTransferUuid },"
 				+ " DECODE( #{ walletAddress }, 'hex'),"
 				+ " #{ step },"
 				+ " DECODE( #{ transactionHash }, 'hex' )"
 			+ " )"
 	)
-	IdResult fileTransferSetTransferStepCompleted(
+	IdVO fileTransferSetTransferStepCompleted(
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("walletAddress") String walletAddress,
 		@Param("step") String step,

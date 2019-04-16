@@ -1,9 +1,9 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class BooleanAnswer extends ErrorCodeMessageAnswer {
+public class BooleanResponse extends ErrorCodeMessageResponse {
 	private final boolean result;
 
-	public BooleanAnswer(final boolean result, final String errorCode, final String errorMessage) {
+	public BooleanResponse(final boolean result, final String errorCode, final String errorMessage) {
 		super(errorCode, errorMessage);
 		this.result = result;
 	}

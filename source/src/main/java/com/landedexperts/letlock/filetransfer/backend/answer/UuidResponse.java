@@ -2,10 +2,10 @@ package com.landedexperts.letlock.filetransfer.backend.answer;
 
 import java.util.UUID;
 
-public class UuidAnswer extends ErrorCodeMessageAnswer {
+public class UuidResponse extends ErrorCodeMessageResponse {
 	private final UUID uuid;
 
-	public UuidAnswer( final UUID uuid, final String errorCode, final String errorMessage) {
+	public UuidResponse( final UUID uuid, final String errorCode, final String errorMessage) {
 		super(errorCode, errorMessage);
 		this.uuid = uuid;
 	}

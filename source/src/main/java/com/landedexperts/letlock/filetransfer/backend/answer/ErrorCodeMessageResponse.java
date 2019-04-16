@@ -1,10 +1,10 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class ErrorCodeMessageAnswer {
+public class ErrorCodeMessageResponse {
 	private final String errorCode;
 	private final String errorMessage;
 
-	public ErrorCodeMessageAnswer(final String errorCode, final String errorMessage) {
+	public ErrorCodeMessageResponse(final String errorCode, final String errorMessage) {
 		this.errorCode = errorCode != null ? errorCode : "";
 		this.errorMessage = errorMessage != null ? errorMessage : "";
 	}

@@ -3,8 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.database.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
 
 public interface OrderMapper {
 	@Select(
@@ -14,7 +14,7 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_create( #{userId} )"
 	)
-	IdResult orderCreate(@Param("userId") int userId);
+	IdVO orderCreate(@Param("userId") int userId);
 
 	@Select(
 		"SELECT"
@@ -22,7 +22,7 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_initiated_to_cancelled( #{ userId }, #{ orderId } )"
 	)
-	ErrorCodeMessageResult changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
+	ErrorCodeMessageVO changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
 
 	@Select(
 		"SELECT"
@@ -30,5 +30,5 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_cancelled_to_initiated( #{ userId }, #{ orderId } )"
 	)
-	ErrorCodeMessageResult changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
+	ErrorCodeMessageVO changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
 }

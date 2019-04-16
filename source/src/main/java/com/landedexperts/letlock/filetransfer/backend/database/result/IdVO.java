@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.database.result;
 
-public class IdResult extends ErrorCodeMessageResult {
+public class IdVO extends ErrorCodeMessageVO {
 	private int id;
 
 	public int getId() {

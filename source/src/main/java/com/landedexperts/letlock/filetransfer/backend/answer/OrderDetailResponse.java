@@ -1,9 +1,9 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class OrderDetailAnswer extends ErrorCodeMessageAnswer {
+public class OrderDetailResponse extends ErrorCodeMessageResponse {
 	private final int orderDetailId;
 
-	public OrderDetailAnswer( final int orderDetailId, final String errorCode, final String errorMessage ) {
+	public OrderDetailResponse( final int orderDetailId, final String errorCode, final String errorMessage ) {
 		super(errorCode, errorMessage);
 		this.orderDetailId = orderDetailId;
 	}

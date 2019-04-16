@@ -1,10 +1,10 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class AddressAnswer {
+public class AddressResponse {
 	private final String address;
 	private final String message;
 
-	public AddressAnswer( final String address, final String message ) {
+	public AddressResponse( final String address, final String message ) {
 		this.address = address;
 		this.message = message;
 	}

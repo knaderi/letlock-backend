@@ -2,7 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.result;
 
 import java.util.UUID;
 
-public class GochainAddressResult extends ErrorCodeMessageResult {
+public class GochainAddressVO extends ErrorCodeMessageVO {
 	private UUID gochainAddress;
 
 	public UUID getGochainAddress() {

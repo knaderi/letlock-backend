@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
+import com.landedexperts.letlock.filetransfer.backend.answer.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -29,7 +29,7 @@ public class FileController {
 		value = "/file_insert",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer fileInsert(
+	public BooleanResponse fileInsert(
 		@RequestParam( value="token" ) final String token,
 		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
 		@RequestParam( value="file" ) final MultipartFile file
@@ -47,7 +47,7 @@ public class FileController {
 			// Set the expiring date
 			Date expires = new Date((new Date()).getTime() + FileController.fileLifeSpan);
 
-			IdResult answer = fileMapper.fileInsert(userId, fileTransferUuid, pathname, expires);
+			IdVO answer = fileMapper.fileInsert(userId, fileTransferUuid, pathname, expires);
 
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();
@@ -55,7 +55,7 @@ public class FileController {
 			result = errorCode.equals("NO_ERROR");
 		}
 
-		return new BooleanAnswer(result, errorCode, errorMessage);
+		return new BooleanResponse(result, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -63,7 +63,7 @@ public class FileController {
 		value = "/file_delete",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer fileDelete(
+	public BooleanResponse fileDelete(
 		@RequestParam( value="token" ) final String token,
 		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid
 	) throws Exception
@@ -74,7 +74,7 @@ public class FileController {
 
 		Integer userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
-			ErrorCodeMessageResult answer = fileMapper.fileDelete(userId, fileTransferUuid);
+			ErrorCodeMessageVO answer = fileMapper.fileDelete(userId, fileTransferUuid);
 
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();
@@ -82,6 +82,6 @@ public class FileController {
 			result = errorCode.equals("NO_ERROR");
 		}
 
-		return new BooleanAnswer(result, errorCode, errorMessage);
+		return new BooleanResponse(result, errorCode, errorMessage);
 	}
 }

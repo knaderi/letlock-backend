@@ -3,8 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.database.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
 
 public interface OrderDetailMapper {
 	@Select(
@@ -14,7 +14,7 @@ public interface OrderDetailMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_detail_add( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )"
 	)
-	IdResult orderDetailAdd(
+	IdVO orderDetailAdd(
 		@Param("userId") int userId,
 		@Param("orderId") int orderId,
 		@Param("productId") int productId,
@@ -27,7 +27,7 @@ public interface OrderDetailMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_detail_update( #{ userId }, #{ orderDetailId }, #{ quantity } )"
 	)
-	ErrorCodeMessageResult orderDetailUpdate(
+	ErrorCodeMessageVO orderDetailUpdate(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId,
 		@Param("quantity") short quantity
@@ -39,7 +39,7 @@ public interface OrderDetailMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_detail_delete( #{ userId }, #{ orderDetailId } )"
 	)
-	ErrorCodeMessageResult orderDetailDelete(
+	ErrorCodeMessageVO orderDetailDelete(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId
 	);

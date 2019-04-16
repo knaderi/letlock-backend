@@ -1,9 +1,9 @@
 package com.landedexperts.letlock.filetransfer.backend.answer;
 
-public class SessionTokenAnswer extends ErrorCodeMessageAnswer {
+public class SessionTokenResponse extends ErrorCodeMessageResponse {
 	private final String token;
 
-	public SessionTokenAnswer(final String token, final String errorCode, final String errorMessage) {
+	public SessionTokenResponse(final String token, final String errorCode, final String errorMessage) {
 		super(errorCode, errorMessage);
 		this.token = token != null ? token : "";
 	}

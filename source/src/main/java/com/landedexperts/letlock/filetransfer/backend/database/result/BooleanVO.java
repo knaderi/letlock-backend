@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.database.result;
 
-public class BooleanResult extends ErrorCodeMessageResult {
+public class BooleanVO extends ErrorCodeMessageVO {
 	private boolean value;
 
 	public boolean getValue() {

@@ -3,8 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.database.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.IdResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.IdVO;
 
 public interface PaymentMapper {
 	@Select(
@@ -14,7 +14,7 @@ public interface PaymentMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.payment_initiate( #{ userId }, #{ orderId }, #{ type }, #{ transactionId } )"
 	)
-	IdResult paymentInitiate(
+	IdVO paymentInitiate(
 		@Param("userId") int userId,
 		@Param("orderId") int orderId,
 		@Param("type") int type,
@@ -27,7 +27,7 @@ public interface PaymentMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.payment_process_failure( #{ userId }, #{ paymentId } )"
 	)
-	ErrorCodeMessageResult paymentProcessFailure(
+	ErrorCodeMessageVO paymentProcessFailure(
 		@Param("userId") int userId,
 		@Param("paymentId") int paymentId
 	);
@@ -38,7 +38,7 @@ public interface PaymentMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.payment_process_success( #{ userId }, #{ paymentId } )"
 	)
-	ErrorCodeMessageResult paymentProcessSuccess(
+	ErrorCodeMessageVO paymentProcessSuccess(
 		@Param("userId") int userId,
 		@Param("paymentId") int paymentId
 	);

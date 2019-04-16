@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.landedexperts.letlock.filetransfer.backend.answer.BooleanAnswer;
-import com.landedexperts.letlock.filetransfer.backend.answer.ConsumeAnswer;
-import com.landedexperts.letlock.filetransfer.backend.answer.UuidAnswer;
+import com.landedexperts.letlock.filetransfer.backend.answer.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.answer.ConsumeResponse;
+import com.landedexperts.letlock.filetransfer.backend.answer.UuidResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.result.ConsumeResult;
-import com.landedexperts.letlock.filetransfer.backend.database.result.GochainAddressResult;
+import com.landedexperts.letlock.filetransfer.backend.database.result.ConsumeVO;
+import com.landedexperts.letlock.filetransfer.backend.database.result.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -26,7 +26,7 @@ public class FileTransferController {
 		value = "/consume_start_file_transfer",
 		produces = {"application/JSON"}
 	)
-	public ConsumeAnswer consumeStartFileTransfer(
+	public ConsumeResponse consumeStartFileTransfer(
 			@RequestParam( value="token" ) final String token,
 			@RequestParam( value="wallet_address" ) final String walletAddress,
 			@RequestParam( value="receiver_login_name" ) final String receiverLoginName
@@ -39,7 +39,7 @@ public class FileTransferController {
 
 		Integer userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
-			ConsumeResult answer = fileTransferMapper.consumeStartFileTransfer(userId, walletAddress, receiverLoginName);
+			ConsumeVO answer = fileTransferMapper.consumeStartFileTransfer(userId, walletAddress, receiverLoginName);
 
 			fileTransferUuid = answer.getFileTransferUuid();
 			walletAddressUuid = answer.getWalletAddressUuid();
@@ -47,7 +47,7 @@ public class FileTransferController {
 			errorMessage = answer.getErrorMessage();
 		}
 
-		return new ConsumeAnswer(fileTransferUuid, walletAddressUuid, errorCode, errorMessage);
+		return new ConsumeResponse(fileTransferUuid, walletAddressUuid, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -55,7 +55,7 @@ public class FileTransferController {
 		value = "/file_transfer_set_receiver_address",
 		produces = {"application/JSON"}
 	)
-	public UuidAnswer fileTransferSetReceiverAddress(
+	public UuidResponse fileTransferSetReceiverAddress(
 			@RequestParam( value="token" ) final String token,
 			@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
 			@RequestParam( value="wallet_address" ) final String walletAddress
@@ -67,14 +67,14 @@ public class FileTransferController {
 
 		int userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
-			GochainAddressResult answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid, walletAddress);
+			GochainAddressVO answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid, walletAddress);
 
 			walletAddressUuid = answer.getGochainAddress();
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();
 		}
 
-		return new UuidAnswer(walletAddressUuid, errorCode, errorMessage);
+		return new UuidResponse(walletAddressUuid, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -82,7 +82,7 @@ public class FileTransferController {
 		value = "/ask_funds",
 		produces = {"application/JSON"}
 	)
-	public BooleanAnswer askFunds(
+	public BooleanResponse askFunds(
 			@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
 			@RequestParam( value="signed_transaction_hex" ) final String signedTransactionHex,
 			@RequestParam( value="step" ) final String step
@@ -92,6 +92,6 @@ public class FileTransferController {
 
 
 
-		return new BooleanAnswer(result, "", "");
+		return new BooleanResponse(result, "", "");
 	}
 }

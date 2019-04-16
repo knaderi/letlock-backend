@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.database.result;
 
-public class AlgoResult extends ErrorCodeMessageResult {
+public class AlgoVO extends ErrorCodeMessageVO {
 	private String hashingAlgo;
 
 	public String getHashingAlgo() {

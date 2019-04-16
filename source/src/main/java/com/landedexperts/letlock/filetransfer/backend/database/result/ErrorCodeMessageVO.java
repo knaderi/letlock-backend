@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.database.result;
 
-public class ErrorCodeMessageResult {
+public class ErrorCodeMessageVO {
 	private String errorCode;
 
 	public String getErrorCode() {
