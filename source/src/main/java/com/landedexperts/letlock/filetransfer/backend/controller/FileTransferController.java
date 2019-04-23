@@ -13,7 +13,6 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.RestCall;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ConsumeVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
@@ -157,11 +156,8 @@ public class FileTransferController {
 				String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
 				String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
 
-				String contractAddress = RestCall.deploySmartContract("0x" + senderWalletAddress, "0x" + receiverWalletAddress);
-
-				ErrorCodeMessageVO answer2 = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, contractAddress);
-				errorCode = answer2.getErrorCode();
-				errorMessage = answer2.getErrorMessage();
+				@SuppressWarnings("unused")
+				boolean response = RestCall.deploySmartContract(fileTransferUuid, "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
 			}
 		}
 

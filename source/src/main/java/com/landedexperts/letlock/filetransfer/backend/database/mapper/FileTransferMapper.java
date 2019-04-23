@@ -94,7 +94,7 @@ public interface FileTransferMapper {
 		@Param("walletAddress") String walletAddress,
 		@Param("step") String step
 	);
-
+/*
 	@Select(
 		"SELECT"
 			+ " _error_code AS errorCode,"
@@ -105,7 +105,7 @@ public interface FileTransferMapper {
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("fileTransferAddress") String fileTransferAddress
 	);
-
+*/
 	@Select(
 		"SELECT"
 			+ " _error_code AS errorCode,"

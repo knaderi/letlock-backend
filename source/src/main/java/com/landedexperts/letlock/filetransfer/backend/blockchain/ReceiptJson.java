@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.blockchain;
 
-public class Receipt {
+public class ReceiptJson {
 	private String contractAddress;
 
 	public String getContractAddress() {

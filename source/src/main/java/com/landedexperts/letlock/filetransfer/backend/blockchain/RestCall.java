@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,13 +34,14 @@ public class RestCall {
 		return walletAddressJson.getWalletAddress();
 	}
 
-	static public String deploySmartContract(String senderWalletAddress, String receiverWalletAddress) throws Exception {
+	static public boolean deploySmartContract(UUID fileTransferUuid, String senderWalletAddress, String receiverWalletAddress) throws Exception {
 		HttpURLConnection performDeployment = (HttpURLConnection) new URL("http://localhost:3001/deploy_smart_contract").openConnection();
 		performDeployment.setDoOutput(true);
 		performDeployment.setRequestProperty("Content-Type", "application/json");
 
 		OutputStream output = performDeployment.getOutputStream();
 		output.write(("{"
+						+ "\"fileTransferUuid\":\"" + fileTransferUuid.toString() + "\","
 						+ "\"senderAddress\":\"" + senderWalletAddress + "\","
 						+ "\"receiverAddress\":\"" + receiverWalletAddress + "\""
 					+ "}").getBytes(StandardCharsets.UTF_8));
@@ -55,9 +57,9 @@ public class RestCall {
 		System.out.println("deploySmartContract " + gotten);
 
 		ObjectMapper mapper = new ObjectMapper();
-		Receipt receiptJson = mapper.readValue(gotten, Receipt.class);
+		ResultJson emptyJson = mapper.readValue(gotten, ResultJson.class);
 
-		return receiptJson.getContractAddress();
+		return emptyJson.getResult();
 	}
 
 	static public String fund(String signedTransactionHex) throws Exception {
@@ -79,7 +81,7 @@ public class RestCall {
 		System.out.println("fund " + gotten);
 
 		ObjectMapper mapper = new ObjectMapper();
-		Receipt receiptJson = mapper.readValue(gotten, Receipt.class);
+		ReceiptJson receiptJson = mapper.readValue(gotten, ReceiptJson.class);
 
 		return receiptJson.getContractAddress();
 	}
