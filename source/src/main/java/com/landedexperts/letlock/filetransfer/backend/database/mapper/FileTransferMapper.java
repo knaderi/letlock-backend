@@ -70,7 +70,11 @@ public interface FileTransferMapper {
 			+ " _is_available AS value,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_is_step_available( #{ fileTransferUuid }, #{ walletAddress }, #{ step } )"
+			+ " FROM gochain.file_transfer_is_step_available("
+				+ " #{ fileTransferUuid },"
+				+ " DECODE( #{ walletAddress }, 'hex' ),"
+				+ " CAST( #{ step } AS gochain.tp_funding_step )"
+			+ " )"
 	)
 	BooleanVO fileTransferIsStepAvailable(
 		@Param("fileTransferUuid") UUID fileTransferUuid,

@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.landedexperts.letlock.filetransfer.backend.blockchain.RestCall;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ConsumeVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
@@ -42,7 +45,9 @@ public class FileTransferController {
 
 		Integer userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
-			ConsumeVO answer = fileTransferMapper.consumeStartFileTransfer(userId, walletAddress, receiverLoginName);
+			String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2) : walletAddress; 
+
+			ConsumeVO answer = fileTransferMapper.consumeStartFileTransfer(userId, walletAddressTrimmed, receiverLoginName);
 
 			fileTransferUuid = answer.getFileTransferUuid();
 			walletAddressUuid = answer.getWalletAddressUuid();
@@ -139,11 +144,25 @@ public class FileTransferController {
 
 		int userId = SessionManager.getInstance().getUserId(token);
 		if(userId > 0) {
-			GochainAddressVO answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid, walletAddress);
+			String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2) : walletAddress;
+
+			GochainAddressVO answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid, walletAddressTrimmed);
 
 			walletAddressUuid = answer.getGochainAddress();
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();
+
+			if(errorCode.equals("NO_ERROR")) {
+				FileTransferReadVO fileTransferInfo = fileTransferMapper.fileTransferRead(userId, fileTransferUuid);
+				String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
+				String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
+
+				String contractAddress = RestCall.deploySmartContract("0x" + senderWalletAddress, "0x" + receiverWalletAddress);
+
+				ErrorCodeMessageVO answer2 = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, contractAddress);
+				errorCode = answer2.getErrorCode();
+				errorMessage = answer2.getErrorMessage();
+			}
 		}
 
 		return new UuidResponse(walletAddressUuid, errorCode, errorMessage);
@@ -161,9 +180,24 @@ public class FileTransferController {
 	) throws Exception
 	{
 		Boolean result = false;
+		String errorCode = "";
+		String errorMessage = "";
 
+		String walletAddress = RestCall.getWalletAddressFromTransaction(signedTransactionHex);
 
+		String prefix = walletAddress.substring(0, 2);
+		if(prefix.equals("0x")) {
+			walletAddress = walletAddress.substring(2);
+		}
 
-		return new BooleanResponse(result, "", "");
+		BooleanVO isAuthorized = fileTransferMapper.fileTransferIsStepAvailable(fileTransferUuid, walletAddress, step);
+
+		errorCode = isAuthorized.getErrorCode();
+		errorMessage = isAuthorized.getErrorMessage();
+		if(errorCode.equals("NO_ERROR") && isAuthorized.getValue()) {
+			;
+		}
+
+		return new BooleanResponse(result, errorCode, errorMessage);
 	}
 }
