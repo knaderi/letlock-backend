@@ -15,9 +15,9 @@ import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ConsumeVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
-import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.ConsumeResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.FileTransferReadResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.UuidResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
@@ -169,13 +169,12 @@ public class FileTransferController {
 		value = "/ask_funds",
 		produces = {"application/JSON"}
 	)
-	public BooleanResponse askFunds(
+	public TransactionHashResponse askFunds(
 			@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
 			@RequestParam( value="signed_transaction_hex" ) final String signedTransactionHex,
 			@RequestParam( value="step" ) final String step
 	) throws Exception
 	{
-		Boolean result = false;
 		String errorCode = "";
 		String errorMessage = "";
 
@@ -190,10 +189,12 @@ public class FileTransferController {
 
 		errorCode = isAuthorized.getErrorCode();
 		errorMessage = isAuthorized.getErrorMessage();
+
+		String transactionHash = "";
 		if(errorCode.equals("NO_ERROR") && isAuthorized.getValue()) {
-			;
+			transactionHash = RestCall.fund(fileTransferUuid, signedTransactionHex, step);
 		}
 
-		return new BooleanResponse(result, errorCode, errorMessage);
+		return new TransactionHashResponse(transactionHash, errorCode, errorMessage);
 	}
 }

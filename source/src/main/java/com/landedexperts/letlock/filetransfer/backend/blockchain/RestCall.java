@@ -62,27 +62,31 @@ public class RestCall {
 		return emptyJson.getResult();
 	}
 
-	static public String fund(String signedTransactionHex) throws Exception {
+	static public String fund(UUID fileTransferUuid, String signedTransactionHex, String step) throws Exception {
 		HttpURLConnection fundIt = (HttpURLConnection) new URL("http://localhost:3001/fund").openConnection();
 		fundIt.setDoOutput(true);
 		fundIt.setRequestProperty("Content-Type", "application/json");
-
+		
 		OutputStream output = fundIt.getOutputStream();
-		output.write(("{\"transaction\":\"" + signedTransactionHex + "\"}").getBytes(StandardCharsets.UTF_8));
+		output.write(("{"
+						+ "\"fileTransferUuid\":\"" + fileTransferUuid.toString() + "\","
+						+ "\"transaction\":\"" + signedTransactionHex + "\","
+						+ "\"step\":\"" + step + "\""
+					+ "}").getBytes(StandardCharsets.UTF_8));
 		output.flush();
 		output.close();
 
-		InputStream gotReceipt = fundIt.getInputStream();
+		InputStream gotTxHash = fundIt.getInputStream();
 		byte[] answer = new byte[1024];
-		int answerLength = gotReceipt.read(answer);
+		int answerLength = gotTxHash.read(answer);
 
 		String gotten = new String(answer, 0, answerLength, StandardCharsets.UTF_8);
 
 		System.out.println("fund " + gotten);
 
 		ObjectMapper mapper = new ObjectMapper();
-		ReceiptJson receiptJson = mapper.readValue(gotten, ReceiptJson.class);
+		TransactionHashJson transactionHashJson = mapper.readValue(gotten, TransactionHashJson.class);
 
-		return receiptJson.getContractAddress();
+		return transactionHashJson.getTransactionHash();
 	}
 }
