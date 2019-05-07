@@ -1,0 +1,3 @@
+source/src/test/java/local_files/*
+
+!source/src/test/java/local_files/empty

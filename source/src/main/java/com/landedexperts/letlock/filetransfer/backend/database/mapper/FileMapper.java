@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanPathnameVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 
@@ -28,11 +28,12 @@ public interface FileMapper {
 	@Select(
 		"SELECT"
 			+ " _result AS value,"
+			+ " _pathname AS pathName,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
 			+ " FROM \"storage\".file_is_allowed_to_download( #{ userId }, #{ fileTransferUuid } )"
 	)
-	BooleanVO fileIsAllowedToDownload(
+	BooleanPathnameVO fileIsAllowedToDownload(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);
