@@ -5,16 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.util.Date;
 import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanPathnameVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
@@ -32,7 +32,7 @@ import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 @RestController
 public class FileController {
 	/* Timeout in milliseconds, 24 hrs */
-	private static long fileLifeSpan = 86400000L;
+	private static long fileLifespan = 86400000L;
 
 	@Autowired
 	FileMapper fileMapper;
@@ -58,7 +58,7 @@ public class FileController {
 			String pathname = "C:\\Users\\Julien\\Desktop\\LetLock\\repositories\\letlock-backend\\source\\src\\test\\java\\local_files\\" + UUID.randomUUID().toString();
 
 			// Set the expiring date
-			Date expires = new Date((new Date()).getTime() + FileController.fileLifeSpan);
+			Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
 
 			IdVO answer = fileMapper.fileInsert(userId, fileTransferUuid, pathname, expires);
 
@@ -89,7 +89,9 @@ public class FileController {
 		@RequestParam( value="token" ) final String token,
 		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid
 	) throws Exception {
+		@SuppressWarnings("unused")
 		String errorCode = "TOKEN_INVALID";
+		@SuppressWarnings("unused")
 		String errorMessage = "Invalid token";
 
 		Integer userId = SessionManager.getInstance().getUserId(token);
