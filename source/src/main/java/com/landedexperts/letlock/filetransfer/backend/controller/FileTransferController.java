@@ -15,9 +15,12 @@ import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ConsumeVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.UuidNameDateVO;
 import com.landedexperts.letlock.filetransfer.backend.response.ConsumeResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.FileTransferReadResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.UuidNameDateArrayResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.UuidNameDate;
 import com.landedexperts.letlock.filetransfer.backend.response.UuidResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
@@ -32,9 +35,9 @@ public class FileTransferController {
 		produces = {"application/JSON"}
 	)
 	public ConsumeResponse consumeStartFileTransfer(
-			@RequestParam( value="token" ) final String token,
-			@RequestParam( value="wallet_address" ) final String walletAddress,
-			@RequestParam( value="receiver_login_name" ) final String receiverLoginName
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="wallet_address" ) final String walletAddress,
+		@RequestParam( value="receiver_login_name" ) final String receiverLoginName
 	) throws Exception
 	{
 		UUID fileTransferUuid = null;
@@ -55,6 +58,33 @@ public class FileTransferController {
 		}
 
 		return new ConsumeResponse(fileTransferUuid, walletAddressUuid, errorCode, errorMessage);
+	}
+
+	@RequestMapping(
+		method = RequestMethod.POST,
+		value = "/file_transfer_waiting_receiver_address",
+		produces = {"application/JSON"}
+	)
+	public UuidNameDateArrayResponse waitingForReceiverAddress(
+		@RequestParam( value="token" ) final String token			
+	) {
+		UuidNameDate[] value = null;
+		String errorCode = "TOKEN_INVALID";
+		String errorMessage = "Invalid token";
+
+		Integer userId = SessionManager.getInstance().getUserId(token);
+		if(userId > 0) {
+			UuidNameDateVO[] answer = fileTransferMapper.readSessionsWaitingForConfirmation(userId);
+
+			value = new UuidNameDate[answer.length];
+			for(int i = 0; i < answer.length; i++) {
+				value[i] = new UuidNameDate(UUID.fromString(answer[i].getUuid()), answer[i].getName(), answer[i].getCreate());
+			}
+			errorCode = "NO_ERROR";
+			errorMessage = "";
+		}
+
+		return new UuidNameDateArrayResponse(value, errorCode, errorMessage);
 	}
 
 	@RequestMapping(
@@ -132,9 +162,9 @@ public class FileTransferController {
 		produces = {"application/JSON"}
 	)
 	public UuidResponse fileTransferSetReceiverAddress(
-			@RequestParam( value="token" ) final String token,
-			@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
-			@RequestParam( value="wallet_address" ) final String walletAddress
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
+		@RequestParam( value="wallet_address" ) final String walletAddress
 	) throws Exception
 	{
 		UUID walletAddressUuid = null;
@@ -170,9 +200,9 @@ public class FileTransferController {
 		produces = {"application/JSON"}
 	)
 	public TransactionHashResponse askFunds(
-			@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
-			@RequestParam( value="signed_transaction_hex" ) final String signedTransactionHex,
-			@RequestParam( value="step" ) final String step
+		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid,
+		@RequestParam( value="signed_transaction_hex" ) final String signedTransactionHex,
+		@RequestParam( value="step" ) final String step
 	) throws Exception
 	{
 		String errorCode = "";

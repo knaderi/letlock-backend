@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.response;
 
-public class TransactionHashResponse  extends ErrorCodeMessageResponse {
+public class TransactionHashResponse extends ErrorCodeMessageResponse {
 	private final String transactionHash;
 
 	public TransactionHashResponse(final String transactionHash, final String errorCode, final String errorMessage) {

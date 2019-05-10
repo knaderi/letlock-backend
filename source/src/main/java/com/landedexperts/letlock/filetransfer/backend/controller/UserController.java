@@ -107,7 +107,7 @@ public class UserController {
 		produces = {"application/JSON"}
 	)
 	public BooleanResponse logout(
-			@RequestParam( value="token" ) final String token
+		@RequestParam( value="token" ) final String token
 	) throws Exception
 	{
 		SessionManager.getInstance().cleanSession(token);

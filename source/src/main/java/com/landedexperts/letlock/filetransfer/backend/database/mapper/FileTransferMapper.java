@@ -11,6 +11,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessa
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.UuidNameDateVO;
 
 public interface FileTransferMapper {
 	@Select(
@@ -25,6 +26,17 @@ public interface FileTransferMapper {
 		@Param("userId") int userId,
 		@Param("walletAddress") String walletAddress,
 		@Param("receiverLoginName") String receiverLoginName
+	);
+
+	@Select(
+		"SELECT"
+			+ " CAST( file_transfer_uuid AS text ) AS uuid,"
+			+ " sender_login_name AS name,"
+			+ " file_transfer_create_dt AS create"
+			+ " FROM gochain.file_transfer_waiting_for_receiver_address( #{ userId } )"
+	)
+	UuidNameDateVO[] readSessionsWaitingForConfirmation(
+		@Param("userId") int userId
 	);
 
 	@Select(

@@ -49,8 +49,8 @@ public class OrderController {
 		produces = {"application/JSON"}
 	)
 	public BooleanResponse orderChangeStatusInitiatedToCancelled(
-			@RequestParam( value="token" ) final String token,
-			@RequestParam( value="order_id" ) final int orderId
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="order_id" ) final int orderId
 	) throws Exception
 	{
 		Boolean result = false;
@@ -76,8 +76,8 @@ public class OrderController {
 		produces = {"application/JSON"}
 	)
 	public BooleanResponse orderChangeStatusCancelledToInitiated(
-			@RequestParam( value="token" ) final String token,
-			@RequestParam( value="order_id" ) final int orderId
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="order_id" ) final int orderId
 	) throws Exception
 	{
 		Boolean result = false;
