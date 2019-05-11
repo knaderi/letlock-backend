@@ -110,7 +110,9 @@ public class FileTransferController {
 		String funding2SendDocinfoTransactionHash = null;
 		String funding3RecFinalStatus = null;
 		String funding3RecFinalTransactionHash = null;
+		boolean fileTransferIsActive = false;
 		Date fileTransferCreate = null;
+		Date fileTransferUpdate = null;
 		String errorCode = "TOKEN_INVALID";
 		String errorMessage = "Invalid token";
 
@@ -131,7 +133,9 @@ public class FileTransferController {
 			funding2SendDocinfoTransactionHash = answer.getFunding2SendDocinfoTransactionHash();
 			funding3RecFinalStatus = answer.getFunding3RecFinalStatus();
 			funding3RecFinalTransactionHash = answer.getFunding3RecFinalTransactionHash();
+			fileTransferIsActive = answer.isFileTransferIsActive();
 			fileTransferCreate = answer.getFileTransferCreate();
+			fileTransferUpdate = answer.getFileTransferUpdate();
 			errorCode = answer.getErrorCode();
 			errorMessage = answer.getErrorMessage();
 		}
@@ -150,7 +154,9 @@ public class FileTransferController {
 			funding2SendDocinfoTransactionHash,
 			funding3RecFinalStatus,
 			funding3RecFinalTransactionHash,
+			fileTransferIsActive,
 			fileTransferCreate,
+			fileTransferUpdate,
 			errorCode,
 			errorMessage
 		);

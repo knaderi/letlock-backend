@@ -16,7 +16,9 @@ public class FileTransferReadVO extends ErrorCodeMessageVO {
 	private String funding2SendDocinfoTransactionHash;
 	private String funding3RecFinalStatus;
 	private String funding3RecFinalTransactionHash;
+	private boolean fileTransferIsActive;
 	private Date fileTransferCreate;
+	private Date fileTransferUpdate;
 
 	public String getSenderLoginName() {
 		return senderLoginName;
@@ -122,11 +124,27 @@ public class FileTransferReadVO extends ErrorCodeMessageVO {
 		this.funding3RecFinalTransactionHash = funding3RecFinalTransactionHash;
 	}
 
+	public boolean isFileTransferIsActive() {
+		return fileTransferIsActive;
+	}
+
+	public void setFileTransferIsActive(boolean fileTransferIsActive) {
+		this.fileTransferIsActive = fileTransferIsActive;
+	}
+
 	public Date getFileTransferCreate() {
 		return fileTransferCreate;
 	}
 
 	public void setFileTransferCreate(Date fileTransferCreate) {
 		this.fileTransferCreate = fileTransferCreate;
+	}
+
+	public Date getFileTransferUpdate() {
+		return fileTransferUpdate;
+	}
+
+	public void setFileTransferUpdate(Date fileTransferUpdate) {
+		this.fileTransferUpdate = fileTransferUpdate;
 	}
 }

@@ -16,7 +16,9 @@ public class FileTransferReadResponse extends ErrorCodeMessageResponse {
 	final private String funding2SendDocinfoTransactionHash;
 	final private String funding3RecFinalStatus;
 	final private String funding3RecFinalTransactionHash;
+	final private boolean fileTransferIsActive;
 	final private Date fileTransferCreate;
+	final private Date fileTransferUpdate;
 
 	public FileTransferReadResponse(
 		final String senderLoginName,
@@ -32,7 +34,9 @@ public class FileTransferReadResponse extends ErrorCodeMessageResponse {
 		final String funding2SendDocinfoTransactionHash,
 		final String funding3RecFinalStatus,
 		final String funding3RecFinalTransactionHash,
+		final boolean fileTransferIsActive,
 		final Date fileTransferCreate,
+		final Date fileTransferUpdate,
 		final String errorCode,
 		final String errorMessage
 	) {
@@ -50,7 +54,9 @@ public class FileTransferReadResponse extends ErrorCodeMessageResponse {
 		this.funding2SendDocinfoTransactionHash = funding2SendDocinfoTransactionHash;
 		this.funding3RecFinalStatus = funding3RecFinalStatus;
 		this.funding3RecFinalTransactionHash = funding3RecFinalTransactionHash;
+		this.fileTransferIsActive = fileTransferIsActive;
 		this.fileTransferCreate = fileTransferCreate;
+		this.fileTransferUpdate = fileTransferUpdate;
 	}
 
 	public String getSenderLoginName() {
@@ -105,8 +111,16 @@ public class FileTransferReadResponse extends ErrorCodeMessageResponse {
 		return funding3RecFinalTransactionHash;
 	}
 
+	public boolean isFileTransferIsActive() {
+		return fileTransferIsActive;
+	}
+
 	public Date getFileTransferCreate() {
 		return fileTransferCreate;
+	}
+
+	public Date getFileTransferUpdate() {
+		return fileTransferUpdate;
 	}
 
 }

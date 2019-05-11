@@ -54,7 +54,9 @@ public interface FileTransferMapper {
 			+ " _funding_2_send_docinfo_transaction_hash AS funding2SendDocinfoTransactionHash,"
 			+ " _funding_3_rec_final_status AS funding3RecFinalStatus,"
 			+ " _funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,"
+			+ " _file_transfer_is_active AS fileTransferIsActive,"
 			+ " _file_transfer_create_dt AS fileTransferCreate,"
+			+ " _file_transfer_update_dt AS fileTransferUpdate,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.file_transfer_read( #{ userId }, #{ fileTransferUuid } )"
@@ -62,7 +64,7 @@ public interface FileTransferMapper {
 	FileTransferReadVO fileTransferRead(
 		@Param("userId") int userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
-	); 
+	);
 
 	@Select(
 		"SELECT"
@@ -106,18 +108,7 @@ public interface FileTransferMapper {
 		@Param("walletAddress") String walletAddress,
 		@Param("step") String step
 	);
-/*
-	@Select(
-		"SELECT"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_set_contract_address( #{ fileTransferUuid }, #{ fileTransferAddress } )"
-	)
-	ErrorCodeMessageVO fileTransferSetContractAddress(
-		@Param("fileTransferUuid") UUID fileTransferUuid,
-		@Param("fileTransferAddress") String fileTransferAddress
-	);
-*/
+
 	@Select(
 		"SELECT"
 			+ " _error_code AS errorCode,"
