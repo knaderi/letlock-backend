@@ -13,10 +13,12 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.RestCall;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ConsumeVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.UuidNameDateVO;
 import com.landedexperts.letlock.filetransfer.backend.response.ConsumeResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.FileTransferReadResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.UuidNameDateArrayResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
@@ -85,6 +87,54 @@ public class FileTransferController {
 		}
 
 		return new UuidNameDateArrayResponse(value, errorCode, errorMessage);
+	}
+
+	@RequestMapping(
+		method = RequestMethod.POST,
+		value = "/file_transfer_activate",
+		produces = {"application/JSON"}
+	)
+	public ErrorCodeMessageResponse fileTransferActivate(
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid
+	) throws Exception
+	{
+		String errorCode = "TOKEN_INVALID";
+		String errorMessage = "Invalid token";
+
+		int userId = SessionManager.getInstance().getUserId(token);
+		if(userId > 0) {
+			ErrorCodeMessageVO answer = fileTransferMapper.fileTransferActivate(userId, fileTransferUuid);
+
+			errorCode = answer.getErrorCode();
+			errorMessage = answer.getErrorMessage();
+		}
+
+		return new ErrorCodeMessageResponse(errorCode, errorMessage);
+	}
+
+	@RequestMapping(
+		method = RequestMethod.POST,
+		value = "/file_transfer_deactivate",
+		produces = {"application/JSON"}
+	)
+	public ErrorCodeMessageResponse fileTransferDeactivate(
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid
+	) throws Exception
+	{
+		String errorCode = "TOKEN_INVALID";
+		String errorMessage = "Invalid token";
+
+		int userId = SessionManager.getInstance().getUserId(token);
+		if(userId > 0) {
+			ErrorCodeMessageVO answer = fileTransferMapper.fileTransferDeactivate(userId, fileTransferUuid);
+
+			errorCode = answer.getErrorCode();
+			errorMessage = answer.getErrorMessage();
+		}
+
+		return new ErrorCodeMessageResponse(errorCode, errorMessage);
 	}
 
 	@RequestMapping(

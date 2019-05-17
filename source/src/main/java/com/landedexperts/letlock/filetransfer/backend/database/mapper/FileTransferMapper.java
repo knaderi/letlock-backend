@@ -41,6 +41,28 @@ public interface FileTransferMapper {
 
 	@Select(
 		"SELECT"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM gochain.file_transfer_activate( #{ userId }, #{ fileTransferUuid } )"
+	)
+	ErrorCodeMessageVO fileTransferActivate(
+		@Param("userId") int userId,
+		@Param("fileTransferUuid") UUID fileTransferUuid
+	);
+
+	@Select(
+		"SELECT"
+			+ " _error_code AS errorCode,"
+			+ " _error_message AS errorMessage"
+			+ " FROM gochain.file_transfer_deactivate( #{ userId }, #{ fileTransferUuid } )"
+	)
+	ErrorCodeMessageVO fileTransferDeactivate(
+		@Param("userId") int userId,
+		@Param("fileTransferUuid") UUID fileTransferUuid
+	);
+
+	@Select(
+		"SELECT"
 			+ " _sender_login_name AS senderLoginName,"
 			+ " CAST( _sender_wallet_address_uuid AS text ) AS senderWalletAddressUuid,"
 			+ " _sender_wallet_address AS senderWalletAddress,"
