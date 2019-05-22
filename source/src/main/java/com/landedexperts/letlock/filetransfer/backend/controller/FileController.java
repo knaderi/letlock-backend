@@ -83,6 +83,30 @@ public class FileController {
 
 	@RequestMapping(
 		method = RequestMethod.POST,
+		value = "/file_can_be_downloaded"
+	)
+	public BooleanResponse fileCanBeDownloaded(
+		@RequestParam( value="token" ) final String token,
+		@RequestParam( value="file_transfer_uuid" ) final UUID fileTransferUuid
+	) throws Exception {
+		boolean result = false;
+		String errorCode = "TOKEN_INVALID";
+		String errorMessage = "Invalid token";
+
+		Integer userId = SessionManager.getInstance().getUserId(token);
+		if(userId > 0) {
+			BooleanPathnameVO isAllowed = fileMapper.fileIsAllowedToDownload(userId, fileTransferUuid);
+
+			result = isAllowed.getValue();
+			errorCode = isAllowed.getErrorCode();
+			errorMessage = isAllowed.getErrorMessage();
+		}
+
+		return new BooleanResponse(result, errorCode, errorMessage);
+	}
+
+	@RequestMapping(
+		method = RequestMethod.POST,
 		value = "/file_download"
 	)
 	public ResponseEntity<Resource> fileDownload(
