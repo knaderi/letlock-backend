@@ -11,6 +11,7 @@
 	<groupId>com.landedexperts.letlock.filetransfer.backend</groupId>
 	<artifactId>letlock-filetransfer-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>LetlockFiletransferBackend</name>
 	<description>Part of LetLock File Transfer</description>
 
