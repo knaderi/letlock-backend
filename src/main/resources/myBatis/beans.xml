@@ -7,21 +7,19 @@
 		http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context.xsd">
-
+ 
+    <context:property-placeholder
+        location="classpath:properties/application-default.properties, classpath:properties/application-${spring.profiles.active}.properties"
+        ignore-unresolvable="true" />
+        
 	<bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
-		<property name="serverName" value="letlockdevdb.clrtajg9k3e2.us-west-2.rds.amazonaws.com"/>
-		<property name="portNumber" value="5432"/>
-		<property name="databaseName" value="letlockdb"/>
-		<property name="user" value="letlock_backend"/>
-		<property name="password" value="Ai#~eq:*|G?|b%t[qJBh8f6["/>
+		<property name="serverName" value="${db.serverName}"/>
+		<property name="portNumber" value="${db.portNumber}"/>
+		<property name="databaseName" value="${db.databaseName}"/>
+		<property name="user" value="${db.user}"/>
+		<property name="password" value="${db.password}"/>
 	</bean>
-	<!-- <bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
-		<property name="serverName" value="localhost"/>
-		<property name="portNumber" value="5432"/>
-		<property name="databaseName" value="letlock_filetransfer"/>
-		<property name="user" value="letlock_backend"/>
-		<property name="password" value="Ai#~eq:*|G?|b%t[qJBh8f6["/>
-	</bean>-->
+
 
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"/>
@@ -54,4 +52,6 @@
 	<bean id="fileMapper" parent="baseMapper">
 		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper"/>
 	</bean>
+	
+
 </beans>
