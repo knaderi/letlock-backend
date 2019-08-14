@@ -26,6 +26,11 @@
 							"type": "text"
 						},
 						{
+							"key": "email",
+							"value": "{{AliceEmail}}",
+							"type": "text"
+						},
+						{
 							"key": "password",
 							"value": "{{AlicePassword}}",
 							"type": "text"

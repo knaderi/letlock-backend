@@ -44,10 +44,11 @@ public class UserController {
 	)
 	public BooleanResponse register(
 		@RequestParam( value="loginName" ) final String loginName,
+		@RequestParam( value="email" ) final String email,
 		@RequestParam( value="password" ) final String password
 	) throws Exception
 	{
-		IdVO answer = userMapper.register(loginName, password);
+		IdVO answer = userMapper.register(loginName,email, password);
 
 		String errorCode = answer.getErrorCode();
 		String errorMessage = answer.getErrorMessage();
