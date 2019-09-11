@@ -16,9 +16,9 @@ public interface FileMapper {
 			+ " _file_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"storage\".file_insert( #{ userId }, #{ fileTransferUuid }, #{ pathname }, #{ expires } )"
+			+ " FROM \"storage\".insert_file_upload_record( #{ userId }, #{ fileTransferUuid }, #{ pathname }, #{ expires } )"
 	)
-	IdVO fileInsert(
+	IdVO insertFileUploadRecord(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid,
 			@Param("pathname") String pathname,
@@ -31,9 +31,9 @@ public interface FileMapper {
 			+ " _pathname AS pathName,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"storage\".file_is_allowed_to_download( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM \"storage\".is_allowed_to_download_file( #{ userId }, #{ fileTransferUuid } )"
 	)
-	BooleanPathnameVO fileIsAllowedToDownload(
+	BooleanPathnameVO isAllowedToDownloadFile(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);
@@ -42,9 +42,9 @@ public interface FileMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"storage\".file_set_downloaded( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM \"storage\".set_file_downloaded( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageVO fileSetDownloaded(
+	ErrorCodeMessageVO setFileDownloaded(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);
@@ -53,9 +53,9 @@ public interface FileMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"storage\".file_delete( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM \"storage\".delete_file( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageVO fileDelete(
+	ErrorCodeMessageVO deleteFile(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);

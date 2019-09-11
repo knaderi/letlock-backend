@@ -2,7 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.vo;
 
 import java.util.UUID;
 
-public class ConsumeVO extends ErrorCodeMessageVO {
+public class FileTransferSessionVO extends ErrorCodeMessageVO {
 	private UUID fileTransferUuid;
 
 	public UUID getFileTransferUuid() {
