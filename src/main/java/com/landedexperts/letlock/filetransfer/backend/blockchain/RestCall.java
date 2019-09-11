@@ -6,35 +6,39 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestCall {
-	static public String getWalletAddressFromTransaction(String signedTransactionHex) throws Exception {
-		HttpURLConnection askWalletAddress = (HttpURLConnection) new URL("http://localhost:3001/fetch_wallet_address").openConnection();
-		askWalletAddress.setDoOutput(true);
-		askWalletAddress.setRequestProperty("Content-Type", "application/json");
+    private final static Logger logger = LoggerFactory.getLogger(RestCall.class);
 
-		OutputStream output = askWalletAddress.getOutputStream();
-		output.write(("{\"transaction\":\"" + signedTransactionHex + "\"}").getBytes(StandardCharsets.UTF_8));
-		output.flush();
-		output.close();
+    public static String getWalletAddressFromTransaction(String signedTransactionHex) throws Exception {
+        HttpURLConnection askWalletAddress = (HttpURLConnection) new URL("http://localhost:3001/fetch_wallet_address").openConnection();
+        askWalletAddress.setDoOutput(true);
+        askWalletAddress.setRequestProperty("Content-Type", "application/json");
 
-		InputStream gotWalletAddress = askWalletAddress.getInputStream();
-		byte[] answer = new byte[1024];
-		int answerLength = gotWalletAddress.read(answer);
+        OutputStream output = askWalletAddress.getOutputStream();
+        output.write(("{\"transaction\":\"" + signedTransactionHex + "\"}").getBytes(StandardCharsets.UTF_8));
+        output.flush();
+        output.close();
 
-		String gotten = new String(answer, 0, answerLength, StandardCharsets.UTF_8);
+        InputStream gotWalletAddress = askWalletAddress.getInputStream();
+        byte[] answer = new byte[1024];
+        int answerLength = gotWalletAddress.read(answer);
 
-		System.out.println("getWalletAddressFromTransaction " + gotten);
+        String gotten = new String(answer, 0, answerLength, StandardCharsets.UTF_8);
 
-		ObjectMapper mapper = new ObjectMapper();
-		WalletAddress walletAddressJson = mapper.readValue(gotten, WalletAddress.class);
+        logger.info("getWalletAddressFromTransaction" + gotten);
 
-		return walletAddressJson.getWalletAddress();
-	}
+        ObjectMapper mapper = new ObjectMapper();
+        WalletAddress walletAddressJson = mapper.readValue(gotten, WalletAddress.class);
 
-	static public boolean deploySmartContract(UUID fileTransferUuid, String senderWalletAddress, String receiverWalletAddress) throws Exception {
+        return walletAddressJson.getWalletAddress();
+    }
+
+    static public boolean deploySmartContract(UUID fileTransferUuid, String senderWalletAddress, String receiverWalletAddress) throws Exception {
 		HttpURLConnection performDeployment = (HttpURLConnection) new URL("http://localhost:3001/deploy_smart_contract").openConnection();
 		performDeployment.setDoOutput(true);
 		performDeployment.setRequestProperty("Content-Type", "application/json");
@@ -54,7 +58,7 @@ public class RestCall {
 
 		String gotten = new String(answer, 0, answerLength, StandardCharsets.UTF_8);
 
-		System.out.println("deploySmartContract " + gotten);
+		logger.info("deploySmartContract " + gotten);
 
 		ObjectMapper mapper = new ObjectMapper();
 		ResultJson emptyJson = mapper.readValue(gotten, ResultJson.class);
@@ -62,31 +66,29 @@ public class RestCall {
 		return emptyJson.getResult();
 	}
 
-	static public String fund(UUID fileTransferUuid, String signedTransactionHex, String step) throws Exception {
-		HttpURLConnection fundIt = (HttpURLConnection) new URL("http://localhost:3001/fund").openConnection();
-		fundIt.setDoOutput(true);
-		fundIt.setRequestProperty("Content-Type", "application/json");
-		
-		OutputStream output = fundIt.getOutputStream();
-		output.write(("{"
-						+ "\"fileTransferUuid\":\"" + fileTransferUuid.toString() + "\","
-						+ "\"transaction\":\"" + signedTransactionHex + "\","
-						+ "\"step\":\"" + step + "\""
-					+ "}").getBytes(StandardCharsets.UTF_8));
-		output.flush();
-		output.close();
+    static public String fund(UUID fileTransferUuid, String signedTransactionHex, String step) throws Exception {
+        HttpURLConnection fundIt = (HttpURLConnection) new URL("http://localhost:3001/fund").openConnection();
+        fundIt.setDoOutput(true);
+        fundIt.setRequestProperty("Content-Type", "application/json");
 
-		InputStream gotTxHash = fundIt.getInputStream();
-		byte[] answer = new byte[1024];
-		int answerLength = gotTxHash.read(answer);
+        OutputStream output = fundIt.getOutputStream();
+        output.write(("{" + "\"fileTransferUuid\":\"" + fileTransferUuid.toString() + "\"," + "\"transaction\":\"" + signedTransactionHex
+                + "\"," + "\"step\":\"" + step + "\"" + "}").getBytes(StandardCharsets.UTF_8));
+        output.flush();
+        output.close();
 
-		String gotten = new String(answer, 0, answerLength, StandardCharsets.UTF_8);
+        InputStream gotTxHash = fundIt.getInputStream();
+        byte[] answer = new byte[1024];
+        int answerLength = gotTxHash.read(answer);
 
-		System.out.println("fund " + gotten);
+        String gotten = new String(answer, 0, answerLength, StandardCharsets.UTF_8);
 
-		ObjectMapper mapper = new ObjectMapper();
-		TransactionHashJson transactionHashJson = mapper.readValue(gotten, TransactionHashJson.class);
+        
+        logger.info("fund " + gotten);
 
-		return transactionHashJson.getTransactionHash();
-	}
+        ObjectMapper mapper = new ObjectMapper();
+        TransactionHashJson transactionHashJson = mapper.readValue(gotten, TransactionHashJson.class);
+
+        return transactionHashJson.getTransactionHash();
+    }
 }

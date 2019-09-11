@@ -12,9 +12,9 @@ public interface OrderDetailMapper {
 			+ " _order_detail_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.order_detail_add( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )"
+			+ " FROM payment.add_order_detail( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )"
 	)
-	IdVO orderDetailAdd(
+	IdVO addOrderDetail(
 		@Param("userId") int userId,
 		@Param("orderId") int orderId,
 		@Param("productId") int productId,
@@ -25,9 +25,9 @@ public interface OrderDetailMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.order_detail_update( #{ userId }, #{ orderDetailId }, #{ quantity } )"
+			+ " FROM payment.update_order_detail( #{ userId }, #{ orderDetailId }, #{ quantity } )"
 	)
-	ErrorCodeMessageVO orderDetailUpdate(
+	ErrorCodeMessageVO updateOrderDetail(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId,
 		@Param("quantity") short quantity
@@ -39,7 +39,7 @@ public interface OrderDetailMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_detail_delete( #{ userId }, #{ orderDetailId } )"
 	)
-	ErrorCodeMessageVO orderDetailDelete(
+	ErrorCodeMessageVO deleteOrderDetail(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId
 	);
