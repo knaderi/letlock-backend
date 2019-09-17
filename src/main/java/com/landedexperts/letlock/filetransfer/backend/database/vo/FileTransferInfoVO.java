@@ -2,7 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.vo;
 
 import java.util.Date;
 
-public class FileTransferReadVO extends ErrorCodeMessageVO {
+public class FileTransferInfoVO extends ErrorCodeMessageVO {
 	private String senderLoginName;
 	private String senderWalletAddressUuid;
 	private String senderWalletAddress;

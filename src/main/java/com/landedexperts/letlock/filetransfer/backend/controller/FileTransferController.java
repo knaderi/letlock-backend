@@ -16,7 +16,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransf
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferSessionVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.UuidNameDateVO;
 import com.landedexperts.letlock.filetransfer.backend.response.ConsumeResponse;
@@ -143,7 +143,7 @@ public class FileTransferController {
 
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            FileTransferReadVO answer = fileTransferMapper.getFileTransferStatus(userId, fileTransferUuid);
+            FileTransferInfoVO answer = fileTransferMapper.getUserFileTransferInfo(userId, fileTransferUuid);
 
             senderLoginName = answer.getSenderLoginName();
             senderWalletAddressUuid = answer.getSenderWalletAddressUuid();
@@ -191,7 +191,7 @@ public class FileTransferController {
             errorMessage = answer.getErrorMessage();
 
             if (errorCode.equals("NO_ERROR")) {
-                FileTransferReadVO fileTransferInfo = fileTransferMapper.getFileTransferStatus(userId, fileTransferUuid);
+                FileTransferInfoVO fileTransferInfo = fileTransferMapper.getUserFileTransferInfo(userId, fileTransferUuid);
                 String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
                 String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
 

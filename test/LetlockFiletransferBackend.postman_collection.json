@@ -197,14 +197,14 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/order_create",
+					"raw": "http://localhost:3000/create_order",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"order_create"
+						"create_order"
 					]
 				}
 			},
@@ -248,14 +248,14 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/order_detail_add",
+					"raw": "http://localhost:3000/add_order_detail",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"order_detail_add"
+						"add_order_detail"
 					]
 				}
 			},
@@ -294,14 +294,14 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/order_detail_update",
+					"raw": "http://localhost:3000/update_order_detail",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"order_detail_update"
+						"update_order_detail"
 					]
 				}
 			},
@@ -335,14 +335,14 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/order_detail_delete",
+					"raw": "http://localhost:3000/delete_order_detail",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"order_detail_delete"
+						"delete_order_detail"
 					]
 				}
 			},
@@ -376,14 +376,14 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/order_change_status_initiated_to_cancelled",
+					"raw": "http://localhost:3000/update_order_status_to_cancelled",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"order_change_status_initiated_to_cancelled"
+						"update_order_status_to_cancelled"
 					]
 				}
 			},
@@ -417,21 +417,21 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/order_change_status_cancelled_to_initiated",
+					"raw": "http://localhost:3000/update_order_status_to_initiated",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"order_change_status_cancelled_to_initiated"
+						"update_order_status_to_initiated"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Consume start file transfer",
+			"name": "insert_start_file_transfer_session_record",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -463,14 +463,14 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/consume_start_file_transfer",
+					"raw": "http://localhost:3000/insert_start_file_transfer_session_record",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"consume_start_file_transfer"
+						"insert_start_file_transfer_session_record"
 					]
 				}
 			},
@@ -509,14 +509,14 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/file_transfer_set_receiver_address",
+					"raw": "http://localhost:3000/set_file_transfer_receiver_address",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
-						"file_transfer_set_receiver_address"
+						"set_file_transfer_receiver_address"
 					]
 				}
 			},
