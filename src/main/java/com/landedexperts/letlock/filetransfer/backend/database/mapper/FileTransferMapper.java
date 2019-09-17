@@ -81,7 +81,7 @@ public interface FileTransferMapper {
 			+ " _file_transfer_update_dt AS fileTransferUpdate,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.retrieve_file_transfer_status( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM gochain.file_transfer_read( #{ userId }, #{ fileTransferUuid } )"
 	)
 	FileTransferReadVO getFileTransferStatus(
 		@Param("userId") int userId,
@@ -93,7 +93,7 @@ public interface FileTransferMapper {
 			+ " CAST( _wallet_address_uuid AS text ) AS gochainAddress,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_set_receiver_address( #{ userId } , #{ fileTransferUuid } , DECODE( #{ walletAddress } , 'hex'))"
+			+ " FROM gochain.set_file_transfer_receiver_address( #{ userId } , #{ fileTransferUuid } , DECODE( #{ walletAddress } , 'hex'))"
 	)
 	GochainAddressVO setReceiverAddress(
 		@Param("userId") int userId,
