@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferSessionVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferReadVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.UuidNameDateVO;
@@ -81,9 +81,9 @@ public interface FileTransferMapper {
 			+ " _file_transfer_update_dt AS fileTransferUpdate,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_read( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM gochain.get_user_file_transfer_Info( #{ userId }, #{ fileTransferUuid } )"
 	)
-	FileTransferReadVO getFileTransferStatus(
+	FileTransferInfoVO getUserFileTransferInfo(
 		@Param("userId") int userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
