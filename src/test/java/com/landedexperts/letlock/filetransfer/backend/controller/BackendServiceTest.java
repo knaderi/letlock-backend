@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 
@@ -27,6 +27,7 @@ public class BackendServiceTest extends AbstractTest {
     private static final String TEST_EMAIL = "knaderi@landedexperts.com";
     private static final String TEST_USER_ID = "knaderi12";
     private static ResultMatcher ok = MockMvcResultMatchers.status().isOk();
+    
 
     @Override
     @Before
@@ -37,7 +38,13 @@ public class BackendServiceTest extends AbstractTest {
     @BeforeClass
     public static void setSystemProperty() {
         Properties properties = System.getProperties();
-        properties.setProperty("spring.profiles.active", "local");
+        if(!properties.contains("spring.profiles.active") || StringUtils.isEmpty(properties.get("spring.profiles.active"))) {
+            System.out.println("Using local env configuration");
+            properties.setProperty("spring.profiles.active", "local");            
+        }else {
+           System.out.println("Using configuration: " + StringUtils.isEmpty(properties.get("spring.profiles.active")));
+        }
+        
     }
 
     @Test
