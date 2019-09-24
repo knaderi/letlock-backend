@@ -99,7 +99,14 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/logout", produces = { "application/JSON" })
     public BooleanResponse logout(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("UserController.logout called for token " + token);
-        SessionManager.getInstance().cleanSession(token);
-        return new BooleanResponse(true, "NO_ERROR", "");
+        
+        SessionManager instance = SessionManager.getInstance();
+        if(instance.isActive(token)) {
+            instance.cleanSession(token);
+            return new BooleanResponse(true, "NO_ERROR", "");    
+        }else {
+            return new BooleanResponse(false, "LOGIN_SESSION_NOT_FOUND", "There is no active login session for the given token"); 
+        }
+        
     }
 }
