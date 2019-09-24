@@ -27,7 +27,7 @@ public interface UserMapper {
 	IdVO login(@Param("loginName") String loginName, @Param("password") String password);
 
 	@Select("SELECT" + " _error_code AS errorCode," + " _error_message AS errorMessage"
-			+ " FROM \"user\".user_change_password( #{ loginName } , #{ oldPassword } , #{ newPassword } )")
+			+ " FROM \"user\".update_user_password( #{ loginName } , #{ oldPassword } , #{ newPassword } )")
 	ErrorCodeMessageVO updateUserPassword(@Param("loginName") String loginName, @Param("oldPassword") String oldPassword,
 			@Param("newPassword") String newPassword);
 
