@@ -39,8 +39,8 @@ public class FileController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/upload_file", produces = { "application/JSON" })
     public BooleanResponse uploadFile(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "file") final MultipartFile file)
-            throws Exception {
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            @RequestParam(value = "file") final MultipartFile file) throws Exception {
         logger.info("FileController.fileInsert called for token " + token);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
@@ -79,7 +79,7 @@ public class FileController {
     @RequestMapping(method = RequestMethod.POST, value = "/can_download_file")
     public BooleanResponse canDownloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.canDownloadFile called for token " + token  );
+        logger.info("FileController.canDownloadFile called for token " + token);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -99,7 +99,7 @@ public class FileController {
     @RequestMapping(method = RequestMethod.POST, value = "/download_file")
     public ResponseEntity<Resource> downloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.downloadFile called for token " + token  );
+        logger.info("FileController.downloadFile called for token " + token);
         @SuppressWarnings("unused")
         String errorCode = "TOKEN_INVALID";
         @SuppressWarnings("unused")
@@ -112,23 +112,26 @@ public class FileController {
                 File file = new File(isAllowed.getPathName());
                 FileInputStream fis = new FileInputStream(file);
                 InputStreamResource isr = new InputStreamResource(fis);
-                return ResponseEntity.ok().contentLength(file.length()).contentType(MediaType.APPLICATION_OCTET_STREAM).body(isr);
+                return ResponseEntity.ok().contentLength(file.length()).contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .body(isr);
             }
         }
 
         /* Improve answer by responding with the error code and message */
         File empty = new File(
-                "C:\\Users\\Julien\\Desktop\\LetLock\\repositories\\letlock-backend\\source\\src\\test\\java\\local_files\\empty");
+                "C:\\Users\\Omer\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\empty");
         FileInputStream fisEmpty = new FileInputStream(empty);
         InputStreamResource isrEmpty = new InputStreamResource(fisEmpty);
-        logger.info("FileController.downloadFile returning responseEntity for entity with length" + isrEmpty.contentLength());
-        return ResponseEntity.ok().contentLength(empty.length()).contentType(MediaType.APPLICATION_OCTET_STREAM).body(isrEmpty);
+        logger.info("FileController.downloadFile returning responseEntity for entity with length"
+                + isrEmpty.contentLength());
+        return ResponseEntity.ok().contentLength(empty.length()).contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(isrEmpty);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/delete_file", produces = { "application/JSON" })
     public BooleanResponse deleteFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.deleteFile called for token " + token  );
+        logger.info("FileController.deleteFile called for token " + token);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
