@@ -132,37 +132,37 @@ public interface FileTransferMapper {
 	);
 
 	@Select(
-		"SELECT"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_set_funding_step_pending("
-				+ " #{ fileTransferUuid },"
-				+ " DECODE( #{ walletAddress }, 'hex'),"
-				+ " #{ step }"
-			+ " )"
-	)
-	ErrorCodeMessageVO fileTransferSetTransferStepPending(
-		@Param("fileTransferUuid") UUID fileTransferUuid,
-		@Param("walletAddress") String walletAddress,
-		@Param("step") String step
-	);
+			"SELECT"
+				+ " _error_code AS errorCode,"
+				+ " _error_message AS errorMessage"
+				+ " FROM gochain.file_transfer_set_funding_step_pending("
+					+ " #{ fileTransferUuid },"
+					+ " DECODE( #{ walletAddress }, 'hex'),"
+					+ " CAST( #{ step } AS gochain.tp_funding_step ),"
+				+ " )"
+		)
+		ErrorCodeMessageVO fileTransferSetTransferStepPending(
+			@Param("fileTransferUuid") UUID fileTransferUuid,
+			@Param("walletAddress") String walletAddress,
+			@Param("step") String step
+		);
 
-	@Select(
-		"SELECT"
-			+ " _transfer_id AS id,"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_set_funding_step_completed("
-				+ " #{ fileTransferUuid },"
-				+ " DECODE( #{ walletAddress }, 'hex'),"
-				+ " #{ step },"
-				+ " DECODE( #{ transactionHash }, 'hex' )"
-			+ " )"
-	)
-	IdVO fileTransferSetTransferStepCompleted(
-		@Param("fileTransferUuid") UUID fileTransferUuid,
-		@Param("walletAddress") String walletAddress,
-		@Param("step") String step,
-		@Param("transactionHash") String transactionHash
-	);
+		@Select(
+			"SELECT"
+				+ " _funding_id AS id,"
+				+ " _error_code AS errorCode,"
+				+ " _error_message AS errorMessage"
+				+ " FROM gochain.file_transfer_set_funding_step_completed("
+					+ " #{ fileTransferUuid },"
+					+ " DECODE( #{ walletAddress }, 'hex'),"
+					+ " CAST( #{ step } AS gochain.tp_funding_step ),"
+					+ " DECODE( #{ transactionHash }, 'hex' )"
+				+ " )"
+		)
+		IdVO fileTransferSetTransferStepCompleted(
+			@Param("fileTransferUuid") UUID fileTransferUuid,
+			@Param("walletAddress") String walletAddress,
+			@Param("step") String step,
+			@Param("transactionHash") String transactionHash
+		);
 }
