@@ -138,7 +138,7 @@ public interface FileTransferMapper {
 			+ " FROM gochain.file_transfer_set_funding_step_pending("
 				+ " #{ fileTransferUuid },"
 				+ " DECODE( #{ walletAddress }, 'hex'),"
-				+ " #{ step }"
+				+ " CAST( #{ step } AS gochain.tp_funding_step ),"
 			+ " )"
 	)
 	ErrorCodeMessageVO fileTransferSetTransferStepPending(
@@ -149,13 +149,13 @@ public interface FileTransferMapper {
 
 	@Select(
 		"SELECT"
-			+ " _transfer_id AS id,"
+			+ " _funding_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.file_transfer_set_funding_step_completed("
 				+ " #{ fileTransferUuid },"
 				+ " DECODE( #{ walletAddress }, 'hex'),"
-				+ " #{ step },"
+				+ " CAST( #{ step } AS gochain.tp_funding_step ),"
 				+ " DECODE( #{ transactionHash }, 'hex' )"
 			+ " )"
 	)

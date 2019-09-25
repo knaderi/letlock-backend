@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 
 public class RestCall {
 	static public String getWalletAddressFromTransaction(String signedTransactionHex) throws Exception {
@@ -80,13 +81,19 @@ public class RestCall {
 		byte[] answer = new byte[1024];
 		int answerLength = gotTxHash.read(answer);
 
+		// read until input stream is completed
+		int endOfFile = answerLength;		
+		while(endOfFile != -1) {
+			endOfFile = gotTxHash.read(answer);
+		}
+
 		String gotten = new String(answer, 0, answerLength, StandardCharsets.UTF_8);
 
 		System.out.println("fund " + gotten);
 
 		ObjectMapper mapper = new ObjectMapper();
 		TransactionHashJson transactionHashJson = mapper.readValue(gotten, TransactionHashJson.class);
-
+				
 		return transactionHashJson.getTransactionHash();
 	}
 }
