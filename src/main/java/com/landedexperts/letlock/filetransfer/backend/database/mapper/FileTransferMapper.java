@@ -81,7 +81,7 @@ public interface FileTransferMapper {
 			+ " _file_transfer_update_dt AS fileTransferUpdate,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.get_user_file_transfer_Info( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM gochain.get_user_file_transfer_info( #{ userId }, #{ fileTransferUuid } )"
 	)
 	FileTransferInfoVO getUserFileTransferInfo(
 		@Param("userId") int userId,

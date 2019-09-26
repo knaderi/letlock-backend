@@ -49,7 +49,7 @@ public class FileController {
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             // Get the path of the uploaded file
-            String pathname = "C:\\Users\\Julien\\Desktop\\LetLock\\repositories\\letlock-backend\\source\\src\\test\\java\\local_files\\"
+            String pathname = "C:\\Users\\Omer\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\"
                     + UUID.randomUUID().toString();
 
             // Set the expiry date
@@ -118,8 +118,7 @@ public class FileController {
         }
 
         /* Improve answer by responding with the error code and message */
-        File empty = new File(
-                "C:\\Users\\Omer\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\empty");
+        File empty = new File("C:\\Users\\Omer\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\empty");
         FileInputStream fisEmpty = new FileInputStream(empty);
         InputStreamResource isrEmpty = new InputStreamResource(fisEmpty);
         logger.info("FileController.downloadFile returning responseEntity for entity with length"
