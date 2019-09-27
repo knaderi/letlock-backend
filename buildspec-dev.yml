@@ -1,6 +1,9 @@
 version: 0.2
 
 phases:
+  env:
+    variables:
+      spring.profiles.active="dev"
   install:
     runtime-versions:
       java: openjdk8
