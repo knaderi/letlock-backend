@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Properties;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -17,7 +16,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.util.StringUtils;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 
@@ -38,18 +36,19 @@ public class BackendServiceTest extends AbstractTest {
 
     @BeforeClass
     public static void setSystemProperty() {
-        boolean isLocal = false;
+        String hostName = "";
         try {
-            isLocal = InetAddress.getLocalHost().isSiteLocalAddress();
+            hostName = InetAddress.getLocalHost().getCanonicalHostName();
+            System.out.println("*************************************" + hostName);
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        if(isLocal) {
+      if(hostName.contains("192.168")) {
             System.out.println("Using local env configuration");
             System.getProperties().setProperty("spring.profiles.active", "local");            
-        }
+       }
         
     }
 
