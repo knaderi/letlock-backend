@@ -3,6 +3,8 @@ version: 0.2
 env:
   variables:
     spring.profiles.active: "dev"
+  parameter-store:
+    spring.profiles.active: "dev"    
 phases:
   install:
     runtime-versions:
