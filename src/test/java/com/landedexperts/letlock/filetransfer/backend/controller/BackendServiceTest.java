@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -22,7 +23,7 @@ import org.springframework.util.StringUtils;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.LetlockFiletransferBackendApplication;
 
-@ContextConfiguration(classes = LetlockFiletransferBackendApplication.class)
+
 public class BackendServiceTest extends AbstractTest {
 
     private static final String TEST_PASSWORD = "passw0rd!";
