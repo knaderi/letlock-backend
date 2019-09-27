@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
@@ -48,7 +47,6 @@ public class BackendServiceTest extends AbstractTest {
     }
 
     @Test
-    @Transactional
     public void registerTest() throws Exception {
         String uri = "/register";
 
