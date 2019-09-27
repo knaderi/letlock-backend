@@ -3,7 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import org.json.JSONObject;
@@ -11,8 +12,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -21,8 +20,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.StringUtils;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
-import com.landedexperts.letlock.filetransfer.backend.LetlockFiletransferBackendApplication;
-
 
 public class BackendServiceTest extends AbstractTest {
 
@@ -37,21 +34,21 @@ public class BackendServiceTest extends AbstractTest {
     @Before
     public void setUp() {
         super.setUp();
-    }
+     }
 
     @BeforeClass
     public static void setSystemProperty() {
-        Properties properties = System.getProperties();
-        Map<String, String> env= System.getenv();
-        if(env.containsKey("spring.profiles.active")) {
-            System.out.println("*******************This is the environemnt variable for spring.profiles.active: " + env.get("spring.profiles.active"));
+        boolean isLocal = false;
+        try {
+            isLocal = InetAddress.getLocalHost().isSiteLocalAddress();
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        
-        if(!properties.contains("spring.profiles.active") || StringUtils.isEmpty(properties.get("spring.profiles.active"))) {
+
+        if(isLocal) {
             System.out.println("Using local env configuration");
-            properties.setProperty("spring.profiles.active", "local");            
-        }else {
-           System.out.println("Using configuration: " + StringUtils.isEmpty(properties.get("spring.profiles.active")));
+            System.getProperties().setProperty("spring.profiles.active", "local");            
         }
         
     }
