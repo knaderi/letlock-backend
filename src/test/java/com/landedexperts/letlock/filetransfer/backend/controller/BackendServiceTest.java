@@ -3,6 +3,7 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.Properties;
 
 import org.json.JSONObject;
@@ -37,6 +38,11 @@ public class BackendServiceTest extends AbstractTest {
     @BeforeClass
     public static void setSystemProperty() {
         Properties properties = System.getProperties();
+        Map<String, String> env= System.getenv();
+        if(env.containsKey("spring.profiles.active")) {
+            System.out.println("*******************This is the environemnt variable for spring.profiles.active: " + env.get("spring.profiles.active"));
+        }
+        
         if(!properties.contains("spring.profiles.active") || StringUtils.isEmpty(properties.get("spring.profiles.active"))) {
             System.out.println("Using local env configuration");
             properties.setProperty("spring.profiles.active", "local");            
