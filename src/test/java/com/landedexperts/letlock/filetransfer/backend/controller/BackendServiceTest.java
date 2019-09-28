@@ -35,11 +35,12 @@ public class BackendServiceTest extends AbstractTest {
     @BeforeClass
     public static void setSystemProperty() {
         String activeProfile = "local";
-        String mvnCommandLineArgs = "/root/.m2 clean install -Dspring.profiles.active=dev";// env.get("MAVEN_CMD_LINE_ARGS");
+        String mvnCommandLineArgs = System.getenv().get("MAVEN_CMD_LINE_ARGS");
         if (!StringUtils.isEmpty(mvnCommandLineArgs)) {
             int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");
             activeProfile = mvnCommandLineArgs.substring(index + 25);
         }
+        System.out.println("\n******************* activeProfile " + activeProfile + " \n");
 
         System.getProperties().setProperty("spring.profiles.active", activeProfile);
 
