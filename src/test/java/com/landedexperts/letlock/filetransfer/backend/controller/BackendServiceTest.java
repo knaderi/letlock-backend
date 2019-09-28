@@ -46,8 +46,8 @@ public class BackendServiceTest extends AbstractTest {
 
     }
 
-//    @Test
-//    public void registerTest() throws Exception {
+    @Test
+    public void registerTest() throws Exception {
 //        String uri = "/register";
 //
 //        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
@@ -58,7 +58,7 @@ public class BackendServiceTest extends AbstractTest {
 //        assertTrue(content.length() > 0);
 //        assertTrue(content.contains("\"result\":false"));
 //        assertTrue(content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
-//    }
+    }
 //
 //    @Test
 //    public void loginTest() throws Exception {
