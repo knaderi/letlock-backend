@@ -3,9 +3,6 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -17,8 +14,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.databind.util.TypeKey;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 
 public class BackendServiceTest extends AbstractTest {
@@ -37,31 +34,14 @@ public class BackendServiceTest extends AbstractTest {
 
     @BeforeClass
     public static void setSystemProperty() {
-        String hostName = "";
-        try {
-            hostName = InetAddress.getLocalHost().getCanonicalHostName();
-            System.out.println("\n************************************* host" + hostName);
-            System.out.println("\n*************************************localHost info" + InetAddress.getLocalHost());
-            System.out.println("\n*************************************System properties" + System.getProperties());
-            Map<String, String> env = System.getenv();
-            for (String name : env.keySet()) {
-                String key = name.toString();
-                String value = env.get(name).toString();
-                System.out.println("\n***********key: " + key + " value: " + value);
-            }
-
-            System.out.println("\n*************************************System properties" + System.getenv());
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        String activeProfile = "local";
+        String mvnCommandLineArgs = "/root/.m2 clean install -Dspring.profiles.active=dev";// env.get("MAVEN_CMD_LINE_ARGS");
+        if (!StringUtils.isEmpty(mvnCommandLineArgs)) {
+            int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");
+            activeProfile = mvnCommandLineArgs.substring(index + 25);
         }
 
-        if (hostName.contains("192.168")) {
-            System.out.println("Using local env configuration");
-            System.getProperties().setProperty("spring.profiles.active", "local");
-        } else {
-            System.getProperties().setProperty("spring.profiles.active", "dev");
-        }
+        System.getProperties().setProperty("spring.profiles.active", activeProfile);
 
     }
 
