@@ -48,121 +48,121 @@ public class BackendServiceTest extends AbstractTest {
 
     @Test
     public void registerTest() throws Exception {
-//        String uri = "/register";
-//
-//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
-//                .param("email", TEST_EMAIL).param("password", TEST_PASSWORD).accept(MediaType.APPLICATION_JSON_VALUE));
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//        String content = mvcResult.getResponse().getContentAsString();
-//        assertTrue(content.length() > 0);
-//        assertTrue(content.contains("\"result\":false"));
-//        assertTrue(content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
+        String uri = "/register";
+
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
+                .param("email", TEST_EMAIL).param("password", TEST_PASSWORD).accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(content.length() > 0);
+        assertTrue(content.contains("\"result\":false"));
+        assertTrue(content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
     }
 
-//    @Test
-//    public void loginTest() throws Exception {
-//        String testPassword = TEST_PASSWORD;
-//        String content = login(testPassword);
-//        assertTrue(content.length() > 0);
-//        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
-//    }
-//
-//    private String login(String password) throws Exception, UnsupportedEncodingException {
-//        String uri = "/login";
-//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
-//                .param("password", password).accept(MediaType.APPLICATION_JSON_VALUE));
-//
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//
-//        String content = mvcResult.getResponse().getContentAsString();
-//        return content;
-//    }
-//
-//    @Test
-//    public void isLoginNameAvailableTest() throws Exception {
-//        String uri = "/user_is_login_name_available";
-//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
-//                .param("password", TEST_PASSWORD).accept(MediaType.APPLICATION_JSON_VALUE));
-//
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//
-//        String content = mvcResult.getResponse().getContentAsString();
-//        assertTrue(content.length() > 0);
-//        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
-//        assertTrue(content.contains("\"result\":false"));
-//    }
-//
-//    @Test
-//    public void logoutTestForGoodToken() throws Exception {
-//        String token = loginUser();
-//        String uri = "/logout";
-//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
-//                .param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
-//
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//
-//        String content = mvcResult.getResponse().getContentAsString();
-//        assertTrue(content.length() > 0);
-//        assertTrue(content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-//        assertTrue(content.contains("\"result\":false"));
-//    }
-//
-//    @Test
-//    public void logoutTestForBadToken() throws Exception {
-//        String uri = "/logout";
-//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
-//                .param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
-//
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//
-//        String content = mvcResult.getResponse().getContentAsString();
-//        assertTrue(content.length() > 0);
-//        assertTrue(content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-//        assertTrue(content.contains("\"result\":false"));
-//    }
-//
-//    private String loginUser() throws Exception {
-//        String uri = "/login";
-//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
-//                .param("password", TEST_PASSWORD).accept(MediaType.APPLICATION_JSON_VALUE));
-//
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//
-//        String content = mvcResult.getResponse().getContentAsString();
-//        return getValuesForGivenKey(content, "token");
-//    }
-//
-//    public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
-//        JSONObject jsonObject = new JSONObject(jsonArrayStr);
-//        return jsonObject.getString(key);
-//    }
-//
-//    @Test
-//    public void updateUserPasswordTest() throws Exception {
-//        // change the password to new password and login
-//        changePassword(TEST_USER_ID, TEST_PASSWORD, NEW_PASSWORD);
-//        login(NEW_PASSWORD);
-//        // Change the password back and re-login.
-//        changePassword(TEST_USER_ID, NEW_PASSWORD, TEST_PASSWORD);
-//        login(TEST_PASSWORD);
-//    }
-//
-//    private void changePassword(String loginName, String oldPassword, String newPassword) throws Exception {
-//        String uri = "/update_user_password";
-//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName)
-//                .param("oldPassword", oldPassword).param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
-//
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//
-//        String content = mvcResult.getResponse().getContentAsString();
-//        assertTrue(content.length() > 0);
-//        assertTrue(content.contains("\"result\":true"));
-//    }
+    @Test
+    public void loginTest() throws Exception {
+        String testPassword = TEST_PASSWORD;
+        String content = login(testPassword);
+        assertTrue(content.length() > 0);
+        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
+    }
+
+    private String login(String password) throws Exception, UnsupportedEncodingException {
+        String uri = "/login";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
+                .param("password", password).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        return content;
+    }
+
+    @Test
+    public void isLoginNameAvailableTest() throws Exception {
+        String uri = "/user_is_login_name_available";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
+                .param("password", TEST_PASSWORD).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(content.length() > 0);
+        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue(content.contains("\"result\":false"));
+    }
+
+    @Test
+    public void logoutTestForGoodToken() throws Exception {
+        String token = loginUser();
+        String uri = "/logout";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
+                .param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(content.length() > 0);
+        assertTrue(content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
+        assertTrue(content.contains("\"result\":false"));
+    }
+
+    @Test
+    public void logoutTestForBadToken() throws Exception {
+        String uri = "/logout";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
+                .param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(content.length() > 0);
+        assertTrue(content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
+        assertTrue(content.contains("\"result\":false"));
+    }
+
+    private String loginUser() throws Exception {
+        String uri = "/login";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
+                .param("password", TEST_PASSWORD).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        return getValuesForGivenKey(content, "token");
+    }
+
+    public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
+        JSONObject jsonObject = new JSONObject(jsonArrayStr);
+        return jsonObject.getString(key);
+    }
+
+    @Test
+    public void updateUserPasswordTest() throws Exception {
+        // change the password to new password and login
+        changePassword(TEST_USER_ID, TEST_PASSWORD, NEW_PASSWORD);
+        login(NEW_PASSWORD);
+        // Change the password back and re-login.
+        changePassword(TEST_USER_ID, NEW_PASSWORD, TEST_PASSWORD);
+        login(TEST_PASSWORD);
+    }
+
+    private void changePassword(String loginName, String oldPassword, String newPassword) throws Exception {
+        String uri = "/update_user_password";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName)
+                .param("oldPassword", oldPassword).param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(content.length() > 0);
+        assertTrue(content.contains("\"result\":true"));
+    }
 }
