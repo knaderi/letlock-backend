@@ -54,9 +54,14 @@ public class UserController {
             errorCode = INVALID_LOGINNAME;
             errorMessage = LOGIN_NAME_IS_INVALID;
         } else {
-            IdVO answer = userMapper.register(loginName, email, password);
-            errorCode = answer.getErrorCode();
-            errorMessage = answer.getErrorMessage();
+            logger.info("****************Calling register on db side");
+            try {
+                IdVO answer = userMapper.register(loginName, email, password);
+                errorCode = answer.getErrorCode();
+                errorMessage = answer.getErrorMessage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         boolean result = errorCode.equals("NO_ERROR");
@@ -99,14 +104,14 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/logout", produces = { "application/JSON" })
     public BooleanResponse logout(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("UserController.logout called for token " + token);
-        
+
         SessionManager instance = SessionManager.getInstance();
-        if(instance.isActive(token)) {
+        if (instance.isActive(token)) {
             instance.cleanSession(token);
-            return new BooleanResponse(true, "NO_ERROR", "");    
-        }else {
-            return new BooleanResponse(false, "LOGIN_SESSION_NOT_FOUND", "There is no active login session for the given token"); 
+            return new BooleanResponse(true, "NO_ERROR", "");
+        } else {
+            return new BooleanResponse(false, "LOGIN_SESSION_NOT_FOUND", "There is no active login session for the given token");
         }
-        
+
     }
 }
