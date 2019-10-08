@@ -17,10 +17,12 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - mvn install -Dspring.profiles.active="dev"
+      - mvn clean install -Dspring.profiles.active="dev"
   post_build:
     commands:
+      - mv target/letlock-filetransfer-backend-0.0.1-SNAPSHOT.jar letlockbackend.jar
       - echo Build completed on `date`
 artifacts:
   files:
-    - target/letlock-filetransfer-backend-0.0.1-SNAPSHOT.jar
+    - letlockbackend.jar
+    - .ebextensions/**/*
