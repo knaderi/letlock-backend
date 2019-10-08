@@ -14,7 +14,8 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - mv target/letlock-filetransfer-backend-0.0.1-SNAPSHOT.jar  target/application.jar
 artifacts:
   files:
-    - target/letlock-filetransfer-backend-0.0.1-SNAPSHOT.jar
+    - target/application.jar
     - .ebextensions/**/*
