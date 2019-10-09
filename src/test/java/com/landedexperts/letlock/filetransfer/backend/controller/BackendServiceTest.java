@@ -40,8 +40,6 @@ public class BackendServiceTest extends AbstractTest {
             int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");
             activeProfile = mvnCommandLineArgs.substring(index + 25);
         }
-        System.out.println("\n******************* activeProfile " + activeProfile + " \n");
-
         System.getProperties().setProperty("spring.profiles.active", activeProfile);
 
     }

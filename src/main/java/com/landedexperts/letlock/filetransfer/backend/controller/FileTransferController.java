@@ -3,6 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import java.util.Date;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,13 +33,13 @@ public class FileTransferController {
     @Autowired
     FileTransferMapper fileTransferMapper;
     
-//    private final Logger logger = LoggerFactory.getLogger(FileController.class);
+    private final Logger logger = LoggerFactory.getLogger(FileTransferController.class);
 
     @RequestMapping(method = RequestMethod.POST, value = "/start_file_transfer_session", produces = { "application/JSON" })
     public ConsumeResponse startFileTransferSession(@RequestParam(value = "token") final String token,
             @RequestParam(value = "wallet_address") final String walletAddress,
             @RequestParam(value = "receiver_login_name") final String receiverLoginName) throws Exception {
-        System.out.println("FileTransferController.startFileTransferSession called for token " + token);
+        logger.info("FileTransferController.startFileTransferSession called for token " + token);
         UUID fileTransferUuid = null;
         UUID walletAddressUuid = null;
         String errorCode = "TOKEN_INVALID";
@@ -60,7 +62,7 @@ public class FileTransferController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/is_file_transfer_waiting_receiver_address", produces = { "application/JSON" })
     public UuidNameDateArrayResponse isFileTransferWaitingForReceiverAddress(@RequestParam(value = "token") final String token) {
-        System.out.println("FileTransferController.isFileTransferWaitingForReceiverAddress called for token " + token);
+        logger.info("FileTransferController.isFileTransferWaitingForReceiverAddress called for token " + token);
         UuidNameDate[] value = null;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -83,7 +85,7 @@ public class FileTransferController {
     @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_as_activate", produces = { "application/JSON" })
     public ErrorCodeMessageResponse setFileTransferAsActive(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        System.out.println("FileTransferController.setFileTransferAsActive called for token " + token);
+        logger.info("FileTransferController.setFileTransferAsActive called for token " + token);
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
@@ -101,7 +103,7 @@ public class FileTransferController {
     @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_inactive", produces = { "application/JSON" })
     public ErrorCodeMessageResponse setFileTransferInactive(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        System.out.println("FileTransferController.setFileTransferInactive called for token " + token);
+        logger.info("FileTransferController.setFileTransferInactive called for token " + token);
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
@@ -119,7 +121,7 @@ public class FileTransferController {
     @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_status", produces = { "application/JSON" })
     public FileTransferReadResponse getFileTransferStatus(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        System.out.println("FileTransferController.getFileTransferStatus called for token " + token);
+        logger.info("FileTransferController.getFileTransferStatus called for token " + token);
         String senderLoginName = null;
         String senderWalletAddressUuid = null;
         String senderWalletAddress = null;
@@ -173,7 +175,7 @@ public class FileTransferController {
     public UuidResponse setFileTransferReceiverAddress(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "wallet_address") final String walletAddress) throws Exception {
-        System.out.println("FileTransferController.setFileTransferReceiverAddress called for token " + token);
+        logger.info("FileTransferController.setFileTransferReceiverAddress called for token " + token);
         UUID walletAddressUuid = null;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -205,7 +207,7 @@ public class FileTransferController {
     public TransactionHashResponse addFunds(@RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "signed_transaction_hex") final String signedTransactionHex,
             @RequestParam(value = "step") final String step) throws Exception {
-        System.out.println("FileTransferController.addFunds called for file_transfer_uuid " + fileTransferUuid);
+        logger.info("FileTransferController.addFunds called for file_transfer_uuid " + fileTransferUuid);
         String errorCode = "";
         String errorMessage = "";
 
