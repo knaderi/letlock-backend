@@ -21,7 +21,7 @@ import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
 @RestController
 public class UserController {
 
-   // private final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private static final String LOGIN_NAME_IS_INVALID = "Login name is invalid";
     private static final String INVALID_LOGINNAME = "INVALID_LOGINNAME";
     private static final String EMAIL_IS_INVALID = "Email is invalid";
@@ -31,7 +31,7 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) throws Exception {
-        System.out.println("UserController.isLoginNameAvailable called for loginName " + loginName);
+        logger.info("UserController.isLoginNameAvailable called for loginName " + loginName);
         BooleanVO answer = userMapper.isLoginNameAvailable(loginName);
 
         boolean result = answer.getValue();
@@ -44,7 +44,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/register", produces = { "application/JSON" })
     public BooleanResponse register(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "email") final String email, @RequestParam(value = "password") final String password) throws Exception {
-        System.out.println("UserController.register called for loginName " + loginName);
+        logger.info("UserController.register called for loginName " + loginName);
         String errorCode = "";
         String errorMessage = "";
         if (!new EmailValidator().isValid(email)) {
@@ -54,7 +54,7 @@ public class UserController {
             errorCode = INVALID_LOGINNAME;
             errorMessage = LOGIN_NAME_IS_INVALID;
         } else {
-            System.out.println("****************Calling register on db side");
+            logger.info("****************Calling register on db side");
             try {
                 IdVO answer = userMapper.register(loginName, email, password);
                 errorCode = answer.getErrorCode();
@@ -72,7 +72,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/login", produces = { "application/JSON" })
     public SessionTokenResponse login(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "password") final String password) throws Exception {
-        System.out.println("UserController.login called for loginName " + loginName);
+        logger.info("UserController.login called for loginName " + loginName);
         IdVO answer = userMapper.login(loginName, password);
 
         int userId = answer.getId();
@@ -91,7 +91,7 @@ public class UserController {
     public BooleanResponse updateUserPassword(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword)
             throws Exception {
-        System.out.println("UserController.updateUserPassword called for loginName " + loginName);
+        logger.info("UserController.updateUserPassword called for loginName " + loginName);
         ErrorCodeMessageVO answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword);
 
         String errorCode = answer.getErrorCode();
@@ -103,7 +103,7 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/logout", produces = { "application/JSON" })
     public BooleanResponse logout(@RequestParam(value = "token") final String token) throws Exception {
-        System.out.println("UserController.logout called for token " + token);
+        logger.info("UserController.logout called for token " + token);
 
         SessionManager instance = SessionManager.getInstance();
         if (instance.isActive(token)) {

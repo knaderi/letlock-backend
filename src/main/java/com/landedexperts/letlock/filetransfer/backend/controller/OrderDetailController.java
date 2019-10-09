@@ -1,5 +1,7 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,13 +19,13 @@ import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 public class OrderDetailController {
     @Autowired
     private OrderDetailMapper orderDetailMapper;
-   //private final Logger logger = LoggerFactory.getLogger(OrderDetailController.class);
+    private final Logger logger = LoggerFactory.getLogger(OrderDetailController.class);
 
     @RequestMapping(method = RequestMethod.POST, value = "/add_order_detail", produces = { "application/JSON" })
     public OrderDetailResponse addOrderDetail(@RequestParam(value = "token") final String token,
             @RequestParam(value = "order_id") final int orderId, @RequestParam(value = "product_id") final int productId,
             @RequestParam(value = "quantity") final short quantity) throws Exception {
-        System.out.println("OrderDetailController.addOrderDetail called for token " + token + " orderId " + orderId + " productId " + productId);
+        logger.info("OrderDetailController.addOrderDetail called for token " + token + " orderId " + orderId + " productId " + productId);
         int orderDetailId = -1;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -44,7 +46,7 @@ public class OrderDetailController {
     public BooleanResponse updateOrderDetail(@RequestParam(value = "token") final String token,
             @RequestParam(value = "order_detail_id") final int orderDetailId, @RequestParam(value = "quantity") final short quantity)
             throws Exception {
-        System.out.println("OrderDetailController.updateOrderDetail called for token " + token + " orderDetailId " + orderDetailId + " quantity " + quantity);
+        logger.info("OrderDetailController.updateOrderDetail called for token " + token + " orderDetailId " + orderDetailId + " quantity " + quantity);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -64,7 +66,7 @@ public class OrderDetailController {
     @RequestMapping(method = RequestMethod.POST, value = "/delete_order_detail", produces = { "application/JSON" })
     public BooleanResponse deleteOrderDetail(@RequestParam(value = "token") final String token,
             @RequestParam(value = "order_detail_id") final int orderDetailId) throws Exception {
-        System.out.println("OrderDetailController.deleteOrderDetail called for token " + token + " orderDetailId " + orderDetailId);
+        logger.info("OrderDetailController.deleteOrderDetail called for token " + token + " orderDetailId " + orderDetailId);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
