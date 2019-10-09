@@ -9,7 +9,7 @@ phases:
       - echo Nothing to do in the pre_build phase...
   build:
     commands:
-      - echo Build started on `date`
+      - echo Build started on `date`      
       - mvn clean install -Dspring.profiles.active="dev"
   post_build:
     commands:
