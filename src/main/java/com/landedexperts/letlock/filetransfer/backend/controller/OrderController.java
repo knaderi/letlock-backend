@@ -1,7 +1,5 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,11 +17,11 @@ import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 public class OrderController {
     @Autowired
     private OrderMapper orderMapper;
-    private final Logger logger = LoggerFactory.getLogger(OrderController.class);
+    //private final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     @RequestMapping(method = RequestMethod.POST, value = "/order_create", produces = { "application/JSON" })
     public OrderResponse createOrder(@RequestParam(value = "token") final String token) throws Exception {
-        logger.info("OrderController.createOrder called for token " + token);
+        System.out.println("OrderController.createOrder called for token " + token);
         int orderId = -1;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -43,7 +41,7 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.POST, value = "/update_order_status_to_cancelled", produces = { "application/JSON" })
     public BooleanResponse updateOrderStatusInitiatedToCancelled(@RequestParam(value = "token") final String token,
             @RequestParam(value = "order_id") final int orderId) throws Exception {
-        logger.info("OrderController.updateOrderStatusInitiatedToCancelled called for token " + token + " and OrderId " + orderId);
+        System.out.println("OrderController.updateOrderStatusInitiatedToCancelled called for token " + token + " and OrderId " + orderId);
         Boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -64,7 +62,7 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.POST, value = "/update_order_status_to_initiated", produces = { "application/JSON" })
     public BooleanResponse UpdateOrderStatusCancelledToInitiated(@RequestParam(value = "token") final String token,
             @RequestParam(value = "order_id") final int orderId) throws Exception {
-        logger.info("OrderController.UpdateOrderStatusCancelledToInitiated called for token " + token + " and OrderId " + orderId);
+        System.out.println("OrderController.UpdateOrderStatusCancelledToInitiated called for token " + token + " and OrderId " + orderId);
         Boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";

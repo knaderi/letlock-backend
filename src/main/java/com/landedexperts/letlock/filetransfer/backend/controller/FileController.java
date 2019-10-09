@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -33,7 +31,7 @@ import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 public class FileController {
     /* Timeout in milliseconds, 24 hrs */
     private static long fileLifespan = 86400000L;
-    private final Logger logger = LoggerFactory.getLogger(FileController.class);
+
     @Autowired
     FileMapper fileMapper;
 
@@ -41,7 +39,7 @@ public class FileController {
     public BooleanResponse uploadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "file") final MultipartFile file) throws Exception {
-        logger.info("FileController.fileInsert called for token " + token);
+        System.out.println("FileController.fileInsert called for token " + token);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -71,7 +69,7 @@ public class FileController {
                 IOUtils.closeQuietly(localFileCopy);
             }
         }
-        logger.info("FileController.uploadFile returning response with result " + result);
+        System.out.println("FileController.uploadFile returning response with result " + result);
 
         return new BooleanResponse(result, errorCode, errorMessage);
     }
@@ -79,7 +77,7 @@ public class FileController {
     @RequestMapping(method = RequestMethod.POST, value = "/can_download_file")
     public BooleanResponse canDownloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.canDownloadFile called for token " + token);
+        System.out.println("FileController.canDownloadFile called for token " + token);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -92,14 +90,14 @@ public class FileController {
             errorCode = isAllowed.getErrorCode();
             errorMessage = isAllowed.getErrorMessage();
         }
-        logger.info("FileController.canDownloadFile returning response " + result);
+        System.out.println("FileController.canDownloadFile returning response " + result);
         return new BooleanResponse(result, errorCode, errorMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/download_file")
     public ResponseEntity<Resource> downloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.downloadFile called for token " + token);
+        System.out.println("FileController.downloadFile called for token " + token);
         @SuppressWarnings("unused")
         String errorCode = "TOKEN_INVALID";
         @SuppressWarnings("unused")
@@ -121,7 +119,7 @@ public class FileController {
         File empty = new File("C:\\Users\\Omer\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\empty");
         FileInputStream fisEmpty = new FileInputStream(empty);
         InputStreamResource isrEmpty = new InputStreamResource(fisEmpty);
-        logger.info("FileController.downloadFile returning responseEntity for entity with length"
+        System.out.println("FileController.downloadFile returning responseEntity for entity with length"
                 + isrEmpty.contentLength());
         return ResponseEntity.ok().contentLength(empty.length()).contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(isrEmpty);
@@ -130,7 +128,7 @@ public class FileController {
     @RequestMapping(method = RequestMethod.POST, value = "/delete_file", produces = { "application/JSON" })
     public BooleanResponse deleteFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.deleteFile called for token " + token);
+        System.out.println("FileController.deleteFile called for token " + token);
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
@@ -144,7 +142,7 @@ public class FileController {
 
             result = errorCode.equals("NO_ERROR");
         }
-        logger.info("FileController.deleteFile returning response " + result);
+        System.out.println("FileController.deleteFile returning response " + result);
         return new BooleanResponse(result, errorCode, errorMessage);
     }
 }
