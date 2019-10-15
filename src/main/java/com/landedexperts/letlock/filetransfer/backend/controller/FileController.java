@@ -2,7 +2,9 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
@@ -12,6 +14,7 @@ import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -22,6 +25,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanPathnameVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
@@ -40,6 +50,9 @@ public class FileController {
     @Autowired
     FileMapper fileMapper;
 
+    @Value("${s3.storage.bucket}")
+    private String s3Bucket;
+    
     @RequestMapping(method = RequestMethod.POST, value = "/upload_file", produces = { "application/JSON" })
     public BooleanResponse uploadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
@@ -48,36 +61,71 @@ public class FileController {
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
+        String remoteFilePath = ".";
 
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             // Get the path of the uploaded file
-            String pathname = "C:\\Users\\Omer\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\"
+            String localFilePath = System.getProperty("user.home")
                     + UUID.randomUUID().toString();
 
             // Set the expiry date
             Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
 
-            IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, pathname, expires);
+            IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remoteFilePath, expires);
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();
 
             result = errorCode.equals("NO_ERROR");
 
-            InputStream fileStream = file.getInputStream();
-            OutputStream localFileCopy = new FileOutputStream(pathname);
-            try {
-                IOUtils.copy(fileStream, localFileCopy);
-            } finally {
-                IOUtils.closeQuietly(fileStream);
-                IOUtils.closeQuietly(localFileCopy);
-            }
+            saveFileOnDisk(file, localFilePath);
+            uploadFileToRemote(localFilePath, remoteFilePath);
         }
         logger.info("FileController.uploadFile returning response with result " + result);
 
         return new BooleanResponse(result, errorCode, errorMessage);
     }
+
+	void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
+		InputStream fileStream = localFile.getInputStream();
+		OutputStream localFileCopy = new FileOutputStream(localFilePath);
+		try {
+		    IOUtils.copy(fileStream, localFileCopy);
+		} finally {
+		    IOUtils.closeQuietly(fileStream);
+		    IOUtils.closeQuietly(localFileCopy);
+		}
+	}
+	
+	void uploadFileToRemote(final String localFilePath, final String remoteFilePath) {
+		Regions clientRegion = Regions.DEFAULT_REGION;
+		String bucketName = "letlock-filetransfer-dev-storage";
+		File localFile = new File(localFilePath);
+		String fileObjKeyName = localFile.getName();
+		
+		try {
+			AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
+
+			// Upload a file as a new object with ContentType and title specified.
+			PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, localFile);
+			ObjectMetadata metadata = new ObjectMetadata();
+			metadata.setContentType("plain/text");
+			request.setMetadata(metadata);
+			s3Client.putObject(request);
+		} catch (AmazonServiceException e) {
+			// The call was transmitted successfully, but Amazon S3 couldn't process
+			// it, so it returned an error response.
+			logger.error(e.getErrorMessage());
+		} catch (SdkClientException e) {
+			// Amazon S3 couldn't be contacted for a response, or the client
+			// couldn't parse the response from Amazon S3.
+			logger.error(e.getMessage());
+		}finally {
+			//TODO: file needs to be removed after moving to use the remote.
+			//localFile.delete();
+		}
+	}
 
     @RequestMapping(method = RequestMethod.POST, value = "/can_download_file")
     public BooleanResponse canDownloadFile(@RequestParam(value = "token") final String token,
@@ -121,7 +169,8 @@ public class FileController {
         }
 
         /* Improve answer by responding with the error code and message */
-        File empty = new File("C:\\Users\\Omer\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\empty");
+        String localFilePath = System.getProperty("user.home") + "\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\empty";
+		File empty = new File(localFilePath);
         FileInputStream fisEmpty = new FileInputStream(empty);
         InputStreamResource isrEmpty = new InputStreamResource(fisEmpty);
         logger.info("FileController.downloadFile returning responseEntity for entity with length"
