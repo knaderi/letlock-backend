@@ -83,7 +83,7 @@ public class FileController {
         return new BooleanResponse(result, errorCode, errorMessage);
     }
 
-    void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
+    public void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
         InputStream fileStream = localFile.getInputStream();
         OutputStream localFileCopy = new FileOutputStream(localFilePath);
         try {
