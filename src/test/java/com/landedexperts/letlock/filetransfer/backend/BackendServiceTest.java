@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.filetransfer.backend.controller;
+package com.landedexperts.letlock.filetransfer.backend;
 
 import static org.junit.Assert.assertTrue;
 
@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
+import com.landedexperts.letlock.filetransfer.backend.controller.FileController;
 
 public class BackendServiceTest extends AbstractTest {
 
@@ -30,11 +30,7 @@ public class BackendServiceTest extends AbstractTest {
 	private static final String TEST_EMAIL = "knaderi@landedexperts.com";
 	private static final String TEST_USER_ID = "knaderi12";
 	private static ResultMatcher ok = MockMvcResultMatchers.status().isOk();
-    @Value("${s3.storage.bucket}")
-    private String s3Bucket;
-    
-    @Autowired
-    private FileController fileController;
+
 
 	@Override
 	@Before
@@ -55,7 +51,7 @@ public class BackendServiceTest extends AbstractTest {
 	}
 
     @Test
-    public void registerTest() throws Exception {
+    public void registerTest() throws Exception {        
         String uri = "/register";
 
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
@@ -67,6 +63,7 @@ public class BackendServiceTest extends AbstractTest {
         assertTrue(content.contains("\"result\":false"));
         assertTrue(content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
     }
+    
 
     @Test
     public void loginTest() throws Exception {
@@ -174,14 +171,5 @@ public class BackendServiceTest extends AbstractTest {
         assertTrue(content.contains("\"result\":true"));
     }
 
-	@Test
-	public void testSaveFileOnDisk() throws Exception {
-		MultipartFile localFile = new MockMultipartFile("testSaveFile.txt", "This is a test file".getBytes());
-		String localFilePath = System.getProperty("user.home") + File.separator + "testSaveFile.txt";
-		String remoteFilePath = ".";
-		//localFile.transferTo(new File(localFilePath));
-		fileController.saveFileOnDisk(localFile, localFilePath);
-		fileController.uploadFileToRemote(localFilePath, remoteFilePath);	
-	}
-	
+
 }
