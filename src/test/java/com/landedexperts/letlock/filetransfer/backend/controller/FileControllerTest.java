@@ -35,7 +35,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
 
     @Test
     public void testUploadFileWithNoTransferSession() throws Exception {
-        SessionTokenResponse response = userController.login("knaderi12", "passw0rd!");
+        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD);
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
         String token = response.getToken();
         BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
@@ -44,7 +44,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
 
     @Test
     public void testDownloadFileFailingForNoTransferSession() throws Exception {
-        SessionTokenResponse response = userController.login("knaderi12", "passw0rd!");
+        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD);
         String token = response.getToken();
         ResponseEntity<Resource> fileDownloadResponse = fileController.downloadFile(token, testUUId);
         // download should fail.
