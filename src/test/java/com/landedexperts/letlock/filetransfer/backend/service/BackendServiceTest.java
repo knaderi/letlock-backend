@@ -95,7 +95,7 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 
     @Test
     public void logoutTestForGoodToken() throws Exception {
-        String token = loginUser();
+        loginUser();
         String uri = "/logout";
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
                 .param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
