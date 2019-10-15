@@ -1,6 +1,8 @@
 package com.landedexperts.letlock.filetransfer.backend;
 
 import java.io.IOException;
+
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -37,5 +40,17 @@ public abstract class AbstractTest {
       
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.readValue(json, clazz);
+   }
+   
+   @BeforeClass
+   public static void setSystemProperty() {
+       String activeProfile = "dev";
+       String mvnCommandLineArgs = System.getenv().get("MAVEN_CMD_LINE_ARGS");
+       if (!StringUtils.isEmpty(mvnCommandLineArgs)) {
+           int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");
+           activeProfile = mvnCommandLineArgs.substring(index + 25);
+       }
+       System.getProperties().setProperty("spring.profiles.active", activeProfile);
+
    }
 }

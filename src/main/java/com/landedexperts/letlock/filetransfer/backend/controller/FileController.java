@@ -30,6 +30,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -162,28 +163,14 @@ public class FileController {
             BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
             if (isAllowed.getValue()) {
                     return downloadRemoteFile(isAllowed.getPathName());
-//                File file = new File(isAllowed.getPathName());
-//                FileInputStream fis = new FileInputStream(file);
-//                InputStreamResource isr = new InputStreamResource(fis);
-//                return ResponseEntity.ok().contentLength(file.length()).contentType(MediaType.APPLICATION_OCTET_STREAM).body(isr);
             }
         }
         logger.error("Cannot download file(s). No authenticated user was found for given token: " + token);
         return ResponseEntity.badRequest().contentLength(0).contentType(MediaType.TEXT_PLAIN)
                 .body(new DescriptiveResource("Download failed."));
-
-        /* Improve answer by responding with the error code and message */
-//        String localFilePath = System.getProperty("user.home") + "\\Documents\\projects\\letlock\\letlock-backend\\src\\test\\java\\local_files\\empty";
-//		File empty = new File(localFilePath);
-//        FileInputStream fisEmpty = new FileInputStream(empty);
-//        InputStreamResource isrEmpty = new InputStreamResource(fisEmpty);
-//        logger.info("FileController.downloadFile returning responseEntity for entity with length"
-//                + isrEmpty.contentLength());
-//        return ResponseEntity.ok().contentLength(empty.length()).contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .body(isrEmpty);
     }
 
-    ResponseEntity<Resource> downloadRemoteFile(String remotePathName) {
+    ResponseEntity<Resource> downloadRemoteFile(final String remotePathName) {
         Regions clientRegion = Regions.DEFAULT_REGION;  
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
         S3Object fullObject = null, objectPortion = null;
@@ -213,8 +200,11 @@ public class FileController {
             errorMessage = answer.getErrorMessage();
 
             result = errorCode.equals("NO_ERROR");
+
         }
         logger.info("FileController.deleteFile returning response " + result);
         return new BooleanResponse(result, errorCode, errorMessage);
     }
+   
+
 }
