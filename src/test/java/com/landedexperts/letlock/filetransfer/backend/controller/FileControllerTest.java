@@ -1,34 +1,29 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
+import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
+import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.SessionTokenResponse;
 
-public class FileControllerTest extends AbstractTest{
-    
-    private static final String TEST_FILE_NAME = "testSaveFile.txt";
+public class FileControllerTest extends AbstractTest implements BackendTestConstants {
 
-    private static final String TEST_FILE_CONTENT = "This is a test file";
-
-    @Value("${s3.storage.bucket}")
-    private String s3Bucket;
-    
     @Autowired
     private FileController fileController;
+
+    @Autowired
+    private UserController userController;
 
     @Override
     @Before
@@ -36,28 +31,28 @@ public class FileControllerTest extends AbstractTest{
         super.setUp();
     }
 
-    
+    private UUID testUUId = getUuid();
+
     @Test
-    public void testUploadFile() throws Exception {
+    public void testUploadFileWithNoTransferSession() throws Exception {
+        SessionTokenResponse response = userController.login("knaderi12", "passw0rd!");
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
-        String localFilePath = System.getProperty("user.home") + File.separator + TEST_FILE_NAME;
-        String remoteFilePath = ".";
-        fileController.saveFileOnDisk(localFile, localFilePath);
-        fileController.uploadFileToRemote(localFilePath, remoteFilePath);   
+        String token = response.getToken();
+        BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
+        assertFalse("upload should fail as there is no transfer session", uploadResponse.getResult());
     }
-    
+
     @Test
-    public void testDownloadFile() throws Exception {
- 
-        ResponseEntity<Resource>  downloadInputStream= fileController.downloadRemoteFile(TEST_FILE_NAME);
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        InputStream inputStream = downloadInputStream.getBody().getInputStream();
-        while ((length = inputStream.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
-        }
-        assertEquals(TEST_FILE_CONTENT, result.toString(StandardCharsets.UTF_8.name()));        
+    public void testDownloadFileFailingForNoTransferSession() throws Exception {
+        SessionTokenResponse response = userController.login("knaderi12", "passw0rd!");
+        String token = response.getToken();
+        ResponseEntity<Resource> fileDownloadResponse = fileController.downloadFile(token, testUUId);
+        // download should fail.
+        assertEquals("download should fail", FileController.DOWNLOAD_FAILED, fileDownloadResponse.getBody().toString());
+    }
+
+    private UUID getUuid() {
+        return UUID.randomUUID();
     }
 
 }

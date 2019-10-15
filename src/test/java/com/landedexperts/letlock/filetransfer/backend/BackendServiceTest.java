@@ -2,33 +2,23 @@ package com.landedexperts.letlock.filetransfer.backend;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.landedexperts.letlock.filetransfer.backend.controller.FileController;
+public class BackendServiceTest extends AbstractTest implements BackendTestConstants {
 
-public class BackendServiceTest extends AbstractTest {
 
-	private static final String TEST_PASSWORD = "passw0rd!";
-	private static final String NEW_PASSWORD = "newpassw0rd!";
-	private static final String TEST_EMAIL = "knaderi@landedexperts.com";
-	private static final String TEST_USER_ID = "knaderi12";
 	private static ResultMatcher ok = MockMvcResultMatchers.status().isOk();
 
 
