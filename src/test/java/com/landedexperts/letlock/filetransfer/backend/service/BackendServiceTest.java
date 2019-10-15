@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.filetransfer.backend;
+package com.landedexperts.letlock.filetransfer.backend.service;
 
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +15,9 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.StringUtils;
+
+import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
+import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 
 public class BackendServiceTest extends AbstractTest implements BackendTestConstants {
 
