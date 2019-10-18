@@ -6,7 +6,6 @@ import java.io.UnsupportedEncodingException;
 
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -14,7 +13,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.util.StringUtils;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
@@ -31,17 +29,6 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 		super.setUp();
 	}
 
-	@BeforeClass
-	public static void setSystemProperty() {
-		String activeProfile = "dev";
-		String mvnCommandLineArgs = System.getenv().get("MAVEN_CMD_LINE_ARGS");
-		if (!StringUtils.isEmpty(mvnCommandLineArgs)) {
-			int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");
-			activeProfile = mvnCommandLineArgs.substring(index + 25);
-		}
-		System.getProperties().setProperty("spring.profiles.active", activeProfile);
-
-	}
 
     @Test
     public void registerTest() throws Exception {        

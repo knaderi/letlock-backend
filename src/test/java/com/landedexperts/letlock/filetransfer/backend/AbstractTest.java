@@ -42,7 +42,7 @@ public abstract class AbstractTest {
    
    @BeforeClass
    public static void setSystemProperty() {
-       String activeProfile = "dev";
+       String activeProfile = "test";
        String mvnCommandLineArgs = System.getenv().get("MAVEN_CMD_LINE_ARGS");
        if (!StringUtils.isEmpty(mvnCommandLineArgs)) {
            int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");
