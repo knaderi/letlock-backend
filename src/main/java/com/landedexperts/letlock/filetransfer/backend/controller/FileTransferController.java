@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.landedexperts.letlock.filetransfer.backend.blockchain.TransactionHashJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceFactory;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
@@ -215,22 +217,21 @@ public class FileTransferController {
         return new UuidResponse(walletAddressUuid, errorCode, errorMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/search_hash", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/get_txn_status", produces = { "application/JSON" })
     public TransactionHashResponse searchTransactionHash(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "hash") final String signedTransactionHex) throws Exception {
+            @RequestParam(value = "transactionHash") final String transactionHash) throws Exception {
         logger.info("FileTransferController.searchTransactionHash called for token " + token);
-        String errorCode = "";
-        String errorMessage = "";
+        String errorCode = "TOKEN_INVALID";
+        String errorMessage = "Invalid token";
         int userId = SessionManager.getInstance().getUserId(token);
-        String transactionHash = "";
+        TransactionHashResponse transactionHashResponse = null;
         if (userId > 0) {
-            transactionHash = getBlockChainGateWayService().searchTransactionHash(signedTransactionHex);
+            transactionHashResponse = getBlockChainGateWayService().getTransactionStatus(transactionHash);
 
-        } else {
-            errorCode = "TOKEN_INVALID";
-            errorMessage = "Invalid token";
+        }else {
+            transactionHashResponse = new TransactionHashResponse(errorCode, errorMessage);
         }
-        return new TransactionHashResponse(transactionHash, errorCode, errorMessage);
+        return transactionHashResponse;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/add_funds", produces = { "application/JSON" })

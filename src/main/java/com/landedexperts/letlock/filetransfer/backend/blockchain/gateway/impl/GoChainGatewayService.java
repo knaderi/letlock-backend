@@ -14,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.ResultJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.TransactionHashJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.WalletAddress;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
+import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
 
 @Service
 public class GoChainGatewayService extends BlockChainGatewayService {
@@ -49,23 +51,25 @@ public class GoChainGatewayService extends BlockChainGatewayService {
      * (non-Javadoc)
      * 
      * @see com.landedexperts.letlock.filetransfer.backend.blockchain.
-     * IBlockChainGatewayService#searchTransactionHash(java.lang.String)
+     * IBlockChainGatewayService#gTransactionHash(java.lang.String)
      */
     @Override
-    public String searchTransactionHash(String signedTransactionHex) throws Exception {
-        HttpURLConnection urlConnection = getURLConnection("http://localhost:3001/search_hash");
-        TransactionHashJson transactionHashJson;
+    public TransactionHashResponse getTransactionStatus(String transactionHash) throws Exception {
+        HttpURLConnection urlConnection = getURLConnection("http://localhost:3001/get_txn_status");
+        TransactionHashResponse transactionHashResponse;
+        String responseStr;
         try {
             OutputStream output = urlConnection.getOutputStream();
-            output.write(("{\"hash\":\"" + signedTransactionHex + "\"}").getBytes(StandardCharsets.UTF_8));
+            output.write(("{\"transactionHash\":\"" + transactionHash + "\"}").getBytes(StandardCharsets.UTF_8));
 
-            String responseStr = readInputStreamIntoJsonString(urlConnection);
+            responseStr = readInputStreamIntoJsonString(urlConnection);
             logger.debug("searchTransactionHash" + responseStr);
-            transactionHashJson = new ObjectMapper().readValue(responseStr, TransactionHashJson.class);
+            ObjectMapper objectMapper = new ObjectMapper();            
+            transactionHashResponse = objectMapper.readValue(responseStr, TransactionHashResponse.class);            
         } finally {
             cleanUpStreams(urlConnection);
         }
-        return transactionHashJson.getTransactionHash();
+        return transactionHashResponse;
     }
 
     /*
