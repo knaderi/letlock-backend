@@ -40,6 +40,9 @@ public class FileTransferController {
     private String blockchainGatewayType;
     
 
+    @Autowired
+    BlockChainGatewayServiceFactory blockChainGatewayServiceFactory;
+
     private final Logger logger = LoggerFactory.getLogger(FileTransferController.class);
 
     @RequestMapping(method = RequestMethod.POST, value = "/start_file_transfer_session", produces = { "application/JSON" })
@@ -260,6 +263,6 @@ public class FileTransferController {
 
     private BlockChainGatewayService getBlockChainGateWayService() {
         BlockChainGatewayServiceTypeEnum blockchainGatewayServiceType = BlockChainGatewayServiceTypeEnum.fromValue(blockchainGatewayType);
-        return new BlockChainGatewayServiceFactory().createGatewayService(blockchainGatewayServiceType);
+        return blockChainGatewayServiceFactory.createGatewayService(blockchainGatewayServiceType);
     }
 }
