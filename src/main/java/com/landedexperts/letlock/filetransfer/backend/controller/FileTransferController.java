@@ -6,12 +6,15 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.landedexperts.letlock.filetransfer.backend.blockchain.RestCall;
+import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
+import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceFactory;
+import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
@@ -33,6 +36,10 @@ public class FileTransferController {
     @Autowired
     FileTransferMapper fileTransferMapper;
     
+    @Value("${blockchain.gateway.type}")
+    private String blockchainGatewayType;
+    
+
     private final Logger logger = LoggerFactory.getLogger(FileTransferController.class);
 
     @RequestMapping(method = RequestMethod.POST, value = "/start_file_transfer_session", produces = { "application/JSON" })
@@ -49,7 +56,8 @@ public class FileTransferController {
         if (userId > 0) {
             String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2) : walletAddress;
 
-            FileTransferSessionVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId, walletAddressTrimmed, receiverLoginName);
+            FileTransferSessionVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId, walletAddressTrimmed,
+                    receiverLoginName);
 
             fileTransferUuid = answer.getFileTransferUuid();
             walletAddressUuid = answer.getWalletAddressUuid();
@@ -196,11 +204,30 @@ public class FileTransferController {
                 String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
 
                 @SuppressWarnings("unused")
-                boolean response = RestCall.deploySmartContract(fileTransferUuid, "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
+                boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid, "0x" + senderWalletAddress,
+                        "0x" + receiverWalletAddress);
             }
         }
 
         return new UuidResponse(walletAddressUuid, errorCode, errorMessage);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/search_hash", produces = { "application/JSON" })
+    public TransactionHashResponse searchTransactionHash(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "hash") final String signedTransactionHex) throws Exception {
+        logger.info("FileTransferController.searchTransactionHash called for token " + token);
+        String errorCode = "";
+        String errorMessage = "";
+        int userId = SessionManager.getInstance().getUserId(token);
+        String transactionHash = "";
+        if (userId > 0) {
+            transactionHash = getBlockChainGateWayService().searchTransactionHash(signedTransactionHex);
+
+        } else {
+            errorCode = "TOKEN_INVALID";
+            errorMessage = "Invalid token";
+        }
+        return new TransactionHashResponse(transactionHash, errorCode, errorMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/add_funds", produces = { "application/JSON" })
@@ -211,7 +238,7 @@ public class FileTransferController {
         String errorCode = "";
         String errorMessage = "";
 
-        String walletAddress = RestCall.getWalletAddressFromTransaction(signedTransactionHex);
+        String walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(signedTransactionHex);
 
         String prefix = walletAddress.substring(0, 2);
         if (prefix.equals("0x")) {
@@ -225,9 +252,14 @@ public class FileTransferController {
 
         String transactionHash = "";
         if (errorCode.equals("NO_ERROR") && isAvailable.getValue()) {
-            transactionHash = RestCall.fund(fileTransferUuid, signedTransactionHex, step);
+            transactionHash = getBlockChainGateWayService().fund(fileTransferUuid, signedTransactionHex, step);
         }
 
         return new TransactionHashResponse(transactionHash, errorCode, errorMessage);
+    }
+
+    private BlockChainGatewayService getBlockChainGateWayService() {
+        BlockChainGatewayServiceTypeEnum blockchainGatewayServiceType = BlockChainGatewayServiceTypeEnum.fromValue(blockchainGatewayType);
+        return new BlockChainGatewayServiceFactory().createGatewayService(blockchainGatewayServiceType);
     }
 }
