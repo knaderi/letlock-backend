@@ -3,6 +3,7 @@ package com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.impl;
 import java.util.UUID;
 
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
+import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
 
 public class DBGatewayService extends BlockChainGatewayService {
 
@@ -17,7 +18,7 @@ public class DBGatewayService extends BlockChainGatewayService {
     }
 
     @Override
-    public String searchTransactionHash(String signedTransactionHex) throws Exception {
+    public TransactionHashResponse getTransactionStatus(String signedTransactionHex) throws Exception {
         // TODO Auto-generated method stub
         return null;
     }

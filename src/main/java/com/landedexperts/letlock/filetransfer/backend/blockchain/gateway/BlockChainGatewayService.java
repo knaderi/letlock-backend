@@ -2,6 +2,8 @@ package com.landedexperts.letlock.filetransfer.backend.blockchain.gateway;
 
 import java.util.UUID;
 
+import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
+
 public abstract class BlockChainGatewayService {
 
    
@@ -21,7 +23,7 @@ public abstract class BlockChainGatewayService {
      * @return
      * @throws Exception
      */
-    public abstract String searchTransactionHash(String signedTransactionHex) throws Exception;
+    public abstract TransactionHashResponse getTransactionStatus(String signedTransactionHex) throws Exception;
 
     /**
      * Deploys a smart contract containing the sender and receiver wallet addresses
