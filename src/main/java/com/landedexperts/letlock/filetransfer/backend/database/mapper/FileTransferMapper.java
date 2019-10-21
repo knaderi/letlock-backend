@@ -147,7 +147,7 @@ public interface FileTransferMapper {
 			@Param("step") String step
 		);
 
-		@Select(
+	@Select(
 			"SELECT"
 				+ " _funding_id AS id,"
 				+ " _error_code AS errorCode,"
@@ -165,4 +165,16 @@ public interface FileTransferMapper {
 			@Param("step") String step,
 			@Param("transactionHash") String transactionHash
 		);
+	//These are the functions used to support dbGateway
+	@Select(
+	        "SELECT" +
+	        " gochain.file_transfer_set_contract_address(" +
+	        " $1," +
+	        " DECODE( $2, 'hex' )" +
+	        " )"
+	        )
+	        BooleanVO fileTransferSetContractAddress(
+	                @Param("fileTransferUuid") UUID fileTransferUuid,
+	                @Param("fileTransferContractAddress") String contractAddress
+	        );
 }
