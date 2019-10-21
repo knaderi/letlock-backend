@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.ResultJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.TransactionHashJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.WalletAddress;
