@@ -1,5 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,17 +57,18 @@ public class FileController {
         boolean result = false;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
-        String remoteFilePath = ".";
+        
 
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             // Get the path of the uploaded file
-            String localFilePath = System.getProperty("user.home") + UUID.randomUUID().toString();
+            String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
+            String remotePathName = UUID.randomUUID().toString(); //we use the uuid as the pathname to the file. This is used a the key name on s3.
 
             // Set the expiry date
             Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
 
-            IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remoteFilePath, expires);
+            IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remotePathName, expires);
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();
@@ -75,7 +77,7 @@ public class FileController {
 
             if (result) {
                 saveFileOnDisk(file, localFilePath);
-                remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(localFilePath, remoteFilePath);
+                remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(localFilePath, remotePathName);
             }
         }
         logger.info("FileController.uploadFile returning response with result " + result);

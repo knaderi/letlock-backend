@@ -48,13 +48,12 @@ public class S3StorageService implements RemoteStorageService {
     public void uploadFileToRemote(String localFilePath, String remoteFilePath) {
         Regions clientRegion = Regions.DEFAULT_REGION;        
         File localFile = new File(localFilePath);
-        String fileObjKeyName = localFile.getName();
-
+        
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
 
             // Upload a file as a new object with ContentType and title specified.
-            PutObjectRequest request = new PutObjectRequest(s3Bucket, fileObjKeyName, localFile);
+            PutObjectRequest request = new PutObjectRequest(s3Bucket, remoteFilePath, localFile);
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("plain/text");
             request.setMetadata(metadata);
