@@ -42,10 +42,9 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
     @Test
     public void testUploadFile() throws Exception {
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
-        String localFilePath = System.getProperty("user.home") + File.separator + TEST_FILE_NAME;
-        String remoteFilePath = ".";      
+        String localFilePath = System.getProperty("user.home") + File.separator + TEST_FILE_NAME; 
         fileControllerService.saveFileOnDisk(localFile, localFilePath);
-        S3StorageService.uploadFileToRemote(localFilePath, remoteFilePath);   
+        S3StorageService.uploadFileToRemote(localFilePath, localFile.getName());   
     }
     
     @Test
