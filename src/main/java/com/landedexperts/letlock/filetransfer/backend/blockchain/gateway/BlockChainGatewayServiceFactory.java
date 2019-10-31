@@ -1,32 +1,36 @@
 package com.landedexperts.letlock.filetransfer.backend.blockchain.gateway;
 
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.impl.DBGatewayService;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.impl.GoChainGatewayService;
 
 @Service
-public class BlockChainGatewayServiceFactory {
+public class BlockChainGatewayServiceFactory  implements ApplicationContextAware {
 
     
-    private static BlockChainGatewayService instance;
+    private static ApplicationContext applicationContext;
 
-    public BlockChainGatewayServiceFactory() {
 
-    }
-    
     public  BlockChainGatewayService createGatewayService(BlockChainGatewayServiceTypeEnum instanceType) {
-        if(null != instance) {
-            return instance;
-        }
+
         if(instanceType == BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY)
-            instance = new GoChainGatewayService();
+            return getBean(GoChainGatewayService.class);
         else if(instanceType == BlockChainGatewayServiceTypeEnum.DB_GATEWAY)
-            instance = new DBGatewayService();
+            return getBean(DBGatewayService.class);
         else
             throw new IllegalArgumentException("No such gateway service");
         
-        return instance;
-
+    }
+    
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        applicationContext = context;
+    }
+    public static <T> T getBean(Class<T> beanClass) {
+        return applicationContext.getBean(beanClass);
     }
 }

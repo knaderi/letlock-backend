@@ -9,7 +9,7 @@ public abstract class BlockChainGatewayService {
    
 
     /**
-     * Retrieves wallet address usin the transaction hash
+     * Retrieves wallet address using the transaction hash
      * 
      * @param signedTransactionHex
      * @return String - Wallet address
