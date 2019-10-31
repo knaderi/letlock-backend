@@ -169,8 +169,8 @@ public interface FileTransferMapper {
 	@Select(
 	        "SELECT" +
 	        " gochain.file_transfer_set_contract_address(" +
-	        " $1," +
-	        " DECODE( $2, 'hex' )" +
+	        " #{ fileTransferUuid }," +
+	        " DECODE( #{fileTransferContractAddress }, 'hex' )" +
 	        " )"
 	        )
 	        BooleanVO fileTransferSetContractAddress(
