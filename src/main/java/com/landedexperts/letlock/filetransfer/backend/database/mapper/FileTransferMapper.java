@@ -177,4 +177,6 @@ public interface FileTransferMapper {
 	                @Param("fileTransferUuid") UUID fileTransferUuid,
 	                @Param("fileTransferContractAddress") String contractAddress
 	        );
+	
+	
 }
