@@ -10,12 +10,14 @@ public abstract class BlockChainGatewayService {
 
     /**
      * Retrieves wallet address using the transaction hash
-     * 
+     * @param fileTransferUuid TODO
+     * @param step TODO
      * @param signedTransactionHex
+     * 
      * @return String - Wallet address
      * @throws Exception
      */
-    public abstract String getWalletAddressFromTransaction(String transaction) throws Exception;
+    public abstract String getWalletAddressFromTransaction(UUID fileTransferUuid, String transaction, String step) throws Exception;
 
     /**
      * 

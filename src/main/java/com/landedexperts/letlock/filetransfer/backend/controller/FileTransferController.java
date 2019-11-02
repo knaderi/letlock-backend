@@ -240,7 +240,7 @@ public class FileTransferController {
         String errorCode = "";
         String errorMessage = "";
 
-        String walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(signedTransactionHex);
+        String walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(fileTransferUuid, signedTransactionHex, step);
 
         String prefix = walletAddress.substring(0, 2);
         if (prefix.equals("0x")) {

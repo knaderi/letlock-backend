@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
-import com.landedexperts.letlock.filetransfer.backend.controller.FileTransferController;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
 
@@ -23,45 +21,55 @@ public class DBGatewayService extends BlockChainGatewayService {
     
     private String senderWalletAddress;
     private String receiverWalletAddress;
-    private String transactionHash;
 
     public DBGatewayService() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     @Override
-    public String getWalletAddressFromTransaction(String transaction) throws Exception {
+    public String getWalletAddressFromTransaction(UUID fileTransferUuid, String transaction, String step) throws Exception {
+        return getWalletAddressForStep(step);
 
         // should be able to find it using the db. However in GoChain engine uses the
         // call below:
         // web3.eth.accounts.recoverTransaction(transaction)
-        return transaction;
+//        return transaction;
+    }
+
+    private String getWalletAddressForStep(String step) {
+        if(step.equals("step_2_send_doc_info")) {
+            return senderWalletAddress;
+        }
+        return receiverWalletAddress;
     }
 
     @Override
     public TransactionHashResponse getTransactionStatus(String transactionHash) throws Exception {
         TransactionHashResponse returnValue = new TransactionHashResponse();
         returnValue.setStatus("completed");
-        returnValue.setTransactionHash("12345678");
+        returnValue.setTransactionHash(transactionHash);
         returnValue.setErrorCode("NO_ERROR");
         returnValue.setErrorMessage("");
         return returnValue;
     }
 
     @Override
-    public boolean deploySmartContract(UUID fileTransferUuid, String senderWalletAddress, String receiverWalletAddress) throws Exception {
+    public boolean deploySmartContract(UUID fileTransferUuid, String senderAddress, String receiverAddress) throws Exception {
+
         // TODO: return a random mock smart contract address
 //        "SELECT" +
 //        " gochain.file_transfer_set_contract_address(" +
 //        " $1," +
 //        " DECODE( $2, 'hex' )" +
 //        " )",
-        this.senderWalletAddress = senderWalletAddress;
-        this.receiverWalletAddress = senderWalletAddress;
-        String smartContractAddres = senderWalletAddress.substring(0, 2).equals("0x") ? senderWalletAddress.substring(2)
-                : senderWalletAddress;
+        this.senderWalletAddress = senderAddress.substring(0, 2).equals("0x") ? senderAddress.substring(2)
+                : senderAddress;
+        this.receiverWalletAddress = receiverAddress.substring(0, 2).equals("0x") ? receiverAddress.substring(2)
+                : receiverAddress;
+        String smartContractAddres = receiverWalletAddress;
         ErrorCodeMessageVO answer = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, smartContractAddres);
+        fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, receiverWalletAddress, "step_1_rec_pubkey", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
+       // fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, senderWalletAddress, "step_2_send_doc_info", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
         // BooleanVO returnValue =
         // fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid,
         // "BB9bc244D798123fDe783fCc1C72d3Bb8C189413");
@@ -77,24 +85,8 @@ public class DBGatewayService extends BlockChainGatewayService {
 
     @Override
     public String fund(UUID fileTransferUuid, String signedTransactionHex, String step) throws Exception {
-
-//        client.query(
-//                "SELECT" +
-//                " gochain.file_transfer_set_funding_step_pending(" +
-//                " $1," +
-//                " DECODE( $2, 'hex' )," +
-//                " $3" +
-//                " )",
-
-//        client.query(
-//                "SELECT" +
-//                " gochain.file_transfer_set_funding_step_completed(" +
-//                " $1," +
-//                " DECODE( $2, 'hex' )," +
-//                " $3," +
-//                " DECODE($4, 'hex')" +
-//                " )",
-        return signedTransactionHex;
+        fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, getWalletAddressForStep(step), step, signedTransactionHex);
+        return signedTransactionHex + "zzz";
     }
 
 //    client.query(

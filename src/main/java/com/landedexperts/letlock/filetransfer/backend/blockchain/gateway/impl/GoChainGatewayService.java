@@ -31,7 +31,7 @@ public class GoChainGatewayService extends BlockChainGatewayService {
      * IBlockChainGatewayService#getWalletAddressFromTransaction(java.lang.String)
      */
     @Override
-    public String getWalletAddressFromTransaction(String transaction) throws Exception {
+    public String getWalletAddressFromTransaction(UUID fileTransferUuid, String transaction, String step) throws Exception {
         HttpURLConnection urlConnection = getURLConnection("http://localhost:3001/fetch_wallet_address");
         WalletAddress walletAddressJson = null;
         try {
