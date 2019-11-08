@@ -20,11 +20,14 @@ import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferSessionVO;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferSessionsVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.UuidNameDateVO;
 import com.landedexperts.letlock.filetransfer.backend.response.ConsumeResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.FileTransferReadResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.FileTransferSession;
+import com.landedexperts.letlock.filetransfer.backend.response.GetFileTransferSessionsForUserResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.UuidNameDate;
 import com.landedexperts.letlock.filetransfer.backend.response.UuidNameDateArrayResponse;
@@ -128,6 +131,48 @@ public class FileTransferController {
 
         return new ErrorCodeMessageResponse(errorCode, errorMessage);
     }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_sessions_for_user", produces = { "application/JSON" })
+    public GetFileTransferSessionsForUserResponse getFileTransferSessionsForUser(@RequestParam(value = "token") final String token) throws Exception {
+        logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
+
+        FileTransferSession[] value = null;
+        String errorCode = "TOKEN_INVALID";
+        String errorMessage = "Invalid token";
+
+        Integer userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            FileTransferSessionsVO[] answer = fileTransferMapper.getFileTransferSessionsForUser(userId);            
+
+            value = new FileTransferSession[answer.length];
+            for (int i = 0; i < answer.length; i++) {
+            	FileTransferSessionsVO item = answer[i];
+                value[i] = new FileTransferSession(
+                		item.getFileTransferUuid(),
+                		item.getSenderLoginName(),
+                		item.getSenderWalletAddressUuid(),
+                		item.getSenderWalletAddress(),
+                		item.getReceiverLoginName(),
+                		item.getReceiverWalletAddressUuid(),
+                		item.getReceiverWalletAddress(),
+                		item.getSmartContractAddress(),
+                		item.getFunding1RecPubkeyStatus(),
+                		item.getFunding1RecPubkeyTransactionHash(),
+                		item.getFunding2SendDocinfoStatus(),
+                		item.getFunding2SendDocinfoTransactionHash(),
+                		item.getFunding3RecFinalStatus(),
+                		item.getFunding3RecFinalTransactionHash(),
+                		item.getFileTransferIsActive(),
+                		item.getFileTransferCreate(),
+                		item.getFileTransferUpdate()
+                		);
+            }
+            errorCode = "NO_ERROR";
+            errorMessage = "";
+        }
+
+        return new GetFileTransferSessionsForUserResponse(value, errorCode, errorMessage);
+    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_status", produces = { "application/JSON" })
     public FileTransferReadResponse getFileTransferStatus(@RequestParam(value = "token") final String token,
@@ -176,10 +221,26 @@ public class FileTransferController {
             errorMessage = answer.getErrorMessage();
         }
 
-        return new FileTransferReadResponse(senderLoginName, senderWalletAddressUuid, senderWalletAddress, receiverLoginName,
-                receiverWalletAddressUuid, receiverWalletAddress, smartContractAddress, funding1RecPubkeyStatus,
-                funding1RecPubkeyTransactionHash, funding2SendDocinfoStatus, funding2SendDocinfoTransactionHash, funding3RecFinalStatus,
-                funding3RecFinalTransactionHash, fileTransferIsActive, fileTransferCreate, fileTransferUpdate, errorCode, errorMessage);
+        return new FileTransferReadResponse(
+        		senderLoginName, 
+        		senderWalletAddressUuid, 
+        		senderWalletAddress, 
+        		receiverLoginName,
+                receiverWalletAddressUuid, 
+                receiverWalletAddress, 
+                smartContractAddress, 
+                funding1RecPubkeyStatus,
+                funding1RecPubkeyTransactionHash, 
+                funding2SendDocinfoStatus, 
+                funding2SendDocinfoTransactionHash, 
+                funding3RecFinalStatus,
+                funding3RecFinalTransactionHash, 
+                fileTransferIsActive, 
+                fileTransferCreate, 
+                fileTransferUpdate, 
+                errorCode, 
+                errorMessage
+        		);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_receiver_address", produces = { "application/JSON" })
