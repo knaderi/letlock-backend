@@ -167,12 +167,6 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
     public void getFileTransferSessionsForUserWithNoTransferSessionsTest() throws Exception {
         Faker faker = new Faker();
 
-        // create a random user as receiver
-        String receiverFirstName = faker.name().firstName() + faker.name().firstName();
-        String receiverEmail = faker.internet().emailAddress();
-        String receiverPassword = receiverFirstName + '!';
-        registerUser(receiverFirstName, receiverEmail, receiverPassword);
-
         // create a random user as sender
         String senderFirstName = faker.name().firstName() + faker.name().firstName();
         String senderEmail = faker.internet().emailAddress();
