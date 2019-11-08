@@ -35,17 +35,17 @@ import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 public class FileTransferController {
     @Autowired
     FileTransferMapper fileTransferMapper;
-    
+
     @Value("${blockchain.gateway.type}")
     private String blockchainGatewayType;
-    
 
     @Autowired
     BlockChainGatewayServiceFactory blockChainGatewayServiceFactory;
 
     private final Logger logger = LoggerFactory.getLogger(FileTransferController.class);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/start_file_transfer_session", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/start_file_transfer_session", produces = {
+            "application/JSON" })
     public ConsumeResponse startFileTransferSession(@RequestParam(value = "token") final String token,
             @RequestParam(value = "wallet_address") final String walletAddress,
             @RequestParam(value = "receiver_login_name") final String receiverLoginName) throws Exception {
@@ -57,10 +57,11 @@ public class FileTransferController {
 
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2) : walletAddress;
+            String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
+                    : walletAddress;
 
-            FileTransferSessionVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId, walletAddressTrimmed,
-                    receiverLoginName);
+            FileTransferSessionVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId,
+                    walletAddressTrimmed, receiverLoginName);
 
             fileTransferUuid = answer.getFileTransferUuid();
             walletAddressUuid = answer.getWalletAddressUuid();
@@ -71,8 +72,10 @@ public class FileTransferController {
         return new ConsumeResponse(fileTransferUuid, walletAddressUuid, errorCode, errorMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/is_file_transfer_waiting_receiver_address", produces = { "application/JSON" })
-    public UuidNameDateArrayResponse isFileTransferWaitingForReceiverAddress(@RequestParam(value = "token") final String token) {
+    @RequestMapping(method = RequestMethod.POST, value = "/is_file_transfer_waiting_receiver_address", produces = {
+            "application/JSON" })
+    public UuidNameDateArrayResponse isFileTransferWaitingForReceiverAddress(
+            @RequestParam(value = "token") final String token) {
         logger.info("FileTransferController.isFileTransferWaitingForReceiverAddress called for token " + token);
         UuidNameDate[] value = null;
         String errorCode = "TOKEN_INVALID";
@@ -84,7 +87,8 @@ public class FileTransferController {
 
             value = new UuidNameDate[answer.length];
             for (int i = 0; i < answer.length; i++) {
-                value[i] = new UuidNameDate(UUID.fromString(answer[i].getUuid()), answer[i].getName(), answer[i].getCreate());
+                value[i] = new UuidNameDate(UUID.fromString(answer[i].getUuid()), answer[i].getName(),
+                        answer[i].getCreate());
             }
             errorCode = "NO_ERROR";
             errorMessage = "";
@@ -93,7 +97,8 @@ public class FileTransferController {
         return new UuidNameDateArrayResponse(value, errorCode, errorMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_as_activate", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_as_activate", produces = {
+            "application/JSON" })
     public ErrorCodeMessageResponse setFileTransferAsActive(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileTransferController.setFileTransferAsActive called for token " + token);
@@ -111,7 +116,8 @@ public class FileTransferController {
         return new ErrorCodeMessageResponse(errorCode, errorMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_inactive", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_inactive", produces = {
+            "application/JSON" })
     public ErrorCodeMessageResponse setFileTransferInactive(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileTransferController.setFileTransferInactive called for token " + token);
@@ -127,6 +133,39 @@ public class FileTransferController {
         }
 
         return new ErrorCodeMessageResponse(errorCode, errorMessage);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_sessions_for_user", produces = {
+            "application/JSON" })
+    public GetFileTransferSessionsForUserResponse getFileTransferSessionsForUser(
+            @RequestParam(value = "token") final String token) throws Exception {
+        logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
+
+        FileTransferSession[] value = null;
+        String errorCode = "TOKEN_INVALID";
+        String errorMessage = "Invalid token";
+
+        Integer userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            FileTransferSessionsVO[] answer = fileTransferMapper.getFileTransferSessionsForUser(userId);
+
+            value = new FileTransferSession[answer.length];
+            for (int i = 0; i < answer.length; i++) {
+                FileTransferSessionsVO item = answer[i];
+                value[i] = new FileTransferSession(item.getFileTransferUuid(), item.getSenderLoginName(),
+                        item.getSenderWalletAddressUuid(), item.getSenderWalletAddress(), item.getReceiverLoginName(),
+                        item.getReceiverWalletAddressUuid(), item.getReceiverWalletAddress(),
+                        item.getSmartContractAddress(), item.getFunding1RecPubkeyStatus(),
+                        item.getFunding1RecPubkeyTransactionHash(), item.getFunding2SendDocinfoStatus(),
+                        item.getFunding2SendDocinfoTransactionHash(), item.getFunding3RecFinalStatus(),
+                        item.getFunding3RecFinalTransactionHash(), item.getFileTransferIsActive(),
+                        item.getFileTransferCreate(), item.getFileTransferUpdate());
+            }
+            errorCode = "NO_ERROR";
+            errorMessage = "";
+        }
+
+        return new GetFileTransferSessionsForUserResponse(value, errorCode, errorMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_status", produces = { "application/JSON" })
@@ -176,13 +215,15 @@ public class FileTransferController {
             errorMessage = answer.getErrorMessage();
         }
 
-        return new FileTransferReadResponse(senderLoginName, senderWalletAddressUuid, senderWalletAddress, receiverLoginName,
-                receiverWalletAddressUuid, receiverWalletAddress, smartContractAddress, funding1RecPubkeyStatus,
-                funding1RecPubkeyTransactionHash, funding2SendDocinfoStatus, funding2SendDocinfoTransactionHash, funding3RecFinalStatus,
-                funding3RecFinalTransactionHash, fileTransferIsActive, fileTransferCreate, fileTransferUpdate, errorCode, errorMessage);
+        return new FileTransferReadResponse(senderLoginName, senderWalletAddressUuid, senderWalletAddress,
+                receiverLoginName, receiverWalletAddressUuid, receiverWalletAddress, smartContractAddress,
+                funding1RecPubkeyStatus, funding1RecPubkeyTransactionHash, funding2SendDocinfoStatus,
+                funding2SendDocinfoTransactionHash, funding3RecFinalStatus, funding3RecFinalTransactionHash,
+                fileTransferIsActive, fileTransferCreate, fileTransferUpdate, errorCode, errorMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_receiver_address", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_receiver_address", produces = {
+            "application/JSON" })
     public UuidResponse setFileTransferReceiverAddress(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "wallet_address") final String walletAddress) throws Exception {
@@ -193,22 +234,25 @@ public class FileTransferController {
 
         int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2) : walletAddress;
+            String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
+                    : walletAddress;
 
-            GochainAddressVO answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid, walletAddressTrimmed);
+            GochainAddressVO answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid,
+                    walletAddressTrimmed);
 
             walletAddressUuid = answer.getGochainAddress();
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();
 
             if (errorCode.equals("NO_ERROR")) {
-                FileTransferInfoVO fileTransferInfo = fileTransferMapper.getUserFileTransferInfo(userId, fileTransferUuid);
+                FileTransferInfoVO fileTransferInfo = fileTransferMapper.getUserFileTransferInfo(userId,
+                        fileTransferUuid);
                 String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
                 String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
 
                 @SuppressWarnings("unused")
-                boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid, "0x" + senderWalletAddress,
-                        "0x" + receiverWalletAddress);
+                boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
+                        "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
             }
         }
 
@@ -226,7 +270,7 @@ public class FileTransferController {
         if (userId > 0) {
             transactionHashResponse = getBlockChainGateWayService().getTransactionStatus(transactionHash);
 
-        }else {
+        } else {
             transactionHashResponse = new TransactionHashResponse(errorCode, errorMessage);
         }
         return transactionHashResponse;
@@ -240,14 +284,16 @@ public class FileTransferController {
         String errorCode = "";
         String errorMessage = "";
 
-        String walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(fileTransferUuid, signedTransactionHex, step);
+        String walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(fileTransferUuid,
+                signedTransactionHex, step);
 
         String prefix = walletAddress.substring(0, 2);
         if (prefix.equals("0x")) {
             walletAddress = walletAddress.substring(2);
         }
 
-        BooleanVO isAvailable = fileTransferMapper.setFileTransferStepAvailability(fileTransferUuid, walletAddress, step);
+        BooleanVO isAvailable = fileTransferMapper.setFileTransferStepAvailability(fileTransferUuid, walletAddress,
+                step);
 
         errorCode = isAvailable.getErrorCode();
         errorMessage = isAvailable.getErrorMessage();
@@ -261,7 +307,8 @@ public class FileTransferController {
     }
 
     private BlockChainGatewayService getBlockChainGateWayService() {
-        BlockChainGatewayServiceTypeEnum blockchainGatewayServiceType = BlockChainGatewayServiceTypeEnum.fromValue(blockchainGatewayType);
+        BlockChainGatewayServiceTypeEnum blockchainGatewayServiceType = BlockChainGatewayServiceTypeEnum
+                .fromValue(blockchainGatewayType);
         return blockChainGatewayServiceFactory.createGatewayService(blockchainGatewayServiceType);
     }
 }

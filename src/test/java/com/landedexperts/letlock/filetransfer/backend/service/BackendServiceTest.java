@@ -19,19 +19,16 @@ import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 
 public class BackendServiceTest extends AbstractTest implements BackendTestConstants {
 
+    private static ResultMatcher ok = MockMvcResultMatchers.status().isOk();
 
-	private static ResultMatcher ok = MockMvcResultMatchers.status().isOk();
-
-
-	@Override
-	@Before
-	public void setUp() {
-		super.setUp();
-	}
-
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
 
     @Test
-    public void registerTest() throws Exception {        
+    public void registerTest() throws Exception {
         String uri = "/register";
 
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
@@ -43,7 +40,6 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         assertTrue(content.contains("\"result\":false"));
         assertTrue(content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
     }
-    
 
     @Test
     public void loginTest() throws Exception {
@@ -140,8 +136,9 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 
     private void changePassword(String loginName, String oldPassword, String newPassword) throws Exception {
         String uri = "/update_user_password";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName)
-                .param("oldPassword", oldPassword).param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc.perform(
+                MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("oldPassword", oldPassword)
+                        .param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -151,5 +148,57 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         assertTrue(content.contains("\"result\":true"));
     }
 
+    @Test
+    public void getFileTransferSessionsForUserWithNoTransferSessionsTest() throws Exception {
+        Faker faker = new Faker();
 
+        // create a random user as sender
+        String senderFirstName = faker.name().firstName() + faker.name().firstName();
+        String senderEmail = faker.internet().emailAddress();
+        String senderPassword = senderFirstName + '!';
+        registerUser(senderFirstName, senderEmail, senderPassword);
+
+        // login the sender and get token
+        String senderToken = loginUser(senderEmail, senderPassword);
+
+        String uri = "/get_file_transfer_sessions_for_user";
+        ResultActions resultAction = mvc.perform(
+                MockMvcRequestBuilders.post(uri).param("token", senderToken).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue(content.length() > 0);
+        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue(content.contains("\"errorMessage\":\"\""));
+        assertTrue(content.contains("\"value\":[]"));
+    }
+
+    @Test
+    public void getFileTransferSessionsForUserWith1TransferSessionTest() throws Exception {
+        // Faker faker = new Faker();
+
+        // // create a random user as receiver
+        // String receiverFirstName = faker.name().firstName() +
+        // faker.name().firstName();
+        // String receiverEmail = faker.internet().emailAddress();
+        // String receiverPassword = receiverFirstName + '!';
+        // registerUser(receiverFirstName, receiverEmail, receiverPassword);
+
+        // // create a random user as sender
+        // String senderFirstName = faker.name().firstName() + faker.name().firstName();
+        // String senderEmail = faker.internet().emailAddress();
+        // String senderPassword = senderFirstName + '!';
+        // registerUser(senderFirstName, senderEmail, senderPassword);
+
+        // // login the sender and get token
+        // String senderToken = loginUser(senderEmail, senderPassword);
+
+        // TODO: create a test with transfer session
+        // currently we cannot start a FileTransferSession because we have no access to
+        // gochain
+        // we will implement this test once db_gateway is completed
+    }
 }
