@@ -2,7 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.vo;
 
 import java.util.Date;
 
-public class FileTransferSessionsVO {
+public class FileTransferInfoRecord {
 	private String fileTransferUuid;
 	private String senderLoginName;
 	private String senderWalletAddressUuid;
@@ -20,7 +20,7 @@ public class FileTransferSessionsVO {
 	private boolean fileTransferIsActive;
 	private Date fileTransferCreate;
 	private Date fileTransferUpdate;
-
+	
 	public String getFileTransferUuid() {
 		return fileTransferUuid;
 	}
@@ -133,7 +133,7 @@ public class FileTransferSessionsVO {
 		this.funding3RecFinalTransactionHash = funding3RecFinalTransactionHash;
 	}
 
-	public boolean getFileTransferIsActive() {
+	public boolean isFileTransferIsActive() {
 		return fileTransferIsActive;
 	}
 

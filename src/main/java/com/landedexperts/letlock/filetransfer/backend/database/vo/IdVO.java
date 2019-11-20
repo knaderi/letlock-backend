@@ -1,6 +1,8 @@
 package com.landedexperts.letlock.filetransfer.backend.database.vo;
 
-public class IdVO extends ErrorCodeMessageVO {
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
+
+public class IdVO extends ErrorCodeMessageResponse {
 	private int id;
 
 	public int getId() {

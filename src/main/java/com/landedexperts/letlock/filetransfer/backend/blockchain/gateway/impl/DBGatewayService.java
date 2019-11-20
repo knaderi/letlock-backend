@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
 
 @Service
@@ -67,7 +67,7 @@ public class DBGatewayService extends BlockChainGatewayService {
         this.receiverWalletAddress = receiverAddress.substring(0, 2).equals("0x") ? receiverAddress.substring(2)
                 : receiverAddress;
         String smartContractAddres = receiverWalletAddress;
-        ErrorCodeMessageVO answer = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, smartContractAddres);
+        ErrorCodeMessageResponse answer = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, smartContractAddres);
         fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, receiverWalletAddress, "step_1_rec_pubkey", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
        // fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, senderWalletAddress, "step_2_send_doc_info", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
         // BooleanVO returnValue =

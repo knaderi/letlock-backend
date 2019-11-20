@@ -3,8 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.database.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 
 public interface PaymentMapper {
 	@Select(
@@ -27,7 +27,7 @@ public interface PaymentMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.payment_process_failure( #{ userId }, #{ paymentId } )"
 	)
-	ErrorCodeMessageVO paymentProcessFailure(
+	ErrorCodeMessageResponse paymentProcessFailure(
 		@Param("userId") int userId,
 		@Param("paymentId") int paymentId
 	);
@@ -38,7 +38,7 @@ public interface PaymentMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.payment_process_success( #{ userId }, #{ paymentId } )"
 	)
-	ErrorCodeMessageVO paymentProcessSuccess(
+	ErrorCodeMessageResponse paymentProcessSuccess(
 		@Param("userId") int userId,
 		@Param("paymentId") int paymentId
 	);

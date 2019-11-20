@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanPathnameVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 
 public interface FileMapper {
 	@Select(
@@ -44,7 +44,7 @@ public interface FileMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM \"storage\".set_file_downloaded( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageVO setFileDownloaded(
+	ErrorCodeMessageResponse setFileDownloaded(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);
@@ -55,7 +55,7 @@ public interface FileMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM \"storage\".delete_file( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageVO deleteFile(
+	ErrorCodeMessageResponse deleteFile(
 			@Param("userId") int userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);

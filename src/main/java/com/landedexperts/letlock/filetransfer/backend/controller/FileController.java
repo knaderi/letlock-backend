@@ -25,9 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanPathnameVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
@@ -147,7 +147,7 @@ public class FileController {
 
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            ErrorCodeMessageVO answer = fileMapper.deleteFile(userId, fileTransferUuid);
+        	ErrorCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();

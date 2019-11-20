@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderDetailMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.OrderDetailResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
@@ -53,7 +53,7 @@ public class OrderDetailController {
 
         int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            ErrorCodeMessageVO answer = orderDetailMapper.updateOrderDetail(userId, orderDetailId, quantity);
+        	ErrorCodeMessageResponse answer = orderDetailMapper.updateOrderDetail(userId, orderDetailId, quantity);
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();
@@ -73,7 +73,7 @@ public class OrderDetailController {
 
         int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            ErrorCodeMessageVO answer = orderDetailMapper.deleteOrderDetail(userId, orderDetailId);
+        	ErrorCodeMessageResponse answer = orderDetailMapper.deleteOrderDetail(userId, orderDetailId);
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();

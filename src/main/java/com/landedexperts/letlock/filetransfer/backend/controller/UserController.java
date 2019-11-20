@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
@@ -92,7 +92,7 @@ public class UserController {
             @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword)
             throws Exception {
         logger.info("UserController.updateUserPassword called for loginName " + loginName);
-        ErrorCodeMessageVO answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword);
+        ErrorCodeMessageResponse answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword);
 
         String errorCode = answer.getErrorCode();
         String errorMessage = answer.getErrorMessage();

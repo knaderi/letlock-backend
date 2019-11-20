@@ -2,149 +2,148 @@ package com.landedexperts.letlock.filetransfer.backend.database.vo;
 
 import java.util.Date;
 
-public class FileTransferInfoVO extends ErrorCodeMessageVO {
-	private String senderLoginName;
-	private String senderWalletAddressUuid;
-	private String senderWalletAddress;
-	private String receiverLoginName;
-	private String receiverWalletAddressUuid;
-	private String receiverWalletAddress;
-	private String smartContractAddress;
-	private String funding1RecPubkeyStatus;
-	private String funding1RecPubkeyTransactionHash;
-	private String funding2SendDocinfoStatus;
-	private String funding2SendDocinfoTransactionHash;
-	private String funding3RecFinalStatus;
-	private String funding3RecFinalTransactionHash;
-	private boolean fileTransferIsActive;
-	private Date fileTransferCreate;
-	private Date fileTransferUpdate;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 
+public class FileTransferInfoVO extends ErrorCodeMessageResponse {
+	FileTransferInfoRecord fileTransferInfoRecord = new FileTransferInfoRecord();
+
+	public FileTransferInfoRecord getFileTransferInfoRecord() {
+		return fileTransferInfoRecord;
+	}
+
+	public String getFileTransferUuid() {
+		return fileTransferInfoRecord.getFileTransferUuid();
+	}
+
+	public void setFileTransferUuid(String fileTransferUuid) {
+		fileTransferInfoRecord.setFileTransferUuid(fileTransferUuid);
+	}
+	
 	public String getSenderLoginName() {
-		return senderLoginName;
+		return fileTransferInfoRecord.getSenderLoginName();
 	}
 
 	public void setSenderLoginName(String senderLoginName) {
-		this.senderLoginName = senderLoginName;
+		fileTransferInfoRecord.setSenderLoginName(senderLoginName);
 	}
 	
 	public String getSenderWalletAddressUuid() {
-		return senderWalletAddressUuid;
+		return fileTransferInfoRecord.getSenderWalletAddressUuid();
 	}
 
 	public void setSenderWalletAddressUuid(String senderWalletAddressUuid) {
-		this.senderWalletAddressUuid = senderWalletAddressUuid;
+		fileTransferInfoRecord.setSenderWalletAddressUuid(senderWalletAddressUuid);
 	}
 
 	public String getSenderWalletAddress() {
-		return senderWalletAddress;
+		return fileTransferInfoRecord.getSenderWalletAddress();
 	}
 
 	public void setSenderWalletAddress(String senderWalletAddress) {
-		this.senderWalletAddress = senderWalletAddress;
+		fileTransferInfoRecord.setSenderWalletAddress(senderWalletAddress);
 	}
 
 	public String getReceiverLoginName() {
-		return receiverLoginName;
+		return fileTransferInfoRecord.getReceiverLoginName();
 	}
 
 	public void setReceiverLoginName(String receiverLoginName) {
-		this.receiverLoginName = receiverLoginName;
+		fileTransferInfoRecord.setReceiverLoginName(receiverLoginName);
 	}
 
 	public String getReceiverWalletAddressUuid() {
-		return receiverWalletAddressUuid;
+		return fileTransferInfoRecord.getReceiverWalletAddressUuid();
 	}
 
 	public void setReceiverWalletAddressUuid(String receiverWalletAddressUuid) {
-		this.receiverWalletAddressUuid = receiverWalletAddressUuid;
+		fileTransferInfoRecord.setReceiverWalletAddressUuid(receiverWalletAddressUuid);
 	}
 
 	public String getReceiverWalletAddress() {
-		return receiverWalletAddress;
+		return fileTransferInfoRecord.getReceiverWalletAddress();
 	}
 
 	public void setReceiverWalletAddress(String receiverWalletAddress) {
-		this.receiverWalletAddress = receiverWalletAddress;
+		fileTransferInfoRecord.setReceiverWalletAddress(receiverWalletAddress);
 	}
 
 	public String getSmartContractAddress() {
-		return smartContractAddress;
+		return fileTransferInfoRecord.getSmartContractAddress();
 	}
 
 	public void setSmartContractAddress(String smartContractAddress) {
-		this.smartContractAddress = smartContractAddress;
+		fileTransferInfoRecord.setSmartContractAddress(smartContractAddress);
 	}
 
 	public String getFunding1RecPubkeyStatus() {
-		return funding1RecPubkeyStatus;
+		return fileTransferInfoRecord.getFunding1RecPubkeyStatus();
 	}
 
 	public void setFunding1RecPubkeyStatus(String funding1RecPubkeyStatus) {
-		this.funding1RecPubkeyStatus = funding1RecPubkeyStatus;
+		fileTransferInfoRecord.setFunding1RecPubkeyStatus(funding1RecPubkeyStatus);
 	}
 
 	public String getFunding1RecPubkeyTransactionHash() {
-		return funding1RecPubkeyTransactionHash;
+		return fileTransferInfoRecord.getFunding1RecPubkeyTransactionHash();
 	}
 
 	public void setFunding1RecPubkeyTransactionHash(String funding1RecPubkeyTransactionHash) {
-		this.funding1RecPubkeyTransactionHash = funding1RecPubkeyTransactionHash;
+		fileTransferInfoRecord.setFunding1RecPubkeyTransactionHash(funding1RecPubkeyTransactionHash);
 	}
 
 	public String getFunding2SendDocinfoStatus() {
-		return funding2SendDocinfoStatus;
+		return fileTransferInfoRecord.getFunding2SendDocinfoStatus();
 	}
 
 	public void setFunding2SendDocinfoStatus(String funding2SendDocinfoStatus) {
-		this.funding2SendDocinfoStatus = funding2SendDocinfoStatus;
+		fileTransferInfoRecord.setFunding2SendDocinfoStatus(funding2SendDocinfoStatus);
 	}
 
 	public String getFunding2SendDocinfoTransactionHash() {
-		return funding2SendDocinfoTransactionHash;
+		return fileTransferInfoRecord.getFunding2SendDocinfoTransactionHash();
 	}
 
 	public void setFunding2SendDocinfoTransactionHash(String funding2SendDocinfoTransactionHash) {
-		this.funding2SendDocinfoTransactionHash = funding2SendDocinfoTransactionHash;
+		fileTransferInfoRecord.setFunding2SendDocinfoTransactionHash(funding2SendDocinfoTransactionHash);
 	}
 
 	public String getFunding3RecFinalStatus() {
-		return funding3RecFinalStatus;
+		return fileTransferInfoRecord.getFunding3RecFinalStatus();
 	}
 
 	public void setFunding3RecFinalStatus(String funding3RecFinalStatus) {
-		this.funding3RecFinalStatus = funding3RecFinalStatus;
+		fileTransferInfoRecord.setFunding3RecFinalStatus(funding3RecFinalStatus);
 	}
 
 	public String getFunding3RecFinalTransactionHash() {
-		return funding3RecFinalTransactionHash;
+		return fileTransferInfoRecord.getFunding3RecFinalTransactionHash();
 	}
 
 	public void setFunding3RecFinalTransactionHash(String funding3RecFinalTransactionHash) {
-		this.funding3RecFinalTransactionHash = funding3RecFinalTransactionHash;
+		fileTransferInfoRecord.setFunding3RecFinalTransactionHash(funding3RecFinalTransactionHash);
 	}
 
 	public boolean isFileTransferIsActive() {
-		return fileTransferIsActive;
+		return fileTransferInfoRecord.isFileTransferIsActive();
 	}
 
 	public void setFileTransferIsActive(boolean fileTransferIsActive) {
-		this.fileTransferIsActive = fileTransferIsActive;
+		fileTransferInfoRecord.setFileTransferIsActive(fileTransferIsActive);
 	}
 
 	public Date getFileTransferCreate() {
-		return fileTransferCreate;
+		return fileTransferInfoRecord.getFileTransferCreate();
 	}
 
 	public void setFileTransferCreate(Date fileTransferCreate) {
-		this.fileTransferCreate = fileTransferCreate;
+		fileTransferInfoRecord.setFileTransferCreate(fileTransferCreate);
 	}
 
 	public Date getFileTransferUpdate() {
-		return fileTransferUpdate;
+		return fileTransferInfoRecord.getFileTransferUpdate();
 	}
 
 	public void setFileTransferUpdate(Date fileTransferUpdate) {
-		this.fileTransferUpdate = fileTransferUpdate;
+		fileTransferInfoRecord.setFileTransferUpdate(fileTransferUpdate);
 	}
 }

@@ -3,8 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.database.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 
 public interface OrderDetailMapper {
 	@Select(
@@ -27,7 +27,7 @@ public interface OrderDetailMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.update_order_detail( #{ userId }, #{ orderDetailId }, #{ quantity } )"
 	)
-	ErrorCodeMessageVO updateOrderDetail(
+	ErrorCodeMessageResponse updateOrderDetail(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId,
 		@Param("quantity") short quantity
@@ -39,7 +39,7 @@ public interface OrderDetailMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_detail_delete( #{ userId }, #{ orderDetailId } )"
 	)
-	ErrorCodeMessageVO deleteOrderDetail(
+	ErrorCodeMessageResponse deleteOrderDetail(
 		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId
 	);

@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.OrderResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
@@ -50,7 +50,7 @@ public class OrderController {
 
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            ErrorCodeMessageVO answer = orderMapper.changeStatusInitiatedToCancelled(userId, orderId);
+        	ErrorCodeMessageResponse answer = orderMapper.changeStatusInitiatedToCancelled(userId, orderId);
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();
@@ -71,7 +71,7 @@ public class OrderController {
 
         Integer userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            ErrorCodeMessageVO answer = orderMapper.changeStatusCancelledToInitiated(userId, orderId);
+        	ErrorCodeMessageResponse answer = orderMapper.changeStatusCancelledToInitiated(userId, orderId);
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();

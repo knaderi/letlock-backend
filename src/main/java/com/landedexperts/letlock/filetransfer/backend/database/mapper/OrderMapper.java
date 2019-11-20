@@ -3,8 +3,8 @@ package com.landedexperts.letlock.filetransfer.backend.database.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 
 public interface OrderMapper {
 	@Select(
@@ -22,7 +22,7 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_initiated_to_cancelled( #{ userId }, #{ orderId } )"
 	)
-	ErrorCodeMessageVO changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
+	ErrorCodeMessageResponse changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
 
 	@Select(
 		"SELECT"
@@ -30,5 +30,5 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_cancelled_to_initiated( #{ userId }, #{ orderId } )"
 	)
-	ErrorCodeMessageVO changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
+	ErrorCodeMessageResponse changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
 }

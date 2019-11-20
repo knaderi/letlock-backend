@@ -1,22 +1,20 @@
 package com.landedexperts.letlock.filetransfer.backend.response;
 
-import java.util.UUID;
-
 public class ConsumeResponse extends ErrorCodeMessageResponse {
-	private final UUID fileTransferUuid;
-	private final UUID walletAddressUuid;
+	private final String fileTransferUuid;
+	private final String walletAddressUuid;
 
-	public ConsumeResponse(final UUID fileTransferUuid, final UUID walletAddressUuid, final String errorCode, final String errorMessage) {
+	public ConsumeResponse(final String fileTransferUuid, final String walletAddressUuid, final String errorCode, final String errorMessage) {
 		super(errorCode, errorMessage);
 		this.fileTransferUuid = fileTransferUuid;
 		this.walletAddressUuid = walletAddressUuid;
 	}
 
-	public UUID getFileTransferUuid() {
+	public String getFileTransferUuid() {
 		return this.fileTransferUuid;
 	}
 
-	public UUID getWalletAddressUuid() {
+	public String getWalletAddressUuid() {
 		return this.walletAddressUuid;
 	}
 }

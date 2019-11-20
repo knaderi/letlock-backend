@@ -5,8 +5,8 @@ import org.apache.ibatis.annotations.Select;
 
 import com.landedexperts.letlock.filetransfer.backend.database.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 
 public interface UserMapper {
 	@Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
@@ -28,11 +28,11 @@ public interface UserMapper {
 
 	@Select("SELECT" + " _error_code AS errorCode," + " _error_message AS errorMessage"
 			+ " FROM \"user\".update_user_password( #{ loginName } , #{ oldPassword } , #{ newPassword } )")
-	ErrorCodeMessageVO updateUserPassword(@Param("loginName") String loginName, @Param("oldPassword") String oldPassword,
+	ErrorCodeMessageResponse updateUserPassword(@Param("loginName") String loginName, @Param("oldPassword") String oldPassword,
 			@Param("newPassword") String newPassword);
 
 	@Select("SELECT" + " _error_code AS errorCode," + " _error_message AS errorMessage"
 			+ " FROM \"user\".update_user_status( #{ userId } , #{ status } )")
-	ErrorCodeMessageVO updateUserStatus(@Param("userId") int userId, @Param("status") String status);
+	ErrorCodeMessageResponse updateUserStatus(@Param("userId") int userId, @Param("status") String status);
 
 }

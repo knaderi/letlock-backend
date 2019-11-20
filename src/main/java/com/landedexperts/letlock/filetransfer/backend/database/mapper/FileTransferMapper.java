@@ -6,9 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferSessionVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferSessionsVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.ErrorCodeMessageVO;
+import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferInfoRecord;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
@@ -23,7 +22,7 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM \"user\".insert_start_file_transfer_session_record( #{ userId } , DECODE( #{ walletAddress } , 'hex'), #{ receiverLoginName } )"
 	)
-	FileTransferSessionVO insertFileTransferSessionRecord(
+	FileTransferInfoVO insertFileTransferSessionRecord(
 		@Param("userId") int userId,
 		@Param("walletAddress") String walletAddress,
 		@Param("receiverLoginName") String receiverLoginName
@@ -46,7 +45,7 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.set_file_transfer_to_active( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageVO setFileTransferAsActive(
+	ErrorCodeMessageResponse setFileTransferAsActive(
 		@Param("userId") int userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
@@ -57,13 +56,14 @@ public interface FileTransferMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM gochain.file_transfer_deactivate( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageVO setFileTransferInactive(
+	ErrorCodeMessageResponse setFileTransferInactive(
 		@Param("userId") int userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
 
 	@Select(
 		"SELECT"
+			+ " #{ fileTransferUuid } AS fileTransferUuid,"
 			+ " _sender_login_name AS senderLoginName,"
 			+ " CAST( _sender_wallet_address_uuid AS text ) AS senderWalletAddressUuid,"
 			+ " _sender_wallet_address AS senderWalletAddress,"
@@ -131,7 +131,7 @@ public interface FileTransferMapper {
 			+ " file_transfer_update_dt AS fileTransferUpdate"
 			+ " FROM gochain.get_file_transfer_sessions_for_user( #{ userId } )"
 		)
-		FileTransferSessionsVO[] getFileTransferSessionsForUser(
+			FileTransferInfoRecord[] getFileTransferSessionsForUser(
 			@Param("userId") int userId
 		);
 
@@ -188,7 +188,7 @@ public interface FileTransferMapper {
 					+ " CAST( #{ step } AS gochain.tp_funding_step ),"
 				+ " )"
 		)
-		ErrorCodeMessageVO fileTransferSetTransferStepPending(
+		ErrorCodeMessageResponse fileTransferSetTransferStepPending(
 			@Param("fileTransferUuid") UUID fileTransferUuid,
 			@Param("walletAddress") String walletAddress,
 			@Param("step") String step
