@@ -171,39 +171,6 @@ public class FileTransferController {
         return new GetFileTransferSessionsForUserResponse(value, errorCode, errorMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_sessions_for_user", produces = {
-            "application/JSON" })
-    public GetFileTransferSessionsForUserResponse getFileTransferSessionsForUser(
-            @RequestParam(value = "token") final String token) throws Exception {
-        logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
-
-        FileTransferSession[] value = null;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
-
-        Integer userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            FileTransferSessionsVO[] answer = fileTransferMapper.getFileTransferSessionsForUser(userId);
-
-            value = new FileTransferSession[answer.length];
-            for (int i = 0; i < answer.length; i++) {
-                FileTransferSessionsVO item = answer[i];
-                value[i] = new FileTransferSession(item.getFileTransferUuid(), item.getSenderLoginName(),
-                        item.getSenderWalletAddressUuid(), item.getSenderWalletAddress(), item.getReceiverLoginName(),
-                        item.getReceiverWalletAddressUuid(), item.getReceiverWalletAddress(),
-                        item.getSmartContractAddress(), item.getFunding1RecPubkeyStatus(),
-                        item.getFunding1RecPubkeyTransactionHash(), item.getFunding2SendDocinfoStatus(),
-                        item.getFunding2SendDocinfoTransactionHash(), item.getFunding3RecFinalStatus(),
-                        item.getFunding3RecFinalTransactionHash(), item.getFileTransferIsActive(),
-                        item.getFileTransferCreate(), item.getFileTransferUpdate());
-            }
-            errorCode = "NO_ERROR";
-            errorMessage = "";
-        }
-
-        return new GetFileTransferSessionsForUserResponse(value, errorCode, errorMessage);
-    }
-
     @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_status", produces = { "application/JSON" })
     public FileTransferReadResponse getFileTransferStatus(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {

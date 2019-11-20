@@ -191,18 +191,6 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         assertTrue(content.contains("\"value\":[]"));
     }
 
-    resultAction.andExpect(ok);
-
-    MvcResult mvcResult = resultAction.andReturn();
-
-    String content = mvcResult.getResponse().getContentAsString();
-
-    assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue(content.contains("\"errorMessage\":\"\""));
-        assertTrue(content.contains("\"value\":[]"));
-    }
-
     @Test
     public void getFileTransferSessionsForUserWith1TransferSessionTest() throws Exception {
         // Faker faker = new Faker();
