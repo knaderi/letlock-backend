@@ -88,28 +88,6 @@ public interface FileTransferMapper {
 		@Param("userId") int userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
-
-	/*
-		SELECT
-		  CAST( file_transfer_uuid AS text ) AS fileTransferUuid,
-		  sender_login_name AS senderLoginName,
-		  CAST( sender_wallet_address_uuid AS text ) AS senderWalletAddressUuid,
-		  sender_wallet_address AS senderWalletAddress,
-		  receiver_login_name AS receiverLoginName,
-		  CAST( receiver_wallet_address_uuid AS text ) AS receiverWalletAddressUuid,
-		  receiver_wallet_address AS receiverWalletAddress,
-		  smart_contract_address AS smartContractAddress,
-		  funding_1_rec_pubkey_status AS funding1RecPubkeyStatus,
-		  funding_1_rec_pubkey_transaction_hash AS funding1RecPubkeyTransactionHash,
-		  funding_2_send_docinfo_status AS funding2SendDocinfoStatus,
-		  funding_2_send_docinfo_transaction_hash AS funding2SendDocinfoTransactionHash,
-		  funding_3_rec_final_status AS funding3RecFinalStatus,
-		  funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,
-		  file_transfer_is_active AS fileTransferIsActive,
-		  file_transfer_create_dt AS fileTransferCreate,
-		  file_transfer_update_dt AS fileTransferUpdate
-		  FROM gochain.get_file_transfer_sessions_for_user( 3 )
-	 */
 	@Select(
 		"SELECT"
 			+ " CAST( file_transfer_uuid AS text ) AS fileTransferUuid,"

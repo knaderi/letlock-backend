@@ -148,7 +148,7 @@ public class FileTransferController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        Integer userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
         	value = fileTransferMapper.getFileTransferSessionsForUser(userId);
             errorCode = "NO_ERROR";
