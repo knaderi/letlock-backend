@@ -21,8 +21,8 @@ public class TransactionHashResponseTest extends AbstractTest {
         String responseStr = "{\"errorCode\":\"TXN_NOT_FOUND\",\"errorMessage\":\"Transaction hash not found\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         TransactionHashResponse value = objectMapper.readValue(responseStr, TransactionHashResponse.class);
-        assertEquals("TXN_NOT_FOUND", value.getErrorCode());
-        assertEquals("Transaction hash not found", value.getErrorMessage());
+        assertEquals("testTransactionResponseCreation: Should get TXT_NOT_FOUND","TXN_NOT_FOUND", value.getErrorCode());
+        assertEquals("testTransactionResponseCreation: Should get transcation hash not found","Transaction hash not found", value.getErrorMessage());
 
     }
 
@@ -31,10 +31,10 @@ public class TransactionHashResponseTest extends AbstractTest {
         String responseStr = "{\"errorCode\":\"TXN_NOT_FOUND\",\"errorMessage\":\"Transaction hash not found\", \"status\":\"completed\",\"transactionHash\":\"0xsdfdsfdssd\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         TransactionHashResponse value = objectMapper.readValue(responseStr, TransactionHashResponse.class);
-        assertEquals("TXN_NOT_FOUND", value.getErrorCode());
-        assertEquals("Transaction hash not found", value.getErrorMessage());
-        assertEquals("completed", value.getStatus());
-        assertEquals("0xsdfdsfdssd", value.getTransactionHash());
+        assertEquals("testTransactionResponseCreation2:  Should get TXT_NOT_FOUND","TXN_NOT_FOUND", value.getErrorCode());
+        assertEquals("testTransactionResponseCreation2:  Should get transcation hash not found","Transaction hash not found", value.getErrorMessage());
+        assertEquals("testTransactionResponseCreation2: Should get completed","completed", value.getStatus());
+        assertEquals("testTransactionResponseCreation2: Should get the correct transaction value","0xsdfdsfdssd", value.getTransactionHash());
     }
     
     @Test
@@ -47,10 +47,10 @@ public class TransactionHashResponseTest extends AbstractTest {
         		"}";
         ObjectMapper objectMapper = new ObjectMapper();
         TransactionHashResponse value = objectMapper.readValue(responseStr, TransactionHashResponse.class);
-        assertEquals("NO_ERROR", value.getErrorCode());
-        assertEquals("", value.getErrorMessage());
-        assertEquals("completed", value.getStatus());
-        assertEquals("0xfbe41c0a01eca13ed0b894e10d073e80cd44e06f0d15343f877bada45472c5ff", value.getTransactionHash());
+        assertEquals("testTransactionResponseCreation3:","NO_ERROR", value.getErrorCode());
+        assertEquals("testTransactionResponseCreation3:","", value.getErrorMessage());
+        assertEquals("testTransactionResponseCreation3:","completed", value.getStatus());
+        assertEquals("testTransactionResponseCreation3:","0xfbe41c0a01eca13ed0b894e10d073e80cd44e06f0d15343f877bada45472c5ff", value.getTransactionHash());
     }
 
 }

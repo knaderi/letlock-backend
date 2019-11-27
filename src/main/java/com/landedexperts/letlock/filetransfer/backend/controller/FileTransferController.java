@@ -100,9 +100,9 @@ public class FileTransferController {
         return new UuidNameDateArrayResponse(value, errorCode, errorMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_as_activate", produces = {
+    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_active", produces = {
             "application/JSON" })
-    public ErrorCodeMessageResponse setFileTransferAsActive(@RequestParam(value = "token") final String token,
+    public ErrorCodeMessageResponse setFileTransferActive(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileTransferController.setFileTransferAsActive called for token " + token);
         String errorCode = "TOKEN_INVALID";

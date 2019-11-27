@@ -26,7 +26,7 @@ public class BlockChainGatewayServiceTest extends AbstractTest implements Backen
 
     @Test
     public void testGetGoChainInstance() {
-        assertTrue(blockChainGatewayServiceFactory.createGatewayService(BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY) instanceof GoChainGatewayService);
+        assertTrue("testGetGoChainInstance: Should have created a GoChain gateway instance", blockChainGatewayServiceFactory.createGatewayService(BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY) instanceof GoChainGatewayService);
     }
 
 }

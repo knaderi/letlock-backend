@@ -43,7 +43,7 @@ public interface FileTransferMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.set_file_transfer_to_active( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM gochain.set_file_transfer_active( #{ userId }, #{ fileTransferUuid } )"
 	)
 	ErrorCodeMessageResponse setFileTransferAsActive(
 		@Param("userId") int userId,
@@ -54,7 +54,7 @@ public interface FileTransferMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM gochain.file_transfer_deactivate( #{ userId }, #{ fileTransferUuid } )"
+			+ " FROM gochain.set_file_transfer_inactive( #{ userId }, #{ fileTransferUuid } )"
 	)
 	ErrorCodeMessageResponse setFileTransferInactive(
 		@Param("userId") int userId,

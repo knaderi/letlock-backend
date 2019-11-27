@@ -58,7 +58,7 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
         while ((length = inputStream.read(buffer)) != -1) {
             result.write(buffer, 0, length);
         }
-        assertEquals(TEST_FILE_CONTENT, result.toString(StandardCharsets.UTF_8.name()));        
+        assertEquals("testDownloadFile: Should get test fiel content",TEST_FILE_CONTENT, result.toString(StandardCharsets.UTF_8.name()));        
     }
     
 

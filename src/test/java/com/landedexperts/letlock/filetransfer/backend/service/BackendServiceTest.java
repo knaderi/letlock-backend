@@ -7,10 +7,6 @@ import java.io.UnsupportedEncodingException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,13 +15,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.github.javafaker.Faker;
-
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 
 public class BackendServiceTest extends AbstractTest implements BackendTestConstants {
     String lineSeparator = System.getProperty("line.separator");
-    private final Logger logger = LoggerFactory.getLogger(BackendServiceTest.class);
 
     private static ResultMatcher ok = MockMvcResultMatchers.status().isOk();
 
@@ -45,16 +39,16 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"result\":false"));
-        assertTrue(content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
+        assertTrue("registerTest: content length should be larger than zero", content.length() > 0);
+        assertTrue("content should be USER_NAME_TAKEN", content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
     }
 
     @Test
     public void loginTest() throws Exception {
         String testPassword = TEST_PASSWORD;
         String content = login(testPassword);
-        assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("loginTest: content length should be larger than zero", content.length() > 0);
+        assertTrue("loginTest: errorCode should be NO_ERROR",content.contains("\"errorCode\":\"NO_ERROR\""));
     }
 
     private String login(String password) throws Exception, UnsupportedEncodingException {
@@ -79,9 +73,9 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue(content.contains("\"result\":false"));
+        assertTrue("isLoginNameAvailableTest: content should be larger than zero",content.length() > 0);
+        assertTrue("isLoginNameAvailableTest: Content should have no error", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("isLoginNameAvailableTest: result should be false",content.contains("\"result\":false"));
     }
 
     @Test
@@ -96,9 +90,9 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue(content.contains("\"result\":false"));
+        assertTrue("logoutTestForGoodToken: length should be larger than zero",content.length() > 0);
+        assertTrue("logoutTestForGoodToken: The error should be Login session  not found" , content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
+        assertTrue("logoutTestForGoodToken: result should be false",content.contains("\"result\":false"));
     }
 
     @Test
@@ -111,15 +105,15 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue(content.contains("\"result\":false"));
+        assertTrue("logoutTestForBadToken:content length should be larger than zero",content.length() > 0);
+        assertTrue("logoutTestForBadToken: The error should be Login session  not found" , content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
+        assertTrue("logoutTestForBadToken: result should be false",content.contains("\"result\":false"));
     }
 
     private String loginUser(String loginName, String password) throws Exception {
         String uri = "/login";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName)
-                .param("password", password).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -130,8 +124,8 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 
     private void registerUser(String loginName, String email, String password) throws Exception {
         String uri = "/register";
-        mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password)
-                .param("email", email).accept(MediaType.APPLICATION_JSON_VALUE));
+        mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password).param("email", email)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
     }
 
     public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
@@ -151,16 +145,15 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 
     private void changePassword(String loginName, String oldPassword, String newPassword) throws Exception {
         String uri = "/update_user_password";
-        ResultActions resultAction = mvc.perform(
-                MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("oldPassword", oldPassword)
-                        .param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName)
+                .param("oldPassword", oldPassword).param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"result\":true"));
+        assertTrue("changePassword:Content length should be larger than zero",content.length() > 0);
+        assertTrue("changePassword: result should be true",content.contains("\"result\":true"));
     }
 
     @Test
@@ -177,18 +170,18 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         String senderToken = loginUser(senderEmail, senderPassword);
 
         String uri = "/get_file_transfer_sessions_for_user";
-        ResultActions resultAction = mvc.perform(
-                MockMvcRequestBuilders.post(uri).param("token", senderToken).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", senderToken).accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
 
-        assertTrue(content.length() > 0);
-        assertTrue(content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue(content.contains("\"errorMessage\":\"\""));
-        assertTrue(content.contains("\"value\":[]"));
+        assertTrue("Content length should be larger than 0", content.length() > 0);
+        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should be empty",content.contains("\"value\":[]"));
     }
 
     @Test
@@ -216,4 +209,5 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         // gochain
         // we will implement this test once db_gateway is completed
     }
+
 }
