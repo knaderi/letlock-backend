@@ -34,5 +34,9 @@ public interface UserMapper {
 	@Select("SELECT" + " _error_code AS errorCode," + " _error_message AS errorMessage"
 			+ " FROM \"user\".update_user_status( #{ userId } , #{ status } )")
 	ErrorCodeMessageResponse updateUserStatus(@Param("userId") int userId, @Param("status") String status);
+	
+	@Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
+	            + " FROM \"user\".is_email_registered( #{ email } )")
+	 BooleanVO isEmailRegistered(@Param("email") String email);
 
 }

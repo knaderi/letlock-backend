@@ -149,6 +149,13 @@
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.11.651</version>
 		</dependency>
+
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>jakarta.mail</artifactId>
+                <version>1.6.4</version>
+            </dependency>
+	
 	</dependencies>
 
 	<build>

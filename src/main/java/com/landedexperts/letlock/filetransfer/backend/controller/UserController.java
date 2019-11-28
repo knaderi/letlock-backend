@@ -114,4 +114,18 @@ public class UserController {
         }
 
     }
+    
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/forgot_password", produces = { "application/JSON" })
+    public BooleanResponse forgotPassword(@RequestParam(value = "email") final String email)
+            throws Exception {
+        logger.info("UserController.forgotPassword called for email " + email);
+        ErrorCodeMessageResponse answer = userMapper.isEmailRegistered(email);
+
+        String errorCode = answer.getErrorCode();
+        String errorMessage = answer.getErrorMessage();
+        boolean result = errorCode.equals("NO_ERROR");
+
+        return new BooleanResponse(result, errorCode, errorMessage);
+    }
 }
