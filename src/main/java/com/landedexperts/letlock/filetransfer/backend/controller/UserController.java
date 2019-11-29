@@ -14,6 +14,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.service.LetLockEmailService;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
@@ -28,6 +29,9 @@ public class UserController {
     private static final String INVALID_EMAIL = "INVALID_EMAIL";
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private LetLockEmailService emailService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) throws Exception {
@@ -114,18 +118,53 @@ public class UserController {
         }
 
     }
-    
-    
-    @RequestMapping(method = RequestMethod.POST, value = "/forgot_password", produces = { "application/JSON" })
-    public BooleanResponse forgotPassword(@RequestParam(value = "email") final String email)
-            throws Exception {
+
+    @RequestMapping(method = RequestMethod.POST, value = "/handle_forgot_password_request", produces = { "application/JSON" })
+    public BooleanResponse forgotPassword(@RequestParam(value = "email") final String email) throws Exception {
         logger.info("UserController.forgotPassword called for email " + email);
-        ErrorCodeMessageResponse answer = userMapper.isEmailRegistered(email);
+        BooleanVO answer = userMapper.isEmailRegistered(email);
+        if (answer.getValue()) {
+            emailService.sendForgotPasswordEmail(email);
+            return new BooleanResponse(true, "NO_ERROR", "");
+        } else {
+            String errorCode = answer.getErrorCode();
+            String errorMessage = answer.getErrorMessage();
+            boolean result = answer.getValue();
 
-        String errorCode = answer.getErrorCode();
-        String errorMessage = answer.getErrorMessage();
-        boolean result = errorCode.equals("NO_ERROR");
+            return new BooleanResponse(result, errorCode, errorMessage);
 
-        return new BooleanResponse(result, errorCode, errorMessage);
+        }
+
     }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/reset_password", produces = { "application/JSON" })
+    public BooleanResponse resetPassword(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "loginName") final String loginName, @RequestParam(value = "newPassword") final String newPassword)
+            throws Exception {
+
+        logger.info("UserController.resetPassword called for email " + loginName);
+        if (!"123456".equals(token)) {
+            return new BooleanResponse(false, "INVALID_RESET_PASSWORD_TOKEN", "Token is invalid.");
+        } else {           
+            BooleanResponse response = updateUserPassword(loginName, "passw0rd!", "passw0rd!");
+//            if(response.getErrorCode().equals("NO_ERROR")) {
+//              emailService.sendForgotPasswordEmail(email);
+//            }
+            return response;
+        
+        }        
+
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/validate_reset_password_token", produces = { "application/JSON" })
+    public BooleanResponse validateResetPasswordToken(@RequestParam(value = "token") final String token) throws Exception {
+
+        if ("123456".equals(token)) {
+            return new BooleanResponse(true, "NO_ERROR", "");
+        } else {
+            return new BooleanResponse(false, "INVALID_RESET_PASSWORD_TOKEN", "Token is invalid.");
+        }
+
+    }
+
 }

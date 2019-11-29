@@ -185,6 +185,119 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
     }
 
     @Test
+    public void isEmailRegisteredTestWhenEmaiIsRegistered() throws Exception {
+        Faker faker = new Faker();
+
+        // create a random user as sender
+        String userFirstName = faker.name().firstName() + faker.name().firstName();
+        String userEmail = faker.internet().emailAddress();
+        String userPassword = userFirstName + '!';
+        registerUser(userFirstName, userEmail, userPassword);
+
+        String uri = "/handle_forgot_password_request";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content length should be larger than 0", content.length() > 0);
+        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should b true",content.contains("\"result\":true"));
+    }
+    
+    @Test
+    public void isEmailRegisteredTestWhenEmaiIsNotRegistered() throws Exception {
+        Faker faker = new Faker();
+        String userEmail = faker.internet().emailAddress();
+        String uri = "/forgot_password";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content length should be larger than 0", content.length() > 0);
+        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should b true",content.contains("\"result\":false"));
+    }
+    
+    @Test
+    public void resetPasswordTokenTestForValidToken() throws Exception {
+        String uri = "/validate_reset_password_token";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", "123456").accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content length should be larger than 0", content.length() > 0);
+        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should be true",content.contains("\"result\":true"));
+    }
+    
+    @Test
+    public void resetPasswordTokenTestForInvalidToken() throws Exception {
+        String uri = "/validate_reset_password_token";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", "1234567213").accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content length should be larger than 0", content.length() > 0);
+        assertTrue("Should have error", content.contains("\"errorCode\":\"INVALID_RESET_PASSWORD_TOKEN\""));
+        assertTrue("Content error message should be token is invalid",content.contains("\"errorMessage\":\"Token is invalid.\""));
+        assertTrue("Content value should be false",content.contains("\"result\":false"));
+    }
+    
+    
+    @Test
+    public void resetPasswordTest() throws Exception {
+        String uri = "/reset_password";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", "123456").param("loginName", "knaderi12").param("newPassword", "passw0rd!").accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content length should be larger than 0", content.length() > 0);
+        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should b true",content.contains("\"result\":true"));
+    }
+    
+    @Test
+    public void resetPasswordForInvalidPasswordTest() throws Exception {
+        String uri = "/reset_password";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", "1234563456").param("loginName", "knaderi12").param("newPassword", "passw0rd!").accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content have error", content.contains("\"errorCode\":\"INVALID_RESET_PASSWORD_TOKEN\""));
+        assertTrue("Content error message should be token is invalid",content.contains("\"errorMessage\":\"Token is invalid.\""));
+        assertTrue("Content value should be false",content.contains("\"result\":false"));
+    }
+    
+    
+    @Test
     public void getFileTransferSessionsForUserWith1TransferSessionTest() throws Exception {
         // Faker faker = new Faker();
 
