@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
-import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
-import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 
 @Service
 public class DBGatewayService extends BlockChainGatewayService {

@@ -2,7 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.blockchain.gateway;
 
 import java.util.UUID;
 
-import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 
 public abstract class BlockChainGatewayService {
 

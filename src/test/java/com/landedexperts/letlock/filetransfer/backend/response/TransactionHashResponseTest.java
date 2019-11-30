@@ -7,6 +7,7 @@ import org.junit.Before;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 
 public class TransactionHashResponseTest extends AbstractTest {
     

@@ -15,8 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
-import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 
 public class FileControllerTest extends AbstractTest implements BackendTestConstants {
 

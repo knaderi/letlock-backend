@@ -49,7 +49,7 @@ public class LetLockEmailService {
             "<p>This email was sent to let you reset your password",
             "<a href='http://localhost:3000/validate_reset_password_token?token=123456'>Reset Password</a>");
 
-    public void sendForgotPasswordEmail(final String email) throws Exception{
+    public void sendForgotPasswordEmail(final String email, final String token) throws Exception{
 
         // Create a Properties object to contain connection configuration information.
         Properties props = System.getProperties();
@@ -78,7 +78,7 @@ public class LetLockEmailService {
 
         // Send the message.
         try {
-            System.out.println("Sending...");
+            System.out.println("Sending token " + token);
 
             // Connect to Amazon SES using the SMTP username and password you specified
             // above.

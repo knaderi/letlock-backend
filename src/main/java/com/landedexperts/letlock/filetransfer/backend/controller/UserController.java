@@ -1,5 +1,8 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +11,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mapper.UserMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
-import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.jpa.UserDTO;
+import com.landedexperts.letlock.filetransfer.backend.database.jpa.types.UserStatusType;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.service.LetLockEmailService;
+import com.landedexperts.letlock.filetransfer.backend.service.UserService;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
@@ -28,7 +34,10 @@ public class UserController {
     private static final String EMAIL_IS_INVALID = "Email is invalid";
     private static final String INVALID_EMAIL = "INVALID_EMAIL";
     @Autowired
-    private UserMapper userMapper;
+    private UserMapper userMapper; // using mybatis
+
+    @Autowired
+    private UserService userService; // using JPA
 
     @Autowired
     private LetLockEmailService emailService;
@@ -122,17 +131,20 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/handle_forgot_password_request", produces = { "application/JSON" })
     public BooleanResponse forgotPassword(@RequestParam(value = "email") final String email) throws Exception {
         logger.info("UserController.forgotPassword called for email " + email);
-        BooleanVO answer = userMapper.isEmailRegistered(email);
-        if (answer.getValue()) {
-            emailService.sendForgotPasswordEmail(email);
+        Optional<UserDTO> userContainer = userService.findUserByEmailAndStatus(email, UserStatusType.active);
+
+        if (userContainer.isPresent() && userContainer.get().getStatus()== UserStatusType.active) {
+            String newToken = UUID.randomUUID().toString();
+            userContainer.get().setResetToken(newToken);
+            // Save token to database
+            userService.save(userContainer.get());
+            emailService.sendForgotPasswordEmail(email, newToken);
             return new BooleanResponse(true, "NO_ERROR", "");
         } else {
-            String errorCode = answer.getErrorCode();
-            String errorMessage = answer.getErrorMessage();
-            boolean result = answer.getValue();
-
+            String errorCode = "USER_NOT_FOUND";
+            String errorMessage = "User with given email address does not exist";
+            boolean result = false;
             return new BooleanResponse(result, errorCode, errorMessage);
-
         }
 
     }
@@ -143,28 +155,35 @@ public class UserController {
             throws Exception {
 
         logger.info("UserController.resetPassword called for email " + loginName);
-        if (!"123456".equals(token)) {
+
+        Optional<UserDTO> user = userService.findUserByResetToken(token);
+
+        if (user.isPresent()) {
+            UserDTO resetUser = user.get();
+            resetUser.setPassword(newPassword);
+            resetUser.setResetToken(null);
+            userService.save(resetUser);
+            return new BooleanResponse(true, "NO_ERROR", "");
+
+        } else {
             return new BooleanResponse(false, "INVALID_RESET_PASSWORD_TOKEN", "Token is invalid.");
-        } else {           
-            BooleanResponse response = updateUserPassword(loginName, "passw0rd!", "passw0rd!");
-//            if(response.getErrorCode().equals("NO_ERROR")) {
-//              emailService.sendForgotPasswordEmail(email);
-//            }
-            return response;
-        
-        }        
+
+        }
 
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/validate_reset_password_token", produces = { "application/JSON" })
     public BooleanResponse validateResetPasswordToken(@RequestParam(value = "token") final String token) throws Exception {
 
-        if ("123456".equals(token)) {
-            return new BooleanResponse(true, "NO_ERROR", "");
-        } else {
+        logger.info("UserController.validateResetPasswordToken called");
+
+        Optional<UserDTO> user = userService.findUserByResetToken(token);
+
+        if (user.isPresent()) {
+            return new BooleanResponse(true, "NO_ERROR", ""); 
+        }else {
             return new BooleanResponse(false, "INVALID_RESET_PASSWORD_TOKEN", "Token is invalid.");
         }
-
     }
 
 }

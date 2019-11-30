@@ -18,7 +18,7 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.ResultJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.TransactionHashJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.WalletAddress;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
-import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 
 @Service
 public class GoChainGatewayService extends BlockChainGatewayService {

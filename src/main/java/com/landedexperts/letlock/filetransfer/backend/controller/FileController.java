@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanPathnameVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.IdVO;
-import com.landedexperts.letlock.filetransfer.backend.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanPathnameVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 

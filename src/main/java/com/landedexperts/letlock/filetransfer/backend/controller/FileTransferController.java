@@ -15,20 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceFactory;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
-import com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.BooleanVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferInfoRecord;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.FileTransferInfoVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.GochainAddressVO;
-import com.landedexperts.letlock.filetransfer.backend.database.vo.UuidNameDateVO;
-import com.landedexperts.letlock.filetransfer.backend.response.ConsumeResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.ErrorCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.FileTransferSessionResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.FileTransferSessionsResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.TransactionHashResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.UuidNameDate;
-import com.landedexperts.letlock.filetransfer.backend.response.UuidNameDateArrayResponse;
-import com.landedexperts.letlock.filetransfer.backend.response.UuidResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ConsumeResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.FileTransferSessionResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.FileTransferSessionsResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UuidNameDate;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UuidNameDateArrayResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UuidResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoRecordVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.GochainAddressVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UuidNameDateVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -144,7 +144,7 @@ public class FileTransferController {
             @RequestParam(value = "token") final String token) throws Exception {
         logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
 
-        FileTransferInfoRecord[] value = null;
+        FileTransferInfoRecordVO[] value = null;
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 

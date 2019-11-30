@@ -30,27 +30,27 @@
 	</bean>
 
 	<bean id="userMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.UserMapper"/>
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper"/>
 	</bean>
 
 	<bean id="orderMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderMapper"/>
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderMapper"/>
 	</bean>
 
 	<bean id="orderDetailMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.OrderDetailMapper"/>
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderDetailMapper"/>
 	</bean>
 
 	<bean id="paymentMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.PaymentMapper"/>
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.PaymentMapper"/>
 	</bean>
 
 	<bean id="fileTransferMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.FileTransferMapper"/>
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper"/>
 	</bean>
 
 	<bean id="fileMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mapper.FileMapper"/>
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileMapper"/>
 	</bean>
 	
 
