@@ -11,6 +11,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.jpa.types.UserSta
 public interface UserRepository extends JpaRepository<UserDTO, Long> {
 
     Optional<UserDTO> findUserByEmailAndStatus(String email, UserStatusType status);
+    Optional<UserDTO> findUserByLoginName(String loginName);
     Optional<UserDTO> findUserByEmail(String email);
     Optional<UserDTO> findByResetToken(String resetToken);
 }

@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -22,9 +23,9 @@ import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 import com.landedexperts.letlock.filetransfer.backend.database.jpa.UserDTO;
 import com.landedexperts.letlock.filetransfer.backend.database.jpa.types.UserStatusType;
 
-public class BackendServiceTest extends AbstractTest implements BackendTestConstants {
+public class BackendRestServiceTest extends AbstractTest implements BackendTestConstants {
     String lineSeparator = System.getProperty("line.separator");
-    
+
     @Autowired
     private UserService userService; // using JPA
 
@@ -55,7 +56,7 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         String testPassword = TEST_PASSWORD;
         String content = login(testPassword);
         assertTrue("loginTest: content length should be larger than zero", content.length() > 0);
-        assertTrue("loginTest: errorCode should be NO_ERROR",content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("loginTest: errorCode should be NO_ERROR", content.contains("\"errorCode\":\"NO_ERROR\""));
     }
 
     private String login(String password) throws Exception, UnsupportedEncodingException {
@@ -80,9 +81,9 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("isLoginNameAvailableTest: content should be larger than zero",content.length() > 0);
+        assertTrue("isLoginNameAvailableTest: content should be larger than zero", content.length() > 0);
         assertTrue("isLoginNameAvailableTest: Content should have no error", content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue("isLoginNameAvailableTest: result should be false",content.contains("\"result\":false"));
+        assertTrue("isLoginNameAvailableTest: result should be false", content.contains("\"result\":false"));
     }
 
     @Test
@@ -97,9 +98,10 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("logoutTestForGoodToken: length should be larger than zero",content.length() > 0);
-        assertTrue("logoutTestForGoodToken: The error should be Login session  not found" , content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue("logoutTestForGoodToken: result should be false",content.contains("\"result\":false"));
+        assertTrue("logoutTestForGoodToken: length should be larger than zero", content.length() > 0);
+        assertTrue("logoutTestForGoodToken: The error should be Login session  not found",
+                content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
+        assertTrue("logoutTestForGoodToken: result should be false", content.contains("\"result\":false"));
     }
 
     @Test
@@ -112,9 +114,10 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("logoutTestForBadToken:content length should be larger than zero",content.length() > 0);
-        assertTrue("logoutTestForBadToken: The error should be Login session  not found" , content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue("logoutTestForBadToken: result should be false",content.contains("\"result\":false"));
+        assertTrue("logoutTestForBadToken:content length should be larger than zero", content.length() > 0);
+        assertTrue("logoutTestForBadToken: The error should be Login session  not found",
+                content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
+        assertTrue("logoutTestForBadToken: result should be false", content.contains("\"result\":false"));
     }
 
     private String loginUser(String loginName, String password) throws Exception {
@@ -159,8 +162,8 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("changePassword:Content length should be larger than zero",content.length() > 0);
-        assertTrue("changePassword: result should be true",content.contains("\"result\":true"));
+        assertTrue("changePassword:Content length should be larger than zero", content.length() > 0);
+        assertTrue("changePassword: result should be true", content.contains("\"result\":true"));
     }
 
     @Test
@@ -187,39 +190,32 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 
         assertTrue("Content length should be larger than 0", content.length() > 0);
         assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
-        assertTrue("Content value should be empty",content.contains("\"value\":[]"));
+        assertTrue("Content error message should be empty", content.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should be empty", content.contains("\"value\":[]"));
     }
 
     @Test
     public void isEmailRegisteredTestWhenEmaiIsRegistered() throws Exception {
-        Faker faker = new Faker();
-
-        // create a random user as sender
-        String userFirstName = faker.name().firstName() + faker.name().firstName();
-        String userEmail = faker.internet().emailAddress();
-        String userPassword = userFirstName + '!';
-        registerUser(userFirstName, userEmail, userPassword);
-
-        String uri = "/handle_forgot_password_request";
-        ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
-
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-
-        String content = mvcResult.getResponse().getContentAsString();
-
-        assertTrue("Content length should be larger than 0", content.length() > 0);
-        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
-        assertTrue("Content value should b true",content.contains("\"result\":true"));
+        runHandleForgotPassword(new Faker(), true);
     }
-    
+
     @Test
     public void isEmailRegisteredTestWhenEmaiIsNotRegistered() throws Exception {
-        Faker faker = new Faker();
+        runHandleForgotPassword(new Faker(), false);
+    }
+
+    private void runHandleForgotPassword(Faker faker, boolean register) throws Exception, UnsupportedEncodingException {
+        String userFirstName = faker.name().firstName() + faker.name().firstName();
         String userEmail = faker.internet().emailAddress();
+        String userPassword = userFirstName + '!';
+        runHandleForgotPassword(userFirstName, userEmail, userPassword, register);
+    }
+
+    private void runHandleForgotPassword(String userFirstName, String userEmail, String userPassword, boolean register)
+            throws Exception, UnsupportedEncodingException {
+        if (register) {
+            registerUser(userFirstName, userEmail, userPassword);
+        }
         String uri = "/handle_forgot_password_request";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
@@ -228,46 +224,35 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-
-        assertTrue("Content length should be larger than 0", content.length() > 0);
-        assertTrue("Should have error", content.contains("\"errorCode\":\"USER_NOT_FOUND\""));
-        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"User with given email address does not exist\""));
-        assertTrue("Content value should be true",content.contains("\"result\":false"));
+        if (register) {
+            assertTrue("Content length should be larger than 0", content.length() > 0);
+            assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
+            assertTrue("Content error message should be empty", content.contains("\"errorMessage\":\"\""));
+            assertTrue("Content value should b true", content.contains("\"result\":true"));
+        } else {
+            assertTrue("Content length should be larger than 0", content.length() > 0);
+            assertTrue("Should have error", content.contains("\"errorCode\":\"USER_NOT_FOUND\""));
+            assertTrue("Content error message should be empty",
+                    content.contains("\"errorMessage\":\"User with given email address does not exist\""));
+            assertTrue("Content value should be true", content.contains("\"result\":false"));
+        }
     }
-    
+
     @Test
     public void validateResetPasswordTokenTestForValidToken() throws Exception {
-        
-        Faker faker = new Faker();
 
+        Faker faker = new Faker();
         // create a random user as sender
         String userFirstName = faker.name().firstName() + faker.name().firstName();
         String userEmail = faker.internet().emailAddress();
         String userPassword = userFirstName + '!';
-        registerUser(userFirstName, userEmail, userPassword);
+        runHandleForgotPassword(userFirstName, userEmail, userPassword, true);
 
-        String uri = "/handle_forgot_password_request";
-        ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
-
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-
-        String content = mvcResult.getResponse().getContentAsString();
-
-        assertTrue("Content length should be larger than 0", content.length() > 0);
-        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
-        assertTrue("Content value should b true",content.contains("\"result\":true"));
-        
-        
-        
         Optional<UserDTO> userContainer = userService.findUserByEmailAndStatus(userEmail, UserStatusType.active);
-        
-        
+
         String uri2 = "/validate_reset_password_token";
-        ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post(uri2).param("token", userContainer.get().getResetToken()).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("token", userContainer.get().getResetToken())
+                .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
         MvcResult mvcResult2 = resultAction2.andReturn();
@@ -276,60 +261,38 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 
         assertTrue("Content length should be larger than 0", content2.length() > 0);
         assertTrue("Should not have any errors", content2.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue("Content error message should be empty",content2.contains("\"errorMessage\":\"\""));
-        assertTrue("Content value should be true",content2.contains("\"result\":true"));
+        assertTrue("Content error message should be empty", content2.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should be true", content2.contains("\"result\":true"));
     }
- 
+
     @Test
     public void resetPasswordTest() throws Exception {
-        
-        Faker faker = new Faker();
 
+        Faker faker = new Faker();
         // create a random user as sender
         String userFirstName = faker.name().firstName() + faker.name().firstName();
         String userEmail = faker.internet().emailAddress();
         String userPassword = userFirstName + '!';
-        registerUser(userFirstName, userEmail, userPassword);
-        
-        
-        
-        Optional<UserDTO> userContainer = userService.findUserByEmail(userEmail);
-       
-        
-        
-        String uri = "/handle_forgot_password_request";
-        ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
+        runHandleForgotPassword(userFirstName, userEmail, userPassword, true);
 
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-
-        String content = mvcResult.getResponse().getContentAsString();
-
-        assertTrue("Content length should be larger than 0", content.length() > 0);
-        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue("Content error message should be empty",content.contains("\"errorMessage\":\"\""));
-        assertTrue("Content value should b true",content.contains("\"result\":true"));
-        
-        
         Optional<UserDTO> userContainer2 = userService.findUserByEmail(userEmail);
-        
-        
-        String uri2 = "/reset_password";
-        ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post(uri2).param("token", userContainer2.get().getResetToken()).param("loginName", userContainer2.get().getEmail()).param("newPassword", "passw0rd!").accept(MediaType.APPLICATION_JSON_VALUE));
 
-        resultAction.andExpect(ok);
+        String uri2 = "/reset_password";
+        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("token", userContainer2.get().getResetToken())
+                .param("loginName", userContainer2.get().getEmail()).param("newPassword", "passw0rd!")
+                .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction2.andExpect(ok);
         MvcResult mvcResult2 = resultAction2.andReturn();
 
         String content2 = mvcResult2.getResponse().getContentAsString();
 
         assertTrue("Content length should be larger than 0", content2.length() > 0);
         assertTrue("Should not have any errors", content2.contains("\"errorCode\":\"NO_ERROR\""));
-        assertTrue("Content error message should be empty",content2.contains("\"errorMessage\":\"\""));
-        assertTrue("Content value should b true",content2.contains("\"result\":true"));
+        assertTrue("Content error message should be empty", content2.contains("\"errorMessage\":\"\""));
+        assertTrue("Content value should b true", content2.contains("\"result\":true"));
     }
-    
+
     @Test
     public void resetPasswordTokenTestForInvalidToken() throws Exception {
         String uri = "/validate_reset_password_token";
@@ -343,18 +306,15 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
 
         assertTrue("Content length should be larger than 0", content.length() > 0);
         assertTrue("Should have error", content.contains("\"errorCode\":\"INVALID_RESET_PASSWORD_TOKEN\""));
-        assertTrue("Content error message should be token is invalid",content.contains("\"errorMessage\":\"Token is invalid.\""));
-        assertTrue("Content value should be false",content.contains("\"result\":false"));
+        assertTrue("Content error message should be token is invalid", content.contains("\"errorMessage\":\"Token is invalid.\""));
+        assertTrue("Content value should be false", content.contains("\"result\":false"));
     }
-    
-    
-  
-    
+
     @Test
     public void resetPasswordForInvalidPasswordTest() throws Exception {
         String uri = "/reset_password";
-        ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", "1234563456").param("loginName", "knaderi12").param("newPassword", "passw0rd!").accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("token", "1234563456")
+                .param("loginName", "knaderi12").param("newPassword", "passw0rd!").accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -362,11 +322,10 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         String content = mvcResult.getResponse().getContentAsString();
 
         assertTrue("Content have error", content.contains("\"errorCode\":\"INVALID_RESET_PASSWORD_TOKEN\""));
-        assertTrue("Content error message should be token is invalid",content.contains("\"errorMessage\":\"Token is invalid.\""));
-        assertTrue("Content value should be false",content.contains("\"result\":false"));
+        assertTrue("Content error message should be token is invalid", content.contains("\"errorMessage\":\"Token is invalid.\""));
+        assertTrue("Content value should be false", content.contains("\"result\":false"));
     }
-    
-    
+
     @Test
     public void getFileTransferSessionsForUserWith1TransferSessionTest() throws Exception {
         // Faker faker = new Faker();
@@ -393,4 +352,20 @@ public class BackendServiceTest extends AbstractTest implements BackendTestConst
         // we will implement this test once db_gateway is completed
     }
 
+    @Test
+    public void testPasswordEncryption() {
+        BCryptPasswordEncoder encoder1 = new BCryptPasswordEncoder(16); // Strength set as 16
+        String encodedPassword1 = encoder1.encode("UserPassword");
+        BCryptPasswordEncoder encoder2 = new BCryptPasswordEncoder(16); // Strength set as 16
+        String encodedPassword2 = encoder2.encode("UserPassword");
+        
+        assertTrue("checker1 check should pass", encoder1.matches("UserPassword", encodedPassword1));
+
+        assertTrue("checker2 checked should pass", encoder2.matches("UserPassword", encodedPassword2));
+        
+        String newPassword = encoder2.encode("passw0rd!");
+       //assertTrue("The  password encoded just now  should match the one in the database", encoder1.matches("$2a$16$MTviKciuiyBayFgmP3STLeafnWcIl4SG92AYhaaPGXV8Yi82jkeD.", "passw0rd!"));
+        
+        assertTrue("The generated password by test should match the one created for login", encoder2.matches("passw0rd!", "$2a$16$jEgvKW9Usuh/1ncL3dKZ4eCSmh7F/71ZvTgseuj.meS4TfM1c5F/i"));
+    }
 }

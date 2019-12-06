@@ -30,7 +30,7 @@ public class OrderDetailController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             IdVO answer = orderDetailMapper.addOrderDetail(userId, orderId, productId, quantity);
 
@@ -51,7 +51,7 @@ public class OrderDetailController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
         	ErrorCodeMessageResponse answer = orderDetailMapper.updateOrderDetail(userId, orderDetailId, quantity);
 
@@ -71,7 +71,7 @@ public class OrderDetailController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
         	ErrorCodeMessageResponse answer = orderDetailMapper.deleteOrderDetail(userId, orderDetailId);
 

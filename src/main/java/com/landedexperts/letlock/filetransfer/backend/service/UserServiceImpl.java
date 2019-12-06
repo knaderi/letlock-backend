@@ -36,4 +36,9 @@ public class UserServiceImpl implements UserService {
     public Optional<UserDTO> findUserByEmailAndStatus(String email, UserStatusType status) {
         return userRepository.findUserByEmailAndStatus(email, status);
     }
+
+    @Override
+    public Optional<UserDTO> findUserByLoginName(String loginName) {
+        return userRepository.findUserByLoginName(loginName);
+    }
 }

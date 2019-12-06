@@ -14,7 +14,7 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_create( #{userId} )"
 	)
-	IdVO orderCreate(@Param("userId") int userId);
+	IdVO orderCreate(@Param("userId") long userId);
 
 	@Select(
 		"SELECT"
@@ -22,7 +22,7 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_initiated_to_cancelled( #{ userId }, #{ orderId } )"
 	)
-	ErrorCodeMessageResponse changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
+	ErrorCodeMessageResponse changeStatusInitiatedToCancelled(@Param("userId") long userId, @Param("orderId") int orderId);
 
 	@Select(
 		"SELECT"
@@ -30,5 +30,5 @@ public interface OrderMapper {
 			+ " _error_message AS errorMessage"
 			+ " FROM payment.order_change_status_cancelled_to_initiated( #{ userId }, #{ orderId } )"
 	)
-	ErrorCodeMessageResponse changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
+	ErrorCodeMessageResponse changeStatusCancelledToInitiated(@Param("userId") long userId, @Param("orderId") int orderId);
 }

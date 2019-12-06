@@ -19,7 +19,7 @@ public interface FileMapper {
 			+ " FROM \"storage\".insert_file_upload_record( #{ userId }, #{ fileTransferUuid }, #{ pathname }, #{ expires } )"
 	)
 	IdVO insertFileUploadRecord(
-			@Param("userId") int userId,
+			@Param("userId") long userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid,
 			@Param("pathname") String pathname,
 			@Param("expires") Date expires
@@ -34,7 +34,7 @@ public interface FileMapper {
 			+ " FROM \"storage\".is_allowed_to_download_file( #{ userId }, #{ fileTransferUuid } )"
 	)
 	BooleanPathnameVO isAllowedToDownloadFile(
-			@Param("userId") int userId,
+			@Param("userId") long userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);
 
@@ -45,7 +45,7 @@ public interface FileMapper {
 			+ " FROM \"storage\".set_file_downloaded( #{ userId }, #{ fileTransferUuid } )"
 	)
 	ErrorCodeMessageResponse setFileDownloaded(
-			@Param("userId") int userId,
+			@Param("userId") long userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);
 
@@ -56,7 +56,7 @@ public interface FileMapper {
 			+ " FROM \"storage\".delete_file( #{ userId }, #{ fileTransferUuid } )"
 	)
 	ErrorCodeMessageResponse deleteFile(
-			@Param("userId") int userId,
+			@Param("userId") long userId,
 			@Param("fileTransferUuid") UUID fileTransferUuid
 		);
 }

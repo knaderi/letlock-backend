@@ -23,7 +23,7 @@ public interface FileTransferMapper {
 			+ " FROM \"user\".insert_start_file_transfer_session_record( #{ userId } , DECODE( #{ walletAddress } , 'hex'), #{ receiverLoginName } )"
 	)
 	FileTransferInfoVO insertFileTransferSessionRecord(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("walletAddress") String walletAddress,
 		@Param("receiverLoginName") String receiverLoginName
 	);
@@ -36,7 +36,7 @@ public interface FileTransferMapper {
 			+ " FROM gochain.file_transfer_waiting_for_receiver_address( #{ userId } )"
 	)
 	UuidNameDateVO[] retrieveSessionWaitingForReceiverAddress(
-		@Param("userId") int userId
+		@Param("userId") long userId
 	);
 
 	@Select(
@@ -46,7 +46,7 @@ public interface FileTransferMapper {
 			+ " FROM gochain.set_file_transfer_active( #{ userId }, #{ fileTransferUuid } )"
 	)
 	ErrorCodeMessageResponse setFileTransferAsActive(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
 
@@ -57,7 +57,7 @@ public interface FileTransferMapper {
 			+ " FROM gochain.set_file_transfer_inactive( #{ userId }, #{ fileTransferUuid } )"
 	)
 	ErrorCodeMessageResponse setFileTransferInactive(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
 
@@ -85,7 +85,7 @@ public interface FileTransferMapper {
 			+ " FROM gochain.get_user_file_transfer_info( #{ userId }, #{ fileTransferUuid } )"
 	)
 	FileTransferInfoVO getUserFileTransferInfo(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
 	@Select(
@@ -110,7 +110,7 @@ public interface FileTransferMapper {
 			+ " FROM gochain.get_file_transfer_sessions_for_user( #{ userId } )"
 		)
 			FileTransferInfoRecordVO[] getFileTransferSessionsForUser(
-			@Param("userId") int userId
+			@Param("userId") long userId
 		);
 
 	@Select(
@@ -121,7 +121,7 @@ public interface FileTransferMapper {
 			+ " FROM gochain.set_file_transfer_receiver_address( #{ userId } , #{ fileTransferUuid } , DECODE( #{ walletAddress } , 'hex'))"
 	)
 	GochainAddressVO setReceiverAddress(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("walletAddress") String walletAddress
 	);

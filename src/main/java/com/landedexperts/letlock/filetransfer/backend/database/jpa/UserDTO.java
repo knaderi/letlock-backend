@@ -20,13 +20,19 @@ import com.landedexperts.letlock.filetransfer.backend.database.jpa.types.UserSta
 
 
 @Entity
-@Table(name = "\"user\"", schema="\"user\"")
+@Table(name = "users", schema="users")
 
 public class UserDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", nullable = false, updatable = false)
     private long id;
+
+
+    @Column(name = "login_name", nullable = false, updatable = false)
+    @NotEmpty(message = "Please provide a loginName")
+    private String loginName;
+      
 
     @Column(name = "email", nullable = false, unique = true)
     @Email(message = "Please provide a valid e-mail")
@@ -152,4 +158,11 @@ public class UserDTO {
         this.resetToken = resetToken;
     }
 
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
 }
