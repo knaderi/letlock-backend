@@ -17,9 +17,11 @@ import com.landedexperts.letlock.filetransfer.backend.database.jpa.UserDTO;
 import com.landedexperts.letlock.filetransfer.backend.database.jpa.types.UserStatusType;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.service.LetLockEmailService;
 import com.landedexperts.letlock.filetransfer.backend.service.UserService;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
@@ -39,9 +41,8 @@ public class UserController {
     @Autowired
     private UserService userService; // using JPA
 
-    
     @Autowired
-    EmailServiceFacade emailServiceFacade;
+    private LetLockEmailService emailService;
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) throws Exception {
@@ -85,36 +86,21 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login", produces = { "application/JSON" })
-    public SessionTokenResponse login(@RequestParam(value = "loginName") final String loginNameOrEmail,
+    public SessionTokenResponse login(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "password") final String password) throws Exception {
-        logger.info("UserController.login called for loginName " + loginNameOrEmail);
-        Optional<UserDTO> userContainer = null;
-        if(isLoginCriteriaAnEmail(loginNameOrEmail)) {
-           userContainer = userService.findUserByEmail(loginNameOrEmail);
-        }else {
-            userContainer = userService.findUserByLoginName(loginNameOrEmail);
-        }
+        logger.info("UserController.login called for loginName " + loginName);
+        IdVO answer = userMapper.login(loginName, password);
+
+        int userId = answer.getId();
+        String errorCode = answer.getErrorCode();
+        String errorMessage = answer.getErrorMessage();
+
         String token = "";
-        if (userContainer.isPresent() && userContainer.get().getStatus()== UserStatusType.active) {
-            long userId = userContainer.get().getId();
-            if(compareStringWithEncodedValues(password,userContainer.get().getPassword())) {
-                token = SessionManager.getInstance().generateSessionToken(userId);
-                UserDTO updatedUser = userContainer.get();
-                updatedUser.setLastLogin(getSQLTime());
-                updatedUser.setUpdatedDate(getSQLTime());
-                userService.save(updatedUser);
-                return new SessionTokenResponse(token, "NO_ERROR", "");
-            }else {
-                String errorCode = "WRONG_PASSWORD";
-                String errorMessage = "The entered password is incorrect";
-                return new SessionTokenResponse(token, errorCode, errorMessage);
-            }
-        }else {
-            String errorCode = "USER_NOT_FOUND";
-            String errorMessage = "User with given email address does not exist";
-            return new SessionTokenResponse(token, errorCode, errorMessage);
+        if (errorCode.equals("NO_ERROR")) {
+            token = SessionManager.getInstance().generateSessionToken(userId);
         }
-        
+
+        return new SessionTokenResponse(token, errorCode, errorMessage);
     }
 
     private boolean isLoginCriteriaAnEmail(final String loginNameOrEmail) {
@@ -125,31 +111,16 @@ public class UserController {
     public BooleanResponse updateUserPassword(@RequestParam(value = "loginName") final String loginNameOrEmail,
             @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword)
             throws Exception {
-        
-        logger.info("UserController.login called for loginName " + loginNameOrEmail);
-        Optional<UserDTO> userContainer = null;
-        if(isLoginCriteriaAnEmail(loginNameOrEmail)) {
-           userContainer = userService.findUserByEmail(loginNameOrEmail);
-        }else {
-            userContainer = userService.findUserByLoginName(loginNameOrEmail);
-        }
-        if (userContainer.isPresent() && userContainer.get().getStatus()== UserStatusType.active) {
-            if(compareStringWithEncodedValues(oldPassword,userContainer.get().getPassword())) {
-                UserDTO updatedUser = userContainer.get();
-                updatedUser.setPassword(encode(newPassword));
-                updatedUser.setUpdatedDate(getSQLTime());
-                userService.save(updatedUser);
-                return new BooleanResponse(true, "NO_ERROR", "");
-            }else {
-                String errorCode = "WRONG_PASSWORD";
-                String errorMessage = "The entered password is incorrect";
-                return new BooleanResponse(false, errorCode, errorMessage);
-            }
-        }else {
-            String errorCode = "USER_NOT_FOUND";
-            String errorMessage = "User with given email address does not exist";
-            return new BooleanResponse(false, errorCode, errorMessage);
-        }
+        String encodedNewPassword = encode(newPassword);
+        String encodedOldPassword = encode(oldPassword);
+        logger.info("UserController.updateUserPassword called for loginName " + loginNameOrEmail);
+        ErrorCodeMessageResponse answer = userMapper.updateUserPassword(loginNameOrEmail, encodedOldPassword, encodedNewPassword);
+
+        String errorCode = answer.getErrorCode();
+        String errorMessage = answer.getErrorMessage();
+        boolean result = errorCode.equals("NO_ERROR");
+
+        return new BooleanResponse(result, errorCode, errorMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/logout", produces = { "application/JSON" })
@@ -167,17 +138,16 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/handle_forgot_password_request", produces = { "application/JSON" })
-    public BooleanResponse forgotPassword(@RequestParam(value = "email") final String recipientEmailAddress) throws Exception {
-        logger.info("UserController.forgotPassword called for email " + recipientEmailAddress);
-        Optional<UserDTO> userContainer = userService.findUserByEmailAndStatus(recipientEmailAddress, UserStatusType.active);
+    public BooleanResponse forgotPassword(@RequestParam(value = "email") final String email) throws Exception {
+        logger.info("UserController.forgotPassword called for email " + email);
+        Optional<UserDTO> userContainer = userService.findUserByEmailAndStatus(email, UserStatusType.active);
 
         if (userContainer.isPresent() && userContainer.get().getStatus()== UserStatusType.active) {
             String newToken = UUID.randomUUID().toString();
             userContainer.get().setResetToken(newToken);
             // Save token to database
             userService.save(userContainer.get());
-            //letLockEmailService.sendForgotPasswordEmail(recipientEmailAddress, newToken);
-            emailServiceFacade.sendForgotPasswordEmail(recipientEmailAddress, newToken);
+            emailService.sendForgotPasswordEmail(email, newToken);
             return new BooleanResponse(true, "NO_ERROR", "");
         } else {
             String errorCode = "USER_NOT_FOUND";
