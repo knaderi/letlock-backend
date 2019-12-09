@@ -3,14 +3,11 @@ package com.landedexperts.letlock.filetransfer.backend.service;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Optional;
 
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -20,14 +17,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.github.javafaker.Faker;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
-import com.landedexperts.letlock.filetransfer.backend.database.jpa.UserDTO;
-import com.landedexperts.letlock.filetransfer.backend.database.jpa.types.UserStatusType;
+
 
 public class BackendRestServiceTest extends AbstractTest implements BackendTestConstants {
     String lineSeparator = System.getProperty("line.separator");
 
-    @Autowired
-    private UserService userService; // using JPA
+
 
     private static ResultMatcher ok = MockMvcResultMatchers.status().isOk();
 
@@ -248,10 +243,9 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         String userPassword = userFirstName + '!';
         runHandleForgotPassword(userFirstName, userEmail, userPassword, true);
 
-        Optional<UserDTO> userContainer = userService.findUserByEmailAndStatus(userEmail, UserStatusType.active);
 
         String uri2 = "/validate_reset_password_token";
-        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("token", userContainer.get().getResetToken())
+        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("loginName", userFirstName).param("resetToken", "")
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
@@ -275,11 +269,10 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         String userPassword = userFirstName + '!';
         runHandleForgotPassword(userFirstName, userEmail, userPassword, true);
 
-        Optional<UserDTO> userContainer2 = userService.findUserByEmail(userEmail);
 
         String uri2 = "/reset_password";
-        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("token", userContainer2.get().getResetToken())
-                .param("loginName", userContainer2.get().getEmail()).param("newPassword", "passw0rd!")
+        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("token", "")
+                .param("loginName", userFirstName).param("newPassword", "passw0rd!")
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
@@ -352,20 +345,5 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         // we will implement this test once db_gateway is completed
     }
 
-    @Test
-    public void testPasswordEncryption() {
-        BCryptPasswordEncoder encoder1 = new BCryptPasswordEncoder(16); // Strength set as 16
-        String encodedPassword1 = encoder1.encode("UserPassword");
-        BCryptPasswordEncoder encoder2 = new BCryptPasswordEncoder(16); // Strength set as 16
-        String encodedPassword2 = encoder2.encode("UserPassword");
-        
-        assertTrue("checker1 check should pass", encoder1.matches("UserPassword", encodedPassword1));
 
-        assertTrue("checker2 checked should pass", encoder2.matches("UserPassword", encodedPassword2));
-        
-        String newPassword = encoder2.encode("passw0rd!");
-       //assertTrue("The  password encoded just now  should match the one in the database", encoder1.matches("$2a$16$MTviKciuiyBayFgmP3STLeafnWcIl4SG92AYhaaPGXV8Yi82jkeD.", "passw0rd!"));
-        
-        assertTrue("The generated password by test should match the one created for login", encoder2.matches("passw0rd!", "$2a$16$jEgvKW9Usuh/1ncL3dKZ4eCSmh7F/71ZvTgseuj.meS4TfM1c5F/i"));
-    }
 }

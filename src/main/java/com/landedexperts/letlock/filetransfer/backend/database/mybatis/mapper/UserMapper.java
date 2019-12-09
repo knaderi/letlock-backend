@@ -9,8 +9,8 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.Boolea
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 
 public interface UserMapper {
-	@Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
-			+ " FROM users.is_login_name_available( #{ loginName } )")
+    @Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
+            + " FROM users.is_login_name_available( #{ loginName } )")
 	BooleanVO isLoginNameAvailable(@Param("loginName") String loginName);
 
 	@Select("SELECT" + " _user_id AS id," + " _error_code AS errorCode," + " _error_message AS errorMessage"
@@ -38,5 +38,16 @@ public interface UserMapper {
 	@Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
 	            + " FROM users.is_email_registered( #{ email } )")
 	 BooleanVO isEmailRegistered(@Param("email") String email);
-
+	
+    @Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
+            + " FROM users.handle_forgot_password( #{ email }, #{resetToken}, #{newPassword} )")
+    BooleanVO resetUserPassword(@Param("email") String email, @Param("resetToken") String resetToken,  @Param("newPassword") String newPassword );
+    
+    @Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
+            + " FROM users.handle_forgot_password( #{ email }, #{resetToken} )")
+    BooleanVO handleForgotPassword(@Param("email") String email, @Param("resetToken") String resetToken );
+    
+    @Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
+            + " FROM users.is_password_reset_token_valid( #{ email }, #{resetToken}, #{newPassword} )")
+    BooleanVO isPasswordResetTokenValid(@Param("loginName") String loginName, @Param("resetToken") String resetToken);
 }
