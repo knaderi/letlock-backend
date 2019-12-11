@@ -147,7 +147,7 @@ public class UserController {
                 
             }
             if ("NO_ERROR".equals(errorCode)) {
-               // emailServiceFacade.sendForgotPasswordEmail(email, resetToken);
+                emailServiceFacade.sendForgotPasswordHTMLEmail(email, resetToken);
             }
         } catch (Exception e) {
             result = false;
@@ -158,36 +158,7 @@ public class UserController {
         return new ForgotPasswordResponse(result, resetToken, errorCode, errorMessage);
 
     }
-    
-    
-    @RequestMapping(method = RequestMethod.POST, value = "/getLastRecord", produces = { "application/JSON" })
-    public BooleanResponse getLastRecord() throws Exception {
- 
-        boolean result = false;
-        String errorCode = "NO_ERROR";
-        String errorMessage = "";       
-        try {
-            ErrorCodeMessageResponse response = userMapper.getLastRecord();
-            
-            errorCode = response.getErrorCode();
-            errorMessage = response.getErrorMessage();
-            if("NO_ERROR".equals(errorCode)) {
-                result = true;
-                
-            }
-            if ("NO_ERROR".equals(errorCode)) {
-               // emailServiceFacade.sendForgotPasswordEmail(email, resetToken);
-            }
-        } catch (Exception e) {
-            result = false;
-            logger.error("Exception thrown sening email." + e.getMessage());
-            errorCode = "FORGOT_PASSWORD_EMAIL_ERROR";
-            errorMessage = e.getMessage();
-        }
-        return new BooleanResponse(result, errorCode, errorMessage);
-
-    }
-    
+       
     
     @RequestMapping(method = RequestMethod.POST, value = "/getUserPasswordAlgo", produces = { "application/JSON" })
     public AlgoVO getUserPasswordAlgo(@RequestParam(value = "loginName") final String loginName) throws Exception {
@@ -205,9 +176,6 @@ public class UserController {
                 encodingAlgo = response.getEncodingAlgo();
                 hashingAlgo = response.getHashingAlgo();
                 
-            }
-            if ("NO_ERROR".equals(errorCode)) {
-               // emailServiceFacade.sendForgotPasswordEmail(email, resetToken);
             }
         } catch (Exception e) {
             hashingAlgo = "";

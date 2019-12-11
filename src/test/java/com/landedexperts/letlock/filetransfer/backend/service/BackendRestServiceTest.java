@@ -59,19 +59,7 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         registerUserAgain(uri, userLoginName, userEmail, userPassword);
     }
 
-    private void registerUserAgain(String uri, String senderLoginName, String senderEmail, String senderPassword)
-            throws Exception, UnsupportedEncodingException {
-        // try to resgister the user again should result in an error
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", senderLoginName)
-                .param("email", senderEmail).param("password", senderPassword).accept(MediaType.APPLICATION_JSON_VALUE));
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-        String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(content.length() > 0);
-        assertTrue("registerTest: content length should be larger than zero", content.length() > 0);
-        assertTrue("content should be USER_NAME_TAKEN", content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
-    }
-
+   
     @Test
     public void loginTest() throws Exception {
         Faker faker = new Faker();
@@ -86,18 +74,7 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("loginTest: errorCode should be NO_ERROR", content.contains("\"errorCode\":\"NO_ERROR\""));
     }
 
-    private String login(String senderLoginName, String password) throws Exception, UnsupportedEncodingException {
-        String uri = "/login";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", senderLoginName)
-                .param("password", password).accept(MediaType.APPLICATION_JSON_VALUE));
-
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-
-        String content = mvcResult.getResponse().getContentAsString();
-        return content;
-    }
-
+  
     @Test
     public void isLoginNameAvailableTest() throws Exception {
         Faker faker = new Faker();
@@ -154,23 +131,6 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("logoutTestForBadToken: result should be false", content.contains("\"result\":false"));
     }
 
-    private String loginUser(String loginName, String password) throws Exception {
-        String uri = "/login";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password)
-                .accept(MediaType.APPLICATION_JSON_VALUE));
-
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-
-        String content = mvcResult.getResponse().getContentAsString();
-        return getValuesForGivenKey(content, "token");
-    }
-
-    private void registerUser(String loginName, String email, String password) throws Exception {
-        String uri = "/register";
-        mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password).param("email", email)
-                .accept(MediaType.APPLICATION_JSON_VALUE));
-    }
 
     public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
         JSONObject jsonObject = new JSONObject(jsonArrayStr);
@@ -351,6 +311,49 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("Content value should be false", content.contains("\"result\":false"));
     }
 
+    private String loginUser(String loginName, String password) throws Exception {
+        String uri = "/login";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        return getValuesForGivenKey(content, "token");
+    }
+
+    private void registerUser(String loginName, String email, String password) throws Exception {
+        String uri = "/register";
+        mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password).param("email", email)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
+    }
+    
+    private void registerUserAgain(String uri, String senderLoginName, String senderEmail, String senderPassword)
+            throws Exception, UnsupportedEncodingException {
+        // try to resgister the user again should result in an error
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", senderLoginName)
+                .param("email", senderEmail).param("password", senderPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(content.length() > 0);
+        assertTrue("registerTest: content length should be larger than zero", content.length() > 0);
+        assertTrue("content should be USER_NAME_TAKEN", content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
+    }
+  
+    private String login(String senderLoginName, String password) throws Exception, UnsupportedEncodingException {
+        String uri = "/login";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", senderLoginName)
+                .param("password", password).accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        return content;
+    }
+    
     @Test
     public void getFileTransferSessionsForUserWith1TransferSessionTest() throws Exception {
         // Faker faker = new Faker();

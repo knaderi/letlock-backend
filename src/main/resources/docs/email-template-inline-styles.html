@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" style="-webkit-box-sizing: inherit; box-sizing: inherit; font-size: 62.5%;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Email</title>
+  </head>
+  <style>
+    @media only screen and (max-width: 75em) {
+      html {
+        font-size: 56.25%;
+      }
+    }
+    @media only screen and (max-width: 63.75em) {
+      html {
+        font-size: 50%;
+      }
+    }
+    @media only screen and (min-width: 112.5em) {
+      html {
+        font-size: 75%;
+      }LetLock Logo
+    }
+    @media only screen and (max-width: 30em) {
+      .footer__contacts {
+        margin-bottom: 1.5rem;
+      }
+    }
+    @media only screen and (max-width: 63.75em) {
+      .footer__contact {
+        margin: 0 2rem 1.5rem;
+      }
+    }
+  </style>
+
+  <body
+    style="-moz-osx-font-smoothing: grayscale; -webkit-font-smoothing: antialiased; -webkit-box-sizing: border-box; box-sizing: border-box; color: #2d2f43; font-family: 'Nunito Sans', sans-serif; font-size: 2rem; font-weight: 400; line-height: 1.375; margin: 0;"
+  >
+    <div class="email-body" style="-webkit-box-sizing: inherit; box-sizing: inherit;">
+      <section
+        class="email"
+        style="-webkit-box-sizing: inherit; box-sizing: inherit; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; text-align: center; padding: 5rem 2rem 2.5rem 2rem;"
+      >
+        <div
+          class="email__content-container"
+          style="-webkit-box-sizing: inherit; box-sizing: inherit; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-align: center; -ms-flex-align: center; align-items: center; max-width: 80rem;"
+        >
+          <div
+            class="email__logo-container"
+            style="-webkit-box-sizing: inherit; box-sizing: inherit; max-width: 30rem; margin-bottom: 5rem;"
+          >
+            <img
+              src="%LETLOCK_LOGO_URL_TOKEN%"
+              alt="LetLock Logo"
+              class="email__logo"
+              style="-webkit-box-sizing: inherit; box-sizing: inherit; width: 100%; height: auto;"
+            />
+          </div>
+          <h1
+            class="email__title"
+            style="-webkit-box-sizing: inherit; box-sizing: inherit; font-size: 3.8rem; font-weight: bold; margin: 0 0 1rem; text-transform: uppercase;"
+          >
+            Password Reset
+          </h1>
+          <p class="email__paragraph" style="-webkit-box-sizing: inherit; box-sizing: inherit;">
+            We are sending you this email because you have forgotten your password. Click the button below to reset your
+            password.
+          </p>
+          <form
+            class="email__form form"
+            action="%RESET_PASSWORD_SERVICE_URL%"
+            target="_blank"
+            method="get"
+            style="-webkit-box-sizing: inherit; box-sizing: inherit;"
+          >
+            <button
+              class="form__btn form__btn--primary"
+              type="submit"
+              name="token"
+              value="%RESET_TOKEN%"
+              style="-webkit-box-sizing: inherit; box-sizing: inherit; cursor: pointer; font-size: 1.6rem; line-height: 1.375; outline: none; background: #2fafff; border: 2px solid #2fafff; border-radius: 3px; color: #fff; font-weight: 700; padding: 12px 24px; text-transform: uppercase;"
+            >
+              Reset My Password
+            </button>
+          </form>
+          <p
+            class="email__paragraph email__footnote"
+            style="-webkit-box-sizing: inherit; box-sizing: inherit; font-size: 1.4rem;"
+          >
+            If you have not forgotten your password and did not request a password reset, please disregard this email.
+          </p>
+        </div>
+      </section>
+      <footer
+        class="footer"
+        style="-webkit-box-sizing: inherit; box-sizing: inherit; color: #666; font-size: 1.2rem; text-align: center;"
+      >
+        <section
+          class="footer__branding"
+          style="-webkit-box-sizing: inherit; box-sizing: inherit; -webkit-box-align: baseline; -ms-flex-align: baseline; align-items: baseline; background: #f3f3f4; display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; padding: 1.5rem;"
+        >
+          <img
+            class="footer__brand-image"
+            src="/assets/logo-gray.png"
+            alt="LetLock logo gray"
+            style="-webkit-box-sizing: inherit; box-sizing: inherit; height: 2.6rem; margin: 1rem 1rem 0 0; width: auto;"
+          />
+          <p class="footer__brand-text" style="-webkit-box-sizing: inherit; box-sizing: inherit; font-size: 1.4rem;">
+            Digital security solution that makes digital property storage and transfer more secure than ever.
+          </p>
+        </section>
+        <section
+          class="footer__content"
+          style="-webkit-box-sizing: inherit; box-sizing: inherit; background: #2d2f43; padding: 2.4rem 1.5rem;"
+        >
+          <div
+            class="footer__contacts"
+            style="-webkit-box-sizing: inherit; box-sizing: inherit; display: -webkit-box; display: -ms-flexbox; display: flex; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; margin-bottom: 2.5rem;"
+          >
+            <a
+              class="footer__contact"
+              href="mailto:info@landedexperts.com"
+              style="-webkit-box-sizing: inherit; box-sizing: inherit; text-decoration: none; -webkit-box-align: center; -ms-flex-align: center; align-items: center; color: #d0d0d5; display: -webkit-box; display: -ms-flexbox; display: flex; font-size: 1.4rem; margin: 0 1.6rem 1.5rem;"
+            >
+              <i
+                class="material-icons footer__contact-icon"
+                style="-webkit-box-sizing: inherit; box-sizing: inherit; font-size: 2rem; margin-right: 0.6rem;"
+                >mail_outline</i
+              >info@landedexperts.com
+            </a>
+            <a
+              class="footer__contact"
+              href="tel:6046746189"
+              style="-webkit-box-sizing: inherit; box-sizing: inherit; text-decoration: none; -webkit-box-align: center; -ms-flex-align: center; align-items: center; color: #d0d0d5; display: -webkit-box; display: -ms-flexbox; display: flex; font-size: 1.4rem; margin: 0 1.6rem 1.5rem;"
+            >
+              <i
+                class="material-icons footer__contact-icon"
+                style="-webkit-box-sizing: inherit; box-sizing: inherit; font-size: 2rem; margin-right: 0.6rem;"
+                >call</i
+              >(604) 674-6189
+            </a>
+          </div>
+          <p class="footer__copy" style="-webkit-box-sizing: inherit; box-sizing: inherit;">
+            &copy; 2019 Landed Experts Technologies Inc. All rights reserved.
+          </p>
+        </section>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -27,6 +27,18 @@ public class LetLockEmailService {
         simpleMailMessage.setText(email.getMessageText());
         javaMailSender.send(simpleMailMessage);
     }
+    
+    
+    public void sendHTMLMail(final Email email) throws Exception {
+        
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+        helper.setSubject(email.getSubject());
+        helper.setFrom(email.getFrom());
+        helper.setTo(email.getTo());
+        helper.setText(email.getMessageText(), true);
+        javaMailSender.send(mimeMessage);
+    }
 
     public void sendMailWithAttachment(final Email email, String filePath) throws Exception {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

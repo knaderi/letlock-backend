@@ -48,10 +48,6 @@ public interface UserMapper {
             + " FROM users.handle_forgot_password( #{email}, #{resetToken} )")
     BooleanVO handleForgotPassword(@Param("email") String email, @Param("resetToken") String resetToken );
     
-
-    @Select("SELECT" +  " _error_code AS errorCode," + " _error_message AS errorMessage"
-            + " FROM users.getLastRecord()")
-    ErrorCodeMessageResponse getLastRecord();
     
     @Select("SELECT" + " _result AS value," +  " _error_code AS errorCode," + " _error_message AS errorMessage"
             + " FROM users.is_password_reset_token_valid( #{email}, #{resetToken})")
