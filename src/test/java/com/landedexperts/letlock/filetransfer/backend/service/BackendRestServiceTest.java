@@ -324,7 +324,7 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
 
         String content = mvcResult.getResponse().getContentAsString();
         assertTrue("Content length should be larger than 0", content.length() > 0);
-        assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("Should not have any errors " + content, content.contains("\"errorCode\":\"NO_ERROR\""));
         assertTrue("Content error message should be empty", content.contains("\"errorMessage\":\"\""));
         assertTrue("Content value should b true", content.contains("\"result\":true"));
         JSONObject jsonObject = new JSONObject(content);
