@@ -20,7 +20,7 @@ public class BlockChainGatewayServiceTest extends AbstractTest implements Backen
 
     @Override
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         super.setUp();
     }
 

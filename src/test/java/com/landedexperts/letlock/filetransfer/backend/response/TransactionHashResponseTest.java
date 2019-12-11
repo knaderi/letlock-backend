@@ -1,9 +1,9 @@
 package com.landedexperts.letlock.filetransfer.backend.response;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
@@ -13,7 +13,7 @@ public class TransactionHashResponseTest extends AbstractTest {
     
     @Override
     @Before
-    public void setUp() {
+    public void setUp() throws Exception{
         super.setUp();
     }
     

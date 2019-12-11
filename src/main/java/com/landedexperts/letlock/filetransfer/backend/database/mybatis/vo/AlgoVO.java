@@ -3,7 +3,19 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
 
 public class AlgoVO extends ErrorCodeMessageResponse {
-	private String hashingAlgo;
+	public AlgoVO(String hashingAlgo, String encodingAlgo, String errorCode, String errorMessage ) {
+	    
+        super(errorCode, errorMessage );
+        setHashingAlgo(hashingAlgo);
+        setHashingAlgo(encodingAlgo);
+    }
+
+    public AlgoVO(String errorCode, String errorMessage) {
+        super(errorCode, errorMessage);
+        // TODO Auto-generated constructor stub
+    }
+
+    private String hashingAlgo;
 
 	public String getHashingAlgo() {
 		return hashingAlgo;

@@ -59,7 +59,7 @@ public class FileController {
         String errorMessage = "Invalid token";
         
 
-        long userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             // Get the path of the uploaded file
             String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
@@ -104,7 +104,7 @@ public class FileController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        long userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
 
@@ -125,7 +125,7 @@ public class FileController {
         @SuppressWarnings("unused")
         String errorMessage = "Invalid token";
 
-        long userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
             if (isAllowed.getValue()) {
@@ -145,7 +145,7 @@ public class FileController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        long userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
         	ErrorCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
 

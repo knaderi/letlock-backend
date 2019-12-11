@@ -28,7 +28,7 @@ public class OrderController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        long userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             IdVO answer = orderMapper.orderCreate(userId);
 
@@ -48,7 +48,7 @@ public class OrderController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        Long userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
         	ErrorCodeMessageResponse answer = orderMapper.changeStatusInitiatedToCancelled(userId, orderId);
 
@@ -69,7 +69,7 @@ public class OrderController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
 
-        Long userId = SessionManager.getInstance().getUserId(token);
+        int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
         	ErrorCodeMessageResponse answer = orderMapper.changeStatusCancelledToInitiated(userId, orderId);
 

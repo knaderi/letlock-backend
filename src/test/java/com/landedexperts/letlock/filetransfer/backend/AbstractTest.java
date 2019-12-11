@@ -26,7 +26,7 @@ public abstract class AbstractTest {
    @Autowired
    WebApplicationContext webApplicationContext;
 
-   protected void setUp() {
+   protected void setUp() throws Exception{
       mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
    }
    protected String mapToJson(Object obj) throws JsonProcessingException {

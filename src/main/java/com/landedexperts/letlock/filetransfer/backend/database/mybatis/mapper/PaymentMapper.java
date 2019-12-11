@@ -15,7 +15,7 @@ public interface PaymentMapper {
 			+ " FROM payment.payment_initiate( #{ userId }, #{ orderId }, #{ type }, #{ transactionId } )"
 	)
 	IdVO paymentInitiate(
-		@Param("userId") long userId,
+		@Param("userId") int userId,
 		@Param("orderId") int orderId,
 		@Param("type") int type,
 		@Param("transactionId") String transactionId
@@ -28,7 +28,7 @@ public interface PaymentMapper {
 			+ " FROM payment.payment_process_failure( #{ userId }, #{ paymentId } )"
 	)
 	ErrorCodeMessageResponse paymentProcessFailure(
-		@Param("userId") long userId,
+		@Param("userId") int userId,
 		@Param("paymentId") int paymentId
 	);
 
@@ -39,7 +39,7 @@ public interface PaymentMapper {
 			+ " FROM payment.payment_process_success( #{ userId }, #{ paymentId } )"
 	)
 	ErrorCodeMessageResponse paymentProcessSuccess(
-		@Param("userId") long userId,
+		@Param("userId") int userId,
 		@Param("paymentId") int paymentId
 	);
 }

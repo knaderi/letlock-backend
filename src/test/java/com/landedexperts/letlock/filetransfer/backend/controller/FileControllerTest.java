@@ -28,7 +28,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
 
     @Override
     @Before
-    public void setUp() {
+    public void setUp() throws Exception{
         super.setUp();
     }
 

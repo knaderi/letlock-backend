@@ -34,7 +34,7 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
 
     @Override
     @Before
-    public void setUp() {
+    public void setUp() throws Exception{
         super.setUp();
     }
 

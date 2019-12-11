@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ForgotPasswordResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -32,22 +33,27 @@ public interface UserMapper {
 			@Param("newPassword") String newPassword);
 
 	@Select("SELECT" + " _error_code AS errorCode," + " _error_message AS errorMessage"
-			+ " FROM users.update_user_status( #{ userId } , #{ status } )")
-	ErrorCodeMessageResponse updateUserStatus(@Param("userId") long userId, @Param("status") String status);
+			+ " FROM users.update_user_status( #{userId} , #{ status } )")
+	ErrorCodeMessageResponse updateUserStatus(@Param("userId") int userId, @Param("status") String status);
 	
-	@Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
-	            + " FROM users.is_email_registered( #{ email } )")
-	 BooleanVO isEmailRegistered(@Param("email") String email);
+//	@Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
+//	            + " FROM users.is_email_registered( #{ email } )")
+//	 BooleanVO isEmailRegistered(@Param("email") String email);
 	
     @Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
-            + " FROM users.handle_forgot_password( #{ email }, #{resetToken}, #{newPassword} )")
+            + " FROM users.reset_user_password( #{email}, #{resetToken}, #{newPassword} )")
     BooleanVO resetUserPassword(@Param("email") String email, @Param("resetToken") String resetToken,  @Param("newPassword") String newPassword );
     
     @Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
-            + " FROM users.handle_forgot_password( #{ email }, #{resetToken} )")
+            + " FROM users.handle_forgot_password( #{email}, #{resetToken} )")
     BooleanVO handleForgotPassword(@Param("email") String email, @Param("resetToken") String resetToken );
     
-    @Select("SELECT" + " _result AS value," + " _error_code AS errorCode," + " _error_message AS errorMessage"
-            + " FROM users.is_password_reset_token_valid( #{ email }, #{resetToken}, #{newPassword} )")
-    BooleanVO isPasswordResetTokenValid(@Param("loginName") String loginName, @Param("resetToken") String resetToken);
+
+    @Select("SELECT" +  " _error_code AS errorCode," + " _error_message AS errorMessage"
+            + " FROM users.getLastRecord()")
+    ErrorCodeMessageResponse getLastRecord();
+    
+    @Select("SELECT" + " _result AS value," +  " _error_code AS errorCode," + " _error_message AS errorMessage"
+            + " FROM users.is_password_reset_token_valid( #{email}, #{resetToken})")
+    BooleanVO isPasswordResetTokenValid(@Param("email") String email, @Param("resetToken") String resetToken);
 }

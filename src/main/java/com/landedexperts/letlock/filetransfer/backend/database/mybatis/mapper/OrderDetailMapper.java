@@ -15,7 +15,7 @@ public interface OrderDetailMapper {
 			+ " FROM payment.add_order_detail( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )"
 	)
 	IdVO addOrderDetail(
-		@Param("userId") long userId,
+		@Param("userId") int userId,
 		@Param("orderId") int orderId,
 		@Param("productId") int productId,
 		@Param("quantity") short quantity
@@ -28,7 +28,7 @@ public interface OrderDetailMapper {
 			+ " FROM payment.update_order_detail( #{ userId }, #{ orderDetailId }, #{ quantity } )"
 	)
 	ErrorCodeMessageResponse updateOrderDetail(
-		@Param("userId") long userId,
+		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId,
 		@Param("quantity") short quantity
 	);
@@ -40,7 +40,7 @@ public interface OrderDetailMapper {
 			+ " FROM payment.order_detail_delete( #{ userId }, #{ orderDetailId } )"
 	)
 	ErrorCodeMessageResponse deleteOrderDetail(
-		@Param("userId") long userId,
+		@Param("userId") int userId,
 		@Param("orderDetailId") int orderDetailId
 	);
 }
