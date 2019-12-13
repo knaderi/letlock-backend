@@ -33,16 +33,14 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
     @Override
     @Before
     @Transactional
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         super.setUp();
         Faker faker = new Faker();
         userLoginName = faker.name().firstName() + faker.name().lastName();
         userEmail = faker.internet().emailAddress();
         userPassword = userLoginName + '!';
-        //registerUser(userLoginName, userEmail, userPassword);
+        // registerUser(userLoginName, userEmail, userPassword);
     }
-
-
 
     @Test
     public void registerTest() throws Exception {
@@ -59,7 +57,6 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         registerUserAgain(uri, userLoginName, userEmail, userPassword);
     }
 
-   
     @Test
     public void loginTest() throws Exception {
         Faker faker = new Faker();
@@ -74,7 +71,6 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("loginTest: errorCode should be NO_ERROR", content.contains("\"errorCode\":\"NO_ERROR\""));
     }
 
-  
     @Test
     public void isLoginNameAvailableTest() throws Exception {
         Faker faker = new Faker();
@@ -130,7 +126,6 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
                 content.contains("\"errorCode\":\"LOGIN_SESSION_NOT_FOUND\""));
         assertTrue("logoutTestForBadToken: result should be false", content.contains("\"result\":false"));
     }
-
 
     public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
         JSONObject jsonObject = new JSONObject(jsonArrayStr);
@@ -191,10 +186,11 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
 
     @Test
     public void handleForgotPasswordWhenEmaiIsRegistered() throws Exception {
-        registerUser(userLoginName, userEmail, userPassword);   
+        registerUser(userLoginName, userEmail, userPassword);
         String uri = "/handle_forgot_password";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).param("resetToken", "").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).param("resetToken", "")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -204,7 +200,20 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("Should not have any errors", content.contains("\"errorCode\":\"NO_ERROR\""));
         assertTrue("Content error message should be empty", content.contains("\"errorMessage\":\"\""));
         assertTrue("Content value should b true", content.contains("\"result\":true"));
-        JSONObject jsonObject = new JSONObject(content);
+        //make sure reset token is created
+        testtResetToken();
+    }
+
+    private void testtResetToken() throws Exception, UnsupportedEncodingException, JSONException {
+        ResultActions resultAction2 = mvc
+                .perform(MockMvcRequestBuilders.post("/get_user_object").param("email", userEmail)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction2.andExpect(ok);
+        MvcResult mvcResult2 = resultAction2.andReturn();
+
+        String content2 = mvcResult2.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(content2);
         resetToken = jsonObject.getString("resetToken");
         assertTrue(resetToken.length() > 0);
     }
@@ -216,8 +225,8 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
 
         String uri2 = "/validate_reset_password_token";
         ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post(uri2).param("email", userEmail).param("token", resetToken).accept(MediaType.APPLICATION_JSON_VALUE));
-
+                .perform(MockMvcRequestBuilders.post(uri2).param("email", userEmail).param("token", resetToken)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
         MvcResult mvcResult2 = resultAction2.andReturn();
@@ -232,9 +241,8 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
 
     @Test
     public void resetPasswordTest() throws Exception {
-        registerUser(userLoginName, userEmail, userPassword);   
+        registerUser(userLoginName, userEmail, userPassword);
         handleForgotPassword();
-     
 
         String uri2 = "/reset_password";
         ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("token", resetToken)
@@ -255,11 +263,12 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
     @Test
     public void resetPasswordTokenTestForInvalidToken() throws Exception {
         registerUser(userLoginName, userEmail, userPassword);
-        handleForgotPassword();                
+        handleForgotPassword();
         String uri2 = "/validate_reset_password_token";
         String wrongToken = "1234567213";
         ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post(uri2).param("email", userEmail).param("token", wrongToken).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri2).param("email", userEmail).param("token", wrongToken)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
         MvcResult mvcResult2 = resultAction2.andReturn();
@@ -271,8 +280,6 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("Content error message should be token is invalid", content2.contains("\"errorMessage\":\"Invalid token or email\""));
         assertTrue("Content value should be false", content2.contains("\"result\":false"));
     }
-
-
 
     private void handleForgotPassword() throws Exception, UnsupportedEncodingException, JSONException {
         String uri = "/handle_forgot_password";
@@ -287,15 +294,14 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("Should not have any errors " + content, content.contains("\"errorCode\":\"NO_ERROR\""));
         assertTrue("Content error message should be empty", content.contains("\"errorMessage\":\"\""));
         assertTrue("Content value should b true", content.contains("\"result\":true"));
-        JSONObject jsonObject = new JSONObject(content);
-        resetToken = jsonObject.getString("resetToken");
-        assertTrue(resetToken.length() > 0);
+        //make sure reset token gets created.
+        testtResetToken();
     }
 
     @Test
     public void resetPasswordForInvalidPasswordTest() throws Exception {
         registerUser(userLoginName, userEmail, userPassword);
-        handleForgotPassword();          
+        handleForgotPassword();
         String uri = "/reset_password";
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("token", resetToken)
                 .param("email", userEmail).param("newPassword", "")
@@ -328,7 +334,7 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName).param("password", password).param("email", email)
                 .accept(MediaType.APPLICATION_JSON_VALUE));
     }
-    
+
     private void registerUserAgain(String uri, String senderLoginName, String senderEmail, String senderPassword)
             throws Exception, UnsupportedEncodingException {
         // try to resgister the user again should result in an error
@@ -341,7 +347,7 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         assertTrue("registerTest: content length should be larger than zero", content.length() > 0);
         assertTrue("content should be USER_NAME_TAKEN", content.contains("\"errorCode\":\"USER_NAME_TAKEN"));
     }
-  
+
     private String login(String senderLoginName, String password) throws Exception, UnsupportedEncodingException {
         String uri = "/login";
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", senderLoginName)
@@ -353,7 +359,7 @@ public class BackendRestServiceTest extends AbstractTest implements BackendTestC
         String content = mvcResult.getResponse().getContentAsString();
         return content;
     }
-    
+
     @Test
     public void getFileTransferSessionsForUserWith1TransferSessionTest() throws Exception {
         // Faker faker = new Faker();
