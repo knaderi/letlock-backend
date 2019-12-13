@@ -20,7 +20,7 @@ public interface OrderMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.order_change_status_initiated_to_cancelled( #{ userId }, #{ orderId } )"
+			+ " FROM payment.update_order_status_initiated_to_cancelled( #{ userId }, #{ orderId } )"
 	)
 	ErrorCodeMessageResponse changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
 
@@ -28,7 +28,7 @@ public interface OrderMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.order_change_status_cancelled_to_initiated( #{ userId }, #{ orderId } )"
+			+ " FROM payment.update_order_status_cancelled_to_initiated( #{ userId }, #{ orderId } )"
 	)
 	ErrorCodeMessageResponse changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
 }
