@@ -20,7 +20,7 @@ public interface FileTransferMapper {
 			+ " CAST( _wallet_address_uuid AS text ) AS walletAddressUuid,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM \"user\".insert_start_file_transfer_session_record( #{ userId } , DECODE( #{ walletAddress } , 'hex'), #{ receiverLoginName } )"
+			+ " FROM \"users\".insert_start_file_transfer_session_record( #{ userId } , DECODE( #{ walletAddress } , 'hex'), #{ receiverLoginName } )"
 	)
 	FileTransferInfoVO insertFileTransferSessionRecord(
 		@Param("userId") int userId,
