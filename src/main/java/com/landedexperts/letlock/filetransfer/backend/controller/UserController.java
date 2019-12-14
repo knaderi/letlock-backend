@@ -31,7 +31,7 @@ public class UserController {
     private static final String EMAIL_IS_INVALID = "Email is invalid";
     private static final String INVALID_EMAIL = "INVALID_EMAIL";
     @Autowired
-    private UserMapper userMapper; // using mybatis
+    private UserMapper userMapper;
 
     @Autowired
     EmailServiceFacade emailServiceFacade;
@@ -49,11 +49,12 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/register", produces = { "application/JSON" })
-    public BooleanResponse register(@RequestParam(value = "loginName") final String loginName,
+    public IdVO register(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "email") final String email, @RequestParam(value = "password") final String password) throws Exception {
         logger.info("UserController.register called for loginName " + loginName);
         String errorCode = "NO_ERROR";
         String errorMessage = "";
+        IdVO answer = new IdVO();
         if (!isLoginCriteriaAnEmail(email)) {
             errorCode = INVALID_EMAIL;
             errorMessage = EMAIL_IS_INVALID;
@@ -63,17 +64,17 @@ public class UserController {
         } else {
             logger.info("****************Calling register on db side");
             try {
-                IdVO answer = userMapper.register(loginName, email, password);
+                answer = userMapper.register(loginName, email, password);
                 errorCode = answer.getErrorCode();
                 errorMessage = answer.getErrorMessage();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        answer.setErrorCode(errorCode);
+        answer.setErrorMessage(errorMessage);
 
-        boolean result = errorCode.equals("NO_ERROR");
-
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return answer;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login", produces = { "application/JSON" })

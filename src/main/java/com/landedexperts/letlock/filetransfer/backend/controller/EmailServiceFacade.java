@@ -51,19 +51,19 @@ public class EmailServiceFacade {
     
     void sendForgotPasswordHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
 
-        Email email = new Email();
-        email.setFrom(letlockNotificationEmail);
-        
-        if("prd".equals(env)) {
-            email.setTo(recepientEmail);            
-        }else {
-            logger.info("replacing recipient email: " + recepientEmail);
-            email.setTo(nonProdReceipientEmail);   
-        }
-             
-        email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
-        email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken));
-        letLockEmailService.sendHTMLMail(email);
+//        Email email = new Email();
+//        email.setFrom(letlockNotificationEmail);
+//        
+//        if("prd".equals(env)) {
+//            email.setTo(recepientEmail);            
+//        }else {
+//            logger.info("replacing recipient email: " + recepientEmail);
+//            email.setTo(nonProdReceipientEmail);   
+//        }
+//             
+//        email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
+//        email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken));
+//        letLockEmailService.sendHTMLMail(email);
     }
 
     String getForgotPasswordHTMLEmailBody(String resetEmailToken) throws Exception {

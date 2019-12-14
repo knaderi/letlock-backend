@@ -42,7 +42,7 @@ public class OrderController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/update_order_status_to_cancelled", produces = { "application/JSON" })
     public BooleanResponse updateOrderStatusInitiatedToCancelled(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "order_id") final int orderId) throws Exception {
+            @RequestParam(value = "order_id") final String orderId) throws Exception {
         logger.info("OrderController.updateOrderStatusInitiatedToCancelled called for token " + token + " and OrderId " + orderId);
         Boolean result = false;
         String errorCode = "TOKEN_INVALID";
@@ -50,7 +50,7 @@ public class OrderController {
 
         int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	ErrorCodeMessageResponse answer = orderMapper.changeStatusInitiatedToCancelled(userId, orderId);
+        	ErrorCodeMessageResponse answer = orderMapper.changeStatusInitiatedToCancelled(userId, Integer.parseInt(orderId));
 
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();

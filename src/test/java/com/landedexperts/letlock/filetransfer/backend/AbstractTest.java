@@ -1,7 +1,11 @@
 package com.landedexperts.letlock.filetransfer.backend;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import java.io.IOException;
 
+import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +56,48 @@ public abstract class AbstractTest {
        System.getProperties().setProperty("spring.profiles.active", activeProfile);
 
    }
+   
+   protected void assertForNoError(String functionName, String content) throws Exception {
+        assertTrue("functionName - content length should be larger than zero", content.length() > 0);
+        assertJsonForKeyValue(functionName, content, "errorMessage", "", "equalsTo");
+        assertJsonForKeyValue(functionName, content, "errorCode", "NO_ERROR", "equalsTo");
+        if(content.contains("\"result\":")) {
+            assertJsonForKeyValue(functionName, content, "result", "", "notEmpty");
+        }
+    }
+   
+   protected void assertContentForKeyValueLargerThanZero(String testName, String content, String keyName) throws Exception {
+       assertJsonForKeyValue(testName, content, keyName, "0", "greaterThan" );
+   }
+    
+    protected void assertJsonForKeyValue(String testName, String content, String keyName, String expectedKeyValue, String operator ) throws Exception {
+        String actualValueForKey = getValuesForGivenKey(content, keyName);
+        String failureMessageComparison = "";
+        if(operator.equals("equalsTo")) {
+            failureMessageComparison = "is not equals to";
+        }else if(operator.equals("lessThan")) {
+            failureMessageComparison = "is not less than";
+        }else if(operator.equals("greaterThan")) {
+            failureMessageComparison = "is not greater than";
+        }else if(operator.equals("notEmpty")) {
+            failureMessageComparison = "is empty";
+        }
+        
+        String failureMessage = String.format(testName + " - The actual value of " + keyName + " is: " + actualValueForKey + ", and " + failureMessageComparison + " expectedValue:  " + expectedKeyValue, testName, keyName, actualValueForKey, expectedKeyValue);
+        if(operator.equals("equalsTo")) {
+            assertTrue(failureMessage, actualValueForKey.equals(expectedKeyValue)); 
+        }else if(operator.equals("lessThan")) {
+            assertTrue(failureMessage, Integer.valueOf(actualValueForKey) < Integer.valueOf(expectedKeyValue));
+        }else if(operator.equals("greaterThan")) {
+            assertTrue(failureMessage, Integer.valueOf(actualValueForKey) > Integer.valueOf(expectedKeyValue));
+        }else if(operator.equals("notEmpty")) {
+            assertFalse(failureMessage, StringUtils.isEmpty(actualValueForKey));
+        }
+    }
+    
+    
+    protected String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
+        JSONObject jsonObject = new JSONObject(jsonArrayStr);
+        return jsonObject.getString(key);
+    }
 }
