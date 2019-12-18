@@ -37,7 +37,7 @@ public interface OrderDetailMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.order_detail_delete( #{ userId }, #{ orderDetailId } )"
+			+ " FROM payment.delete_order_detail( #{ userId }, #{ orderDetailId } )"
 	)
 	ErrorCodeMessageResponse deleteOrderDetail(
 		@Param("userId") int userId,
