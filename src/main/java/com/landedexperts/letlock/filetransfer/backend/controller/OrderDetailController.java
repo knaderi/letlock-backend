@@ -74,7 +74,6 @@ public class OrderDetailController {
         int userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
         	ErrorCodeMessageResponse answer = orderDetailMapper.deleteOrderDetail(userId, orderDetailId);
-
             errorCode = answer.getErrorCode();
             errorMessage = answer.getErrorMessage();
             result = errorCode.equals("NO_ERROR");

@@ -14,9 +14,11 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Us
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersInfoResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderInfoRecordVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
@@ -211,10 +213,10 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_object", produces = { "application/JSON" })
-     public UserVO getUserObject(String email) {
+    public UserVO getUserObject(String email) {
         String errorCode = "NO_ERROR";
         String errorMessage = "";
-        UserVO response = new UserVO(); 
+        UserVO response = new UserVO();
         try {
             response = userMapper.getUserObject(email);
 
@@ -225,7 +227,27 @@ public class UserController {
         }
         response.setErrorCode(errorCode);
         response.setErrorMessage(errorMessage);
-        return response;       
+        return response;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/get_orders_for_user", produces = {
+            "application/JSON" })
+    public OrdersInfoResponse getFileTransferSessionsForUser(
+            @RequestParam(value = "token") final String token) throws Exception {
+        logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
+
+        OrderInfoRecordVO[] value = null;
+        String errorCode = "TOKEN_INVALID";
+        String errorMessage = "Invalid token";
+
+        int userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            value = userMapper.getUserOrders(userId);
+            errorCode = "NO_ERROR";
+            errorMessage = "";
+        }
+
+        return new OrdersInfoResponse(value, errorCode, errorMessage);
     }
 
 }

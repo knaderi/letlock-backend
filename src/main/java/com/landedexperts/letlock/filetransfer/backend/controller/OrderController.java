@@ -12,7 +12,9 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Or
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrderResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ProductsResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ProductVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -80,5 +82,22 @@ public class OrderController {
         }
 
         return new BooleanResponse(result, errorCode, errorMessage);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/get_products", produces = { "application/JSON" })
+    public ProductsResponse getProducts(String token) {
+        logger.info("OrderController.getProducts called for token ");
+        ProductVO[] value = null;
+        String errorCode = "TOKEN_INVALID";
+        String errorMessage = "Invalid token";
+        int userId = SessionManager.getInstance().getUserId(token);
+        boolean result = false;
+        if (userId > 0) {
+            value = orderMapper.getActiveProducts(userId);
+            errorCode = "NO_ERROR";
+            errorMessage = "";
+        }
+
+        return new ProductsResponse(value, errorCode, errorMessage);
     }
 }
