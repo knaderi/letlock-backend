@@ -4,7 +4,7 @@ public class OrderInfoRecordVO {
     
     private int userId;
     private int order_id;
-    private int order_detail_id;
+    private int order_line_item_id;
     private String order_status;
     private int product_id;
     private String product_name;
@@ -23,11 +23,11 @@ public class OrderInfoRecordVO {
     public void setOrder_id(int order_id) {
         this.order_id = order_id;
     }
-    public int getOrder_detail_id() {
-        return order_detail_id;
+    public int getOrder_line_item_id() {
+        return order_line_item_id;
     }
-    public void setOrder_detail_id(int order_detail_id) {
-        this.order_detail_id = order_detail_id;
+    public void setOrder_detail_id(int order_line_item_id) {
+        this.order_line_item_id = order_line_item_id;
     }
     public String getOrder_status() {
         return order_status;

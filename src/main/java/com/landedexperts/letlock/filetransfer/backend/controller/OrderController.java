@@ -91,7 +91,6 @@ public class OrderController {
         String errorCode = "TOKEN_INVALID";
         String errorMessage = "Invalid token";
         int userId = SessionManager.getInstance().getUserId(token);
-        boolean result = false;
         if (userId > 0) {
             value = orderMapper.getActiveProducts(userId);
             errorCode = "NO_ERROR";

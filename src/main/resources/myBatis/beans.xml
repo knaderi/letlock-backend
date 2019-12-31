@@ -38,7 +38,7 @@
 	</bean>
 
 	<bean id="orderDetailMapper" parent="baseMapper">
-		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderDetailMapper"/>
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderLineItemMapper"/>
 	</bean>
 
 	<bean id="paymentMapper" parent="baseMapper">

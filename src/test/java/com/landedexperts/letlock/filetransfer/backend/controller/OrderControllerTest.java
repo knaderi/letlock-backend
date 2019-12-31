@@ -68,33 +68,33 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void createOrderDetailTest() throws Exception {
         createOrder();
-        createOrderDetail();
-        updateOrderDetail();
+        createOrderLineItem();
+        updateOrderLineItem();
         
     }
 
-    private void createOrderDetail() throws Exception, UnsupportedEncodingException {
-        String uri = "/add_order_detail";
+    private void createOrderLineItem() throws Exception, UnsupportedEncodingException {
+        String uri = "/add_order_line_item";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).param("product_id", "3").param("quantity", "1").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("createOrderDetailTest", content);
-        assertContentForKeyValueLargerThanZero("createOrderTest", content, "orderDetailId");
-        orderDetailId = getValuesForGivenKey(content, "orderDetailId");
+        assertContentForKeyValueLargerThanZero("createOrderTest", content, "orderLineItemId");
+        orderDetailId = getValuesForGivenKey(content, "orderLineItemId");
     }
     
     
 
-    private void updateOrderDetail() throws Exception {
-        String uri = "/update_order_detail";
+    private void updateOrderLineItem() throws Exception {
+        String uri = "/update_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_detail_id", orderDetailId).param("quantity", "2").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_line_item_id", orderDetailId).param("quantity", "2").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertForNoError("createOrderDetailTest", content);
+        assertForNoError("createOrderLineItemTest", content);
     }
     
     @Test
@@ -104,7 +104,7 @@ public class OrderControllerTest extends BaseControllerTest {
 //        createOrderDetail();
 //        String uri = "/delete_order_detail";
 //        ResultActions resultAction = mvc
-//                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_detail_id", orderDetailId).accept(MediaType.APPLICATION_JSON_VALUE));
+//                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_line_item_id", orderDetailId).accept(MediaType.APPLICATION_JSON_VALUE));
 //        resultAction.andExpect(ok);
 //        MvcResult mvcResult = resultAction.andReturn();
 //        String content = mvcResult.getResponse().getContentAsString();
@@ -114,7 +114,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void getUserOrdersTest() throws Exception {
         createOrder();
-        createOrderDetail();
+        createOrderLineItem();
         String uri = "/get_orders_for_user";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
@@ -129,7 +129,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void getProductsTest() throws Exception {
         createOrder();
-        createOrderDetail();
+        createOrderLineItem();
         String uri = "/get_products";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));

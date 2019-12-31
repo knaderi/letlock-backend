@@ -12,23 +12,23 @@ public interface OrderMapper {
             + " _order_id AS id,"
             + " _error_code AS errorCode,"
             + " _error_message AS errorMessage"
-            + " FROM payment.order_create( #{userId} )")
+            + " FROM orders.order_create( #{userId} )")
     IdVO orderCreate(@Param("userId") int userId);
 
     @Select("SELECT"
             + " _error_code AS errorCode,"
             + " _error_message AS errorMessage"
-            + " FROM payment.update_order_status_initiated_to_cancelled( #{ userId }, #{ orderId } )")
+            + " FROM orders.update_order_status_initiated_to_cancelled( #{ userId }, #{ orderId } )")
     ErrorCodeMessageResponse changeStatusInitiatedToCancelled(@Param("userId") int userId, @Param("orderId") int orderId);
 
     @Select("SELECT"
             + " _error_code AS errorCode,"
             + " _error_message AS errorMessage"
-            + " FROM payment.update_order_status_cancelled_to_initiated( #{ userId }, #{ orderId } )")
+            + " FROM orders.update_order_status_cancelled_to_initiated( #{ userId }, #{ orderId } )")
     ErrorCodeMessageResponse changeStatusCancelledToInitiated(@Param("userId") int userId, @Param("orderId") int orderId);
 
     @Select("SELECT"
             + " * "
-            + " FROM product.product")
+            + " FROM orders.product")
     ProductVO[] getActiveProducts(@Param("userId") int userId);
 }

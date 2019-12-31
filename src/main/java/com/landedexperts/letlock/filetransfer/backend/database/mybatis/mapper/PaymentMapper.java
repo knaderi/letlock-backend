@@ -11,7 +11,7 @@ public interface PaymentMapper {
             + " _payment_id AS id,"
             + " _error_code AS errorCode,"
             + " _error_message AS errorMessage"
-            + " FROM payment.payment_initiate( #{ userId }, #{ orderId }, #{ type }, #{ transactionId } )")
+            + " FROM orders.payment_initiate( #{ userId }, #{ orderId }, #{ type }, #{ transactionId } )")
     IdVO paymentInitiate(
             @Param("userId") int userId,
             @Param("orderId") int orderId,
@@ -21,7 +21,7 @@ public interface PaymentMapper {
     @Select("SELECT"
             + " _error_code AS errorCode,"
             + " _error_message AS errorMessage"
-            + " FROM payment.payment_process_failure( #{ userId }, #{ paymentId } )")
+            + " FROM orders.payment_process_failure( #{ userId }, #{ paymentId } )")
     ErrorCodeMessageResponse paymentProcessFailure(
             @Param("userId") int userId,
             @Param("paymentId") int paymentId);
@@ -29,7 +29,7 @@ public interface PaymentMapper {
     @Select("SELECT"
             + " _error_code AS errorCode,"
             + " _error_message AS errorMessage"
-            + " FROM payment.payment_process_success( #{ userId }, #{ paymentId } )")
+            + " FROM orders.payment_process_success( #{ userId }, #{ paymentId } )")
     ErrorCodeMessageResponse paymentProcessSuccess(
             @Param("userId") int userId,
             @Param("paymentId") int paymentId);

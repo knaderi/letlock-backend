@@ -6,15 +6,15 @@ import org.apache.ibatis.annotations.Select;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 
-public interface OrderDetailMapper {
+public interface OrderLineItemMapper {
 	@Select(
 		"SELECT"
-			+ " _order_detail_id AS id,"
+			+ " _order_line_item_id AS id,"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.add_order_detail( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )"
+			+ " FROM orders.add_order_line_item( #{ userId }, #{ orderId }, #{ productId }, #{ quantity } )"
 	)
-	IdVO addOrderDetail(
+	IdVO addOrderLineItem(
 		@Param("userId") int userId,
 		@Param("orderId") int orderId,
 		@Param("productId") int productId,
@@ -25,11 +25,11 @@ public interface OrderDetailMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.update_order_detail( #{ userId }, #{ orderDetailId }, #{ quantity } )"
+			+ " FROM orders.update_order_line_item( #{ userId }, #{ orderLineItemId }, #{ quantity } )"
 	)
-	ErrorCodeMessageResponse updateOrderDetail(
+	ErrorCodeMessageResponse updateOrderLineItem(
 		@Param("userId") int userId,
-		@Param("orderDetailId") int orderDetailId,
+		@Param("orderLineItemId") int orderDetailId,
 		@Param("quantity") short quantity
 	);
 
@@ -37,10 +37,10 @@ public interface OrderDetailMapper {
 		"SELECT"
 			+ " _error_code AS errorCode,"
 			+ " _error_message AS errorMessage"
-			+ " FROM payment.delete_order_detail( #{ userId }, #{ orderDetailId } )"
+			+ " FROM orders.delete_order_line_item( #{ userId }, #{ orderLineItemId } )"
 	)
-	ErrorCodeMessageResponse deleteOrderDetail(
+	ErrorCodeMessageResponse deleteOrderLineItem(
 		@Param("userId") int userId,
-		@Param("orderDetailId") int orderDetailId
+		@Param("orderLineItemId") int orderDetailId
 	);
 }
