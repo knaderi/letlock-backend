@@ -84,14 +84,9 @@ public class OrderController {
     }
     
     @RequestMapping(method = RequestMethod.POST, value = "/get_packages", produces = { "application/JSON" })
-    public JsonResponse getPackages(String token) {
-        logger.info("OrderController.getProducts called for token " + token);
-        JsonResponse value = null;
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            value = orderMapper.getPackages(false, false);
-        }
-
+    public JsonResponse getPackages() {
+        logger.info("OrderController.getProducts called");
+        JsonResponse value = orderMapper.getPackages(false, false);
         return value;
     }
     
