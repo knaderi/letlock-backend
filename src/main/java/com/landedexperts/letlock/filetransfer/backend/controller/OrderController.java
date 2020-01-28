@@ -89,7 +89,7 @@ public class OrderController {
         JsonResponse value = null;
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            value = orderMapper.getActiveProducts(false, false);
+            value = orderMapper.getPackages(false, false);
         }
 
         return value;
