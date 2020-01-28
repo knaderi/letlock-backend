@@ -80,7 +80,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         token = getValuesForGivenKey(content, "token");
         assertForNoError("login", content);
         assertTrue("loginTest: content length should be larger than zero", content.length() > 0);
-        assertTrue("loginTest: errorCode should be NO_ERROR", content.contains("\"errorCode\":\"NO_ERROR\""));
+        assertTrue("loginTest: returnCode should be SUCCESS", content.contains("\"returnCode\":\"SUCCESS\""));
     }
     
 

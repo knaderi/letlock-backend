@@ -2,9 +2,9 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
 import java.util.Date;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 
-public class UserVO extends ErrorCodeMessageResponse{
+public class UserVO extends ReturnCodeMessageResponse{
 
     private long userId;
 

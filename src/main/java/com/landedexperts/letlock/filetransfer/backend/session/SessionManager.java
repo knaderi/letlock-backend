@@ -26,7 +26,7 @@ public class SessionManager {
 	/*
 	 * Generates a new session token for the user
 	 */
-	public String generateSessionToken(final int userId) {
+	public String generateSessionToken(final long userId) {
 		/* Generate the token */
 		byte[] randomBytes = new byte[128];
 		random.nextBytes(randomBytes);
@@ -75,8 +75,8 @@ public class SessionManager {
 	 * Gives the user id (for the database) associated with this token
 	 * Returned value to be used internally only
 	 */
-	public int getUserId(final String token) {
-		int result = -1;
+	public long getUserId(final String token) {
+		long result = -1;
 		if(isActive(token)) {
 			UserSession userSession = sessionTokens.get(token);
 			result = userSession.getUserId();

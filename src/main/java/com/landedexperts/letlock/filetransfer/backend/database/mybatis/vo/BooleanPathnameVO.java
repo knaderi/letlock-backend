@@ -1,8 +1,8 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 
-public class BooleanPathnameVO extends ErrorCodeMessageResponse {
+public class BooleanPathnameVO extends ReturnCodeMessageResponse {
 	private boolean value;
 
 	public boolean getValue() {

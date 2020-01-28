@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersInfoResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -44,37 +44,37 @@ public class UserController {
         BooleanVO answer = userMapper.isLoginNameAvailable(loginName);
 
         boolean result = answer.getValue();
-        String errorCode = answer.getErrorCode();
-        String errorMessage = answer.getErrorMessage();
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
 
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/register", produces = { "application/JSON" })
     public IdVO register(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "email") final String email, @RequestParam(value = "password") final String password) throws Exception {
         logger.info("UserController.register called for loginName " + loginName);
-        String errorCode = "NO_ERROR";
-        String errorMessage = "";
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
         IdVO answer = new IdVO();
         if (!isLoginCriteriaAnEmail(email)) {
-            errorCode = INVALID_EMAIL;
-            errorMessage = EMAIL_IS_INVALID;
+            returnCode = INVALID_EMAIL;
+            returnMessage = EMAIL_IS_INVALID;
         } else if (!new LoginNameValidator().isValid(loginName)) {
-            errorCode = INVALID_LOGINNAME;
-            errorMessage = LOGIN_NAME_IS_INVALID;
+            returnCode = INVALID_LOGINNAME;
+            returnMessage = LOGIN_NAME_IS_INVALID;
         } else {
             logger.info("****************Calling register on db side");
             try {
                 answer = userMapper.register(loginName, email, password);
-                errorCode = answer.getErrorCode();
-                errorMessage = answer.getErrorMessage();
+                returnCode = answer.getReturnCode();
+                returnMessage = answer.getReturnMessage();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        answer.setErrorCode(errorCode);
-        answer.setErrorMessage(errorMessage);
+        answer.setReturnCode(returnCode);
+        answer.setReturnMessage(returnMessage);
 
         return answer;
     }
@@ -85,16 +85,16 @@ public class UserController {
         logger.info("UserController.login called for loginName " + loginName);
         IdVO answer = userMapper.login(loginName, password);
 
-        int userId = answer.getId();
-        String errorCode = answer.getErrorCode();
-        String errorMessage = answer.getErrorMessage();
+        long userId = answer.getId();
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
 
         String token = "";
-        if (errorCode.equals("NO_ERROR")) {
+        if (returnCode.equals("SUCCESS")) {
             token = SessionManager.getInstance().generateSessionToken(userId);
         }
 
-        return new SessionTokenResponse(token, errorCode, errorMessage);
+        return new SessionTokenResponse(token, returnCode, returnMessage);
     }
 
     private boolean isLoginCriteriaAnEmail(final String loginNameOrEmail) {
@@ -107,13 +107,13 @@ public class UserController {
             throws Exception {
 
         logger.info("UserController.updateUserPassword called for loginName " + loginNameOrEmail);
-        ErrorCodeMessageResponse answer = userMapper.updateUserPassword(loginNameOrEmail, oldPassword, newPassword);
+        ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginNameOrEmail, oldPassword, newPassword);
 
-        String errorCode = answer.getErrorCode();
-        String errorMessage = answer.getErrorMessage();
-        boolean result = errorCode.equals("NO_ERROR");
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
+        boolean result = returnCode.equals("SUCCESS");
 
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/logout", produces = { "application/JSON" })
@@ -123,7 +123,7 @@ public class UserController {
         SessionManager instance = SessionManager.getInstance();
         if (instance.isActive(token)) {
             instance.cleanSession(token);
-            return new BooleanResponse(true, "NO_ERROR", "");
+            return new BooleanResponse(true, "SUCCESS", "");
         } else {
             return new BooleanResponse(false, "LOGIN_SESSION_NOT_FOUND", "There is no active login session for the given token");
         }
@@ -134,30 +134,30 @@ public class UserController {
     public BooleanResponse handleForgotPassword(@RequestParam(value = "email") final String email) throws Exception {
         logger.info("UserController.forgotPassword called for email " + email);
         boolean result = false;
-        String errorCode = "NO_ERROR";
-        String errorMessage = "";
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
         String resetToken = "";
         try {
             resetToken = UUID.randomUUID().toString();
 
             BooleanVO response = userMapper.handleForgotPassword(email, resetToken);
 
-            errorCode = response.getErrorCode();
-            errorMessage = response.getErrorMessage();
-            if ("NO_ERROR".equals(errorCode)) {
+            returnCode = response.getReturnCode();
+            returnMessage = response.getReturnMessage();
+            if ("SUCCESS".equals(returnCode)) {
                 result = true;
 
             }
-            if ("NO_ERROR".equals(errorCode)) {
+            if ("SUCCESS".equals(returnCode)) {
                 emailServiceFacade.sendForgotPasswordHTMLEmail(email, resetToken);
             }
         } catch (Exception e) {
             result = false;
             logger.error("Exception thrown sening email." + e.getMessage());
-            errorCode = "FORGOT_PASSWORD_EMAIL_ERROR";
-            errorMessage = e.getMessage();
+            returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
+            returnMessage = e.getMessage();
         }
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
 
     }
 
@@ -166,14 +166,14 @@ public class UserController {
 
         String encodingAlgo = "";
         String hashingAlgo = "";
-        String errorCode = "NO_ERROR";
-        String errorMessage = "";
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
         try {
             AlgoVO response = userMapper.getUserPasswordAlgo(loginName);
 
-            errorCode = response.getErrorCode();
-            errorMessage = response.getErrorMessage();
-            if ("NO_ERROR".equals(errorCode)) {
+            returnCode = response.getReturnCode();
+            returnMessage = response.getReturnMessage();
+            if ("SUCCESS".equals(returnCode)) {
                 encodingAlgo = response.getEncodingAlgo();
                 hashingAlgo = response.getHashingAlgo();
 
@@ -182,10 +182,10 @@ public class UserController {
             hashingAlgo = "";
             encodingAlgo = "";
             logger.error("Exception thrown sening email." + e.getMessage());
-            errorCode = "FORGOT_PASSWORD_EMAIL_ERROR";
-            errorMessage = e.getMessage();
+            returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
+            returnMessage = e.getMessage();
         }
-        return new AlgoVO(hashingAlgo, encodingAlgo, errorCode, errorMessage);
+        return new AlgoVO(hashingAlgo, encodingAlgo, returnCode, returnMessage);
 
     }
 
@@ -196,9 +196,9 @@ public class UserController {
         logger.info("UserController.resetPassword called for email " + email);
         BooleanVO response = userMapper.resetUserPassword(email, token, newPassword);
         boolean result = response.getValue();
-        String errorCode = response.getErrorCode();
-        String errorMessage = response.getErrorMessage();
-        return new BooleanResponse(result, errorCode, errorMessage);
+        String returnCode = response.getReturnCode();
+        String returnMessage = response.getReturnMessage();
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/validate_reset_password_token", produces = { "application/JSON" })
@@ -207,26 +207,26 @@ public class UserController {
         logger.info("UserController.validateResetPasswordToken called for validating resetToken");
         BooleanVO response = userMapper.isPasswordResetTokenValid(token);
         boolean result = response.getValue();
-        String errorCode = response.getErrorCode();
-        String errorMessage = response.getErrorMessage();
-        return new BooleanResponse(result, errorCode, errorMessage);
+        String returnCode = response.getReturnCode();
+        String returnMessage = response.getReturnMessage();
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_object", produces = { "application/JSON" })
     public UserVO getUserObject(String email) {
-        String errorCode = "NO_ERROR";
-        String errorMessage = "";
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
         UserVO response = new UserVO();
         try {
             response = userMapper.getUserObject(email);
 
         } catch (Exception e) {
             logger.error("UserMapper.getUserObject threw an Exception " + e.getMessage());
-            errorCode = "USER_NOT_FOUND";
-            errorMessage = "Cannot find user using email " + email;
+            returnCode = "USER_NOT_FOUND";
+            returnMessage = "Cannot find user using email " + email;
         }
-        response.setErrorCode(errorCode);
-        response.setErrorMessage(errorMessage);
+        response.setReturnCode(returnCode);
+        response.setReturnMessage(returnMessage);
         return response;
     }
 
@@ -237,17 +237,17 @@ public class UserController {
         logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
 
         OrderInfoRecordVO[] value = null;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             value = userMapper.getUserOrders(userId);
-            errorCode = "NO_ERROR";
-            errorMessage = "";
+            returnCode = "SUCCESS";
+            returnMessage = "";
         }
 
-        return new OrdersInfoResponse(value, errorCode, errorMessage);
+        return new OrdersInfoResponse(value, returnCode, returnMessage);
     }
 
 }

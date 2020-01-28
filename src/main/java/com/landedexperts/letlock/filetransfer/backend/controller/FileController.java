@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanPathnameVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
@@ -55,11 +55,11 @@ public class FileController {
             throws Exception {
         logger.info("FileController.fileInsert called for token " + token);
         boolean result = false;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
         
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             // Get the path of the uploaded file
             String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
@@ -70,10 +70,10 @@ public class FileController {
 
             IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remotePathName, expires);
 
-            errorCode = answer.getErrorCode();
-            errorMessage = answer.getErrorMessage();
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
 
-            result = errorCode.equals("NO_ERROR");
+            result = returnCode.equals("SUCCESS");
 
             if (result) {
                 saveFileOnDisk(file, localFilePath);
@@ -82,7 +82,7 @@ public class FileController {
         }
         logger.info("FileController.uploadFile returning response with result " + result);
 
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     public void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
@@ -101,19 +101,19 @@ public class FileController {
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileController.canDownloadFile called for token " + token);
         boolean result = false;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
 
             result = isAllowed.getValue();
-            errorCode = isAllowed.getErrorCode();
-            errorMessage = isAllowed.getErrorMessage();
+            returnCode = isAllowed.getReturnCode();
+            returnMessage = isAllowed.getReturnMessage();
         }
         logger.info("FileController.canDownloadFile returning response " + result);
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/download_file")
@@ -121,11 +121,11 @@ public class FileController {
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileController.downloadFile called for token " + token);
         @SuppressWarnings("unused")
-        String errorCode = "TOKEN_INVALID";
+        String returnCode = "TOKEN_INVALID";
         @SuppressWarnings("unused")
-        String errorMessage = "Invalid token";
+        String returnMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
             if (isAllowed.getValue()) {
@@ -142,21 +142,21 @@ public class FileController {
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileController.deleteFile called for token " + token);
         boolean result = false;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	ErrorCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
+        	ReturnCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
 
-            errorCode = answer.getErrorCode();
-            errorMessage = answer.getErrorMessage();
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
 
-            result = errorCode.equals("NO_ERROR");
+            result = returnCode.equals("SUCCESS");
 
         }
         logger.info("FileController.deleteFile returning response " + result);
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
 }

@@ -1,17 +1,17 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 
-public class AlgoVO extends ErrorCodeMessageResponse {
-	public AlgoVO(String hashingAlgo, String encodingAlgo, String errorCode, String errorMessage ) {
+public class AlgoVO extends ReturnCodeMessageResponse {
+	public AlgoVO(String hashingAlgo, String encodingAlgo, String returnCode, String returnMessage ) {
 	    
-        super(errorCode, errorMessage );
+        super(returnCode, returnMessage );
         setHashingAlgo(hashingAlgo);
         setHashingAlgo(encodingAlgo);
     }
 
-    public AlgoVO(String errorCode, String errorMessage) {
-        super(errorCode, errorMessage);
+    public AlgoVO(String returnCode, String returnMessage) {
+        super(returnCode, returnMessage);
         // TODO Auto-generated constructor stub
     }
 

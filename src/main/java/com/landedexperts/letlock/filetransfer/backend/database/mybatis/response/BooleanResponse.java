@@ -1,10 +1,10 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-public class BooleanResponse extends ErrorCodeMessageResponse {
+public class BooleanResponse extends ReturnCodeMessageResponse {
 	private final boolean result;
 
-	public BooleanResponse(final boolean result, final String errorCode, final String errorMessage) {
-		super(errorCode, errorMessage);
+	public BooleanResponse(final boolean result, final String returnCode, final String returnMessage) {
+		super(returnCode, returnMessage);
 		this.result = result;
 	}
 

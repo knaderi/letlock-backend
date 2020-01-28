@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-public class TransactionHashResponse extends ErrorCodeMessageResponse {
+public class TransactionHashResponse extends ReturnCodeMessageResponse {
 
 
     private String transactionHash;
@@ -9,45 +9,45 @@ public class TransactionHashResponse extends ErrorCodeMessageResponse {
     private String status;
     
 
-//    private String errorCode;
+//    private String returnCode;
 //
 //
-//    private String errorMessage;
+//    private String returnMessage;
 
-    public TransactionHashResponse(final String errorCode,
-            final String errorMessage) {
-        super(errorCode, errorMessage);
+    public TransactionHashResponse(final String returnCode,
+            final String returnMessage) {
+        super(returnCode, returnMessage);
     }
 
     public TransactionHashResponse(final String transactionHash,
-           final String errorCode, final String errorMessage) {
-       // super(errorCode, errorMessage);
+           final String returnCode, final String returnMessage) {
+       // super(returnCode, returnMessage);
         this.transactionHash = transactionHash;
         status = "";
     }
 
     public TransactionHashResponse(final String transactionHash,
-             final String status, String errorCode,
-            final String errorMessage) {
-     //   super(errorCode, errorMessage);
+             final String status, String returnCode,
+            final String returnMessage) {
+     //   super(returnCode, returnMessage);
         this.transactionHash = transactionHash;
         this.status = status;
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public String getReturnCode() {
+        return returnCode;
     }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
+    public void setReturnCode(String returnCode) {
+        this.returnCode = returnCode;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getReturnMessage() {
+        return returnMessage;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void setReturnMessage(String returnMessage) {
+        this.returnMessage = returnMessage;
     }
 
     public TransactionHashResponse() {

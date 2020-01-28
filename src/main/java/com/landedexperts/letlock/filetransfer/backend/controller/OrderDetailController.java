@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderLineItemMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrderLineItemResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
@@ -26,20 +26,20 @@ public class OrderDetailController {
             @RequestParam(value = "order_id") final int orderId, @RequestParam(value = "product_id") final int productId,
             @RequestParam(value = "quantity") final short quantity) throws Exception {
         logger.info("OrderDetailController.addOrderDetail called for token " + token + " orderId " + orderId + " productId " + productId);
-        int orderLineItemId = -1;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
+        long orderLineItemId = -1;
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             IdVO answer = orderLineItemMapper.addOrderLineItem(userId, orderId, productId, quantity);
 
             orderLineItemId = answer.getId();
-            errorCode = answer.getErrorCode();
-            errorMessage = answer.getErrorMessage();
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
         }
 
-        return new OrderLineItemResponse(orderLineItemId, errorCode, errorMessage);
+        return new OrderLineItemResponse(orderLineItemId, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/update_order_line_item", produces = { "application/JSON" })
@@ -48,19 +48,19 @@ public class OrderDetailController {
             throws Exception {
         logger.info("OrderDetailController.updateOrderLineItem called for token " + token + " orderDLineItemId " + orderLineItemId + " quantity " + quantity);
         boolean result = false;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	ErrorCodeMessageResponse answer = orderLineItemMapper.updateOrderLineItem(userId, orderLineItemId, quantity);
+        	ReturnCodeMessageResponse answer = orderLineItemMapper.updateOrderLineItem(userId, orderLineItemId, quantity);
 
-            errorCode = answer.getErrorCode();
-            errorMessage = answer.getErrorMessage();
-            result = errorCode.equals("NO_ERROR");
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+            result = returnCode.equals("SUCCESS");
         }
 
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/delete_order_line_item", produces = { "application/JSON" })
@@ -68,17 +68,17 @@ public class OrderDetailController {
             @RequestParam(value = "order_line_item_id") final int orderLineItemId) throws Exception {
         logger.info("OrderDetailController.deleteOrderDetail called for token " + token + " orderDetailId " + orderLineItemId);
         boolean result = false;
-        String errorCode = "TOKEN_INVALID";
-        String errorMessage = "Invalid token";
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
 
-        int userId = SessionManager.getInstance().getUserId(token);
+        long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	ErrorCodeMessageResponse answer = orderLineItemMapper.deleteOrderLineItem(userId, orderLineItemId);
-            errorCode = answer.getErrorCode();
-            errorMessage = answer.getErrorMessage();
-            result = errorCode.equals("NO_ERROR");
+        	ReturnCodeMessageResponse answer = orderLineItemMapper.deleteOrderLineItem(userId, orderLineItemId);
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+            result = returnCode.equals("SUCCESS");
         }
 
-        return new BooleanResponse(result, errorCode, errorMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 }

@@ -2,9 +2,9 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
 import java.util.UUID;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 
-public class GochainAddressVO extends ErrorCodeMessageResponse {
+public class GochainAddressVO extends ReturnCodeMessageResponse {
 	private UUID gochainAddress;
 
 	public UUID getGochainAddress() {

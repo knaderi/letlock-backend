@@ -2,28 +2,28 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
 public class OrderInfoRecordVO {
     
-    private int userId;
-    private int order_id;
-    private int order_line_item_id;
+    private long userId;
+    private long order_id;
+    private long order_line_item_id;
     private String order_status;
     private int product_id;
     private String product_name;
     private int order_quantity;
     private int order_price;
     
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
-    public int getOrder_id() {
+    public long getOrder_id() {
         return order_id;
     }
     public void setOrder_id(int order_id) {
         this.order_id = order_id;
     }
-    public int getOrder_line_item_id() {
+    public long getOrder_line_item_id() {
         return order_line_item_id;
     }
     public void setOrder_detail_id(int order_line_item_id) {

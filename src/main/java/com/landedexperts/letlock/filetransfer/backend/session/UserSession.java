@@ -8,15 +8,15 @@ public class UserSession {
 		return new Date((new Date()).getTime() + UserSession.timeout);
 	}
 
-	private int userId;
+	private long userId;
 	private Date expires;
 
-	public UserSession(final int userId) {
+	public UserSession(final long userId) {
 		this.userId = userId;
 		this.expires = UserSession.newExpire();
 	}
 
-	public int getUserId() {
+	public long getUserId() {
 		return this.userId;
 	}
 

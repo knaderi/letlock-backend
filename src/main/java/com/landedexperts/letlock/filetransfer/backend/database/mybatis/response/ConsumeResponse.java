@@ -1,11 +1,11 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-public class ConsumeResponse extends ErrorCodeMessageResponse {
+public class ConsumeResponse extends ReturnCodeMessageResponse {
 	private final String fileTransferUuid;
 	private final String walletAddressUuid;
 
-	public ConsumeResponse(final String fileTransferUuid, final String walletAddressUuid, final String errorCode, final String errorMessage) {
-		super(errorCode, errorMessage);
+	public ConsumeResponse(final String fileTransferUuid, final String walletAddressUuid, final String returnCode, final String returnMessage) {
+		super(returnCode, returnMessage);
 		this.fileTransferUuid = fileTransferUuid;
 		this.walletAddressUuid = walletAddressUuid;
 	}

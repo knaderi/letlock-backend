@@ -1,12 +1,12 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-public class OrderLineItemResponse extends ErrorCodeMessageResponse {
-	private final int orderLineItemId;
+public class OrderLineItemResponse extends ReturnCodeMessageResponse {
+	private final long orderLineItemId;
 
-	public OrderLineItemResponse( final int orderDetailId, final String errorCode, final String errorMessage ) {
-		super(errorCode, errorMessage);
+	public OrderLineItemResponse( final long orderDetailId, final String returnCode, final String returnMessage ) {
+		super(returnCode, returnMessage);
 		this.orderLineItemId = orderDetailId;
 	}
 
-	public int getOrderLineItemId() { return this.orderLineItemId; }
+	public long getOrderLineItemId() { return this.orderLineItemId; }
 }

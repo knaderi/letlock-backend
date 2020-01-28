@@ -2,10 +2,10 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 
-public class UsersResponse extends ErrorCodeMessageResponse {
+public class UsersResponse extends ReturnCodeMessageResponse {
 
-    public UsersResponse(final UserVO[] value, final String errorCode, final String errorMessage) {
-        super(errorCode, errorMessage);
+    public UsersResponse(final UserVO[] value, final String returnCode, final String returnMessage) {
+        super(returnCode, returnMessage);
         this.value = value;
     }
 

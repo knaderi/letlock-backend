@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoRecordVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
@@ -18,12 +18,12 @@ public interface FileTransferMapper {
 		"SELECT"
 			+ " CAST( _file_transfer_uuid AS text ) AS fileTransferUuid,"
 			+ " CAST( _wallet_address_uuid AS text ) AS walletAddressUuid,"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
+			+ " _return_code AS returnCode,"
+			+ " _return_message AS returnMessage"
 			+ " FROM \"users\".insert_start_file_transfer_session_record( #{ userId } , DECODE( #{ walletAddress } , 'hex'), #{ receiverLoginName } )"
 	)
 	FileTransferInfoVO insertFileTransferSessionRecord(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("walletAddress") String walletAddress,
 		@Param("receiverLoginName") String receiverLoginName
 	);
@@ -36,28 +36,28 @@ public interface FileTransferMapper {
 			+ " FROM gochain.file_transfer_waiting_for_receiver_address( #{ userId } )"
 	)
 	UuidNameDateVO[] retrieveSessionWaitingForReceiverAddress(
-		@Param("userId") int userId
+		@Param("userId") long userId
 	);
 
 	@Select(
 		"SELECT"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
+			+ " _return_code AS returnCode,"
+			+ " _return_message AS returnMessage"
 			+ " FROM gochain.set_file_transfer_active( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageResponse setFileTransferAsActive(
-		@Param("userId") int userId,
+	ReturnCodeMessageResponse setFileTransferAsActive(
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
 
 	@Select(
 		"SELECT"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
+			+ " _return_code AS returnCode,"
+			+ " _return_message AS returnMessage"
 			+ " FROM gochain.set_file_transfer_inactive( #{ userId }, #{ fileTransferUuid } )"
 	)
-	ErrorCodeMessageResponse setFileTransferInactive(
-		@Param("userId") int userId,
+	ReturnCodeMessageResponse setFileTransferInactive(
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
 
@@ -80,12 +80,12 @@ public interface FileTransferMapper {
 			+ " _file_transfer_is_active AS fileTransferIsActive,"
 			+ " _file_transfer_create_dt AS fileTransferCreate,"
 			+ " _file_transfer_update_dt AS fileTransferUpdate,"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
+			+ " _return_code AS returnCode,"
+			+ " _return_message AS returnMessage"
 			+ " FROM gochain.get_user_file_transfer_info( #{ userId }, #{ fileTransferUuid } )"
 	)
 	FileTransferInfoVO getUserFileTransferInfo(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid
 	);
 	@Select(
@@ -110,18 +110,18 @@ public interface FileTransferMapper {
 			+ " FROM gochain.get_file_transfer_sessions_for_user( #{ userId } )"
 		)
 			FileTransferInfoRecordVO[] getFileTransferSessionsForUser(
-			@Param("userId") int userId
+			@Param("userId") long userId
 		);
 
 	@Select(
 		"SELECT"
 			+ " CAST( _wallet_address_uuid AS text ) AS gochainAddress,"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
+			+ " _return_code AS returnCode,"
+			+ " _return_message AS returnMessage"
 			+ " FROM gochain.set_file_transfer_receiver_address( #{ userId } , #{ fileTransferUuid } , DECODE( #{ walletAddress } , 'hex'))"
 	)
 	GochainAddressVO setReceiverAddress(
-		@Param("userId") int userId,
+		@Param("userId") long userId,
 		@Param("fileTransferUuid") UUID fileTransferUuid,
 		@Param("walletAddress") String walletAddress
 	);
@@ -129,8 +129,8 @@ public interface FileTransferMapper {
 	@Select(
 		"SELECT"
 			+ " _is_available AS value,"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
+			+ " _return_code AS returnCode,"
+			+ " _return_message AS returnMessage"
 			+ " FROM gochain.set_file_transfer_step_availability("
 				+ " #{ fileTransferUuid },"
 				+ " DECODE( #{ walletAddress }, 'hex' ),"
@@ -146,8 +146,8 @@ public interface FileTransferMapper {
 	@Select(
 		"SELECT"
 			+ " _is_available AS value,"
-			+ " _error_code AS errorCode,"
-			+ " _error_message AS errorMessage"
+			+ " _return_code AS returnCode,"
+			+ " _return_message AS returnMessage"
 			+ " FROM gochain.file_transfer_is_step_pending( #{ fileTransferUuid }, #{ walletAddress }, #{ step } )"
 	)
 	BooleanVO fileTransferIsStepPending(
@@ -158,15 +158,15 @@ public interface FileTransferMapper {
 
 	@Select(
 			"SELECT"
-				+ " _error_code AS errorCode,"
-				+ " _error_message AS errorMessage"
+				+ " _return_code AS returnCode,"
+				+ " _return_message AS returnMessage"
 				+ " FROM gochain.file_transfer_set_funding_step_pending("
 					+ " #{ fileTransferUuid },"
 					+ " DECODE( #{ walletAddress }, 'hex'),"
 					+ " CAST( #{ step } AS gochain.tp_funding_step ),"
 				+ " )"
 		)
-		ErrorCodeMessageResponse fileTransferSetTransferStepPending(
+		ReturnCodeMessageResponse fileTransferSetTransferStepPending(
 			@Param("fileTransferUuid") UUID fileTransferUuid,
 			@Param("walletAddress") String walletAddress,
 			@Param("step") String step
@@ -175,8 +175,8 @@ public interface FileTransferMapper {
 	@Select(
 			"SELECT"
 				+ " _funding_id AS id,"
-				+ " _error_code AS errorCode,"
-				+ " _error_message AS errorMessage"
+				+ " _return_code AS returnCode,"
+				+ " _return_message AS returnMessage"
 				+ " FROM gochain.file_transfer_set_funding_step_completed("
 					+ " #{ fileTransferUuid },"
 					+ " DECODE( #{ walletAddress }, 'hex'),"

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ErrorCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 
 @Service
@@ -48,8 +48,8 @@ public class DBGatewayService extends BlockChainGatewayService {
         TransactionHashResponse returnValue = new TransactionHashResponse();
         returnValue.setStatus("completed");
         returnValue.setTransactionHash(transactionHash);
-        returnValue.setErrorCode("NO_ERROR");
-        returnValue.setErrorMessage("");
+        returnValue.setReturnCode("SUCCESS");
+        returnValue.setReturnMessage("");
         return returnValue;
     }
 
@@ -67,17 +67,17 @@ public class DBGatewayService extends BlockChainGatewayService {
         this.receiverWalletAddress = receiverAddress.substring(0, 2).equals("0x") ? receiverAddress.substring(2)
                 : receiverAddress;
         String smartContractAddres = receiverWalletAddress;
-        ErrorCodeMessageResponse answer = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, smartContractAddres);
+        ReturnCodeMessageResponse answer = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, smartContractAddres);
         fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, receiverWalletAddress, "step_1_rec_pubkey", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
        // fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, senderWalletAddress, "step_2_send_doc_info", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
         // BooleanVO returnValue =
         // fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid,
         // "BB9bc244D798123fDe783fCc1C72d3Bb8C189413");
-        if (null == answer || answer.getErrorCode().equals("NO_ERROR")) {
+        if (null == answer || answer.getReturnCode().equals("SUCCESS")) {
             return true;
         } else {
-            logger.error(answer.getErrorMessage());
-            throw new Exception(answer.getErrorMessage());
+            logger.error(answer.getReturnMessage());
+            throw new Exception(answer.getReturnMessage());
 
         }
 
