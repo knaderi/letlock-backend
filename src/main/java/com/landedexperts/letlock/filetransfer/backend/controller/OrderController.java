@@ -97,7 +97,7 @@ public class OrderController {
             @RequestParam(value = "order_id") final int orderId,
             @RequestParam(value = "package_id") final int packageId,
             @RequestParam(value = "quantity") final short quantity,
-            @RequestParam(value = "quantity") final short locationId) throws Exception {
+            @RequestParam(value = "location_id") final short locationId) throws Exception {
         logger.info("OrderController.upsertOrderLineItem called for token " + token + " and OrderId " + orderId);
         Boolean result = false;
         String returnCode = "TOKEN_INVALID";

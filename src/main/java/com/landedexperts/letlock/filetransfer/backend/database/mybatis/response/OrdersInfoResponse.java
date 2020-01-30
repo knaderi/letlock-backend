@@ -1,17 +1,17 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderInfoRecordVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderLineItemVO;
 
 public class OrdersInfoResponse extends ReturnCodeMessageResponse {
 
-    public OrdersInfoResponse(final OrderInfoRecordVO[] value, final String returnCode, final String returnMessage) {
+    public OrdersInfoResponse(final OrderLineItemVO[] result, final String returnCode, final String returnMessage) {
         super(returnCode, returnMessage);
-        this.value = value;
+        this.result = result;
     }
 
-    private final OrderInfoRecordVO[] value;
+    private final OrderLineItemVO[] result;
 
-    public OrderInfoRecordVO[] getValue() {
-        return value;
+    public OrderLineItemVO[] getResult() {
+        return result;
     }
 }

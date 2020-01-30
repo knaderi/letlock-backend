@@ -1,6 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
-public class OrderInfoRecordVO {
+public class OrderLineItemVO {
     
     private long userId;
     private long order_id;

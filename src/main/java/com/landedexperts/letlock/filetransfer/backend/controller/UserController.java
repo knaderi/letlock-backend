@@ -18,7 +18,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderInfoRecordVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderLineItemVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
@@ -236,7 +236,7 @@ public class UserController {
             @RequestParam(value = "token") final String token) throws Exception {
         logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
 
-        OrderInfoRecordVO[] value = null;
+        OrderLineItemVO[] value = null;
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
 

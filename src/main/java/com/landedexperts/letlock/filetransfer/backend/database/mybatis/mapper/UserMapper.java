@@ -7,7 +7,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderInfoRecordVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderLineItemVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 
 public interface UserMapper {
@@ -60,6 +60,6 @@ public interface UserMapper {
     @Select("SELECT *"
             + " FROM users.vw_user_orders"
             + " WHERE users.vw_user_orders.user_id = #{userId}")
-    OrderInfoRecordVO[] getUserOrders(
+    OrderLineItemVO[] getUserOrders(
             @Param("userId") long userId);
 }

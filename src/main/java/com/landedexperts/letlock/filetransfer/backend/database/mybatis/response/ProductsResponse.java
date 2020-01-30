@@ -4,14 +4,14 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.Produc
 
 public class ProductsResponse extends ReturnCodeMessageResponse{
 
-    public ProductsResponse(final ProductVO[] value, final String returnCode, final String returnMessage) {
+    public ProductsResponse(final ProductVO[] result, final String returnCode, final String returnMessage) {
         super(returnCode, returnMessage);
-        this.value = value;
+        this.result = result;
     }
 
-    private final ProductVO[] value;
+    private final ProductVO[] result;
 
-    public ProductVO[] getValue() {
-        return value;
+    public ProductVO[] getResult() {
+        return result;
     }
 }

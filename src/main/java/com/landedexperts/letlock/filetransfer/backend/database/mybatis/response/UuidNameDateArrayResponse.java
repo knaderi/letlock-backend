@@ -1,14 +1,14 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
 public class UuidNameDateArrayResponse extends ReturnCodeMessageResponse {
-	public UuidNameDateArrayResponse(final UuidNameDate[] value, final String returnCode, final String returnMessage) {
+	public UuidNameDateArrayResponse(final UuidNameDate[] result, final String returnCode, final String returnMessage) {
 		super(returnCode, returnMessage);
-		this.value = value;
+		this.result = result;
 	}
 
-	private final UuidNameDate[] value;
+	private final UuidNameDate[] result;
 
-	public UuidNameDate[] getValue() {
-		return value;
+	public UuidNameDate[] getResult() {
+		return result;
 	}
 }

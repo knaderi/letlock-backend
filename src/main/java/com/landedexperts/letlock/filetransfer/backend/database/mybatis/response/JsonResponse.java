@@ -1,12 +1,12 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
 public class JsonResponse extends ReturnCodeMessageResponse {
-	private final String value;
+	private final String result;
 
-	public JsonResponse(final String value, final String returnCode, final String returnMessage) {
+	public JsonResponse(final String result, final String returnCode, final String returnMessage) {
 		super(returnCode, returnMessage);
-		this.value = value;
+		this.result = result;
 	}
 
-	public String getResult() { return value; }
+	public String getResult() { return result; }
 }

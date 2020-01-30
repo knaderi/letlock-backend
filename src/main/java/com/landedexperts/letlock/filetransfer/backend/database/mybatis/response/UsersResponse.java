@@ -4,15 +4,15 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO
 
 public class UsersResponse extends ReturnCodeMessageResponse {
 
-    public UsersResponse(final UserVO[] value, final String returnCode, final String returnMessage) {
+    public UsersResponse(final UserVO[] result, final String returnCode, final String returnMessage) {
         super(returnCode, returnMessage);
-        this.value = value;
+        this.result = result;
     }
 
-    private final UserVO[] value;
+    private final UserVO[] result;
 
-    public UserVO[] getValue() {
-        return value;
+    public UserVO[] getResult() {
+        return result;
     }
 
 }

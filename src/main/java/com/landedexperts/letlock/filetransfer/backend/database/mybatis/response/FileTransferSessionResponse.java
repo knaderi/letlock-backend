@@ -3,15 +3,15 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoRecordVO;
 
 public class FileTransferSessionResponse extends ReturnCodeMessageResponse {
-	public FileTransferSessionResponse(final FileTransferInfoRecordVO value, final String returnCode, final String returnMessage) {
+	public FileTransferSessionResponse(final FileTransferInfoRecordVO result, final String returnCode, final String returnMessage) {
 		super(returnCode, returnMessage);
-		this.value = value;
+		this.result = result;
 	}
 
-	private final FileTransferInfoRecordVO value;
+	private final FileTransferInfoRecordVO result;
 
-	public FileTransferInfoRecordVO getValue() {
-		return value;
+	public FileTransferInfoRecordVO getResult() {
+		return result;
 	}
 
 }
