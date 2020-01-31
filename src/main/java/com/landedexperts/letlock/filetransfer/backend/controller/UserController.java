@@ -230,24 +230,4 @@ public class UserController {
         return response;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_orders_for_user", produces = {
-            "application/JSON" })
-    public OrdersInfoResponse getFileTransferSessionsForUser(
-            @RequestParam(value = "token") final String token) throws Exception {
-        logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
-
-        OrderLineItemVO[] value = null;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            value = userMapper.getUserOrders(userId);
-            returnCode = "SUCCESS";
-            returnMessage = "";
-        }
-
-        return new OrdersInfoResponse(value, returnCode, returnMessage);
-    }
-
 }

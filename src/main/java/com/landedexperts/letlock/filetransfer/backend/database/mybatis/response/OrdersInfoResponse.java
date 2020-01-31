@@ -4,12 +4,16 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderL
 
 public class OrdersInfoResponse extends ReturnCodeMessageResponse {
 
-    public OrdersInfoResponse(final OrderLineItemVO[] result, final String returnCode, final String returnMessage) {
-        super(returnCode, returnMessage);
+    private final OrderLineItemVO[] result;
+    
+    public OrdersInfoResponse(final OrderLineItemVO[] result) {
+        super("SUCCESS", "");
+        if(null == result || result.length == 0) {
+            setReturnCode("ORDER_NOT_FOUND");
+            setReturnMessage("No user orders can be found.");
+        }
         this.result = result;
     }
-
-    private final OrderLineItemVO[] result;
 
     public OrderLineItemVO[] getResult() {
         return result;

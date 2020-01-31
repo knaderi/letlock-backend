@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderLineItemMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrderLineItemResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.AddOrderLineItemResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
@@ -22,7 +22,7 @@ public class OrderDetailController {
     private final Logger logger = LoggerFactory.getLogger(OrderDetailController.class);
 
     @RequestMapping(method = RequestMethod.POST, value = "/add_order_line_item", produces = { "application/JSON" })
-    public OrderLineItemResponse addOrderLineItem(@RequestParam(value = "token") final String token,
+    public AddOrderLineItemResponse addOrderLineItem(@RequestParam(value = "token") final String token,
             @RequestParam(value = "order_id") final int orderId, @RequestParam(value = "product_id") final int productId,
             @RequestParam(value = "quantity") final short quantity) throws Exception {
         logger.info("OrderDetailController.addOrderDetail called for token " + token + " orderId " + orderId + " productId " + productId);
@@ -39,7 +39,7 @@ public class OrderDetailController {
             returnMessage = answer.getReturnMessage();
         }
 
-        return new OrderLineItemResponse(orderLineItemId, returnCode, returnMessage);
+        return new AddOrderLineItemResponse(orderLineItemId, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/update_order_line_item", produces = { "application/JSON" })
