@@ -32,8 +32,7 @@ public interface OrderMapper {
             + " * "
             + " FROM product.get_packages(#{isPackageDeleted}, #{isProductDeleted})")
     JsonResponse getPackages(boolean isPackageDeleted, boolean isProductDeleted);
-    
-    
+
     @Select("SELECT"
             + " * "
             + " FROM orders.vw_get_locations")
@@ -46,23 +45,9 @@ public interface OrderMapper {
     ReturnCodeMessageResponse upsertOrderLineItem(long userId, long orderId, int packageId, short quantity, short locationId);
 
     @Select("SELECT *"
-            + " FROM orders.get_user_orders( #{ userId }, #{ orderId }, #{ userStatus } , #{ orderStatus })")
-    OrderLineItemVO[] getUserOrdersDetailsForAnOrderAndUserStatusAndOrderStatus(
+            + " FROM orders.get_user_orders( #{ userId }, #{ orderId }, CAST( #{ userStatus } AS users.tp_user_status ) , CAST( #{ orderStatus } AS orders.tp_order_status ))")
+    OrderLineItemVO[] getUserOrders(
             @Param("userId") long userId, @Param("orderId") long orderId, @Param("userStatus") String userStatus,
             @Param("orderStatus") String orderStatus);
 
-    @Select("SELECT *"
-            + " FROM orders.get_user_orders( #{ userId }, #{ orderId }, #{ userStatus })")
-    OrderLineItemVO[] getUserOrdersDetailsForAnOrderAndUserStatus(
-            @Param("userId") long userId, @Param("orderId") long orderId, @Param("userStatus") String userStatus);
-
-    @Select("SELECT *"
-            + " FROM orders.get_user_orders( #{ userId }, #{ orderId })")
-    OrderLineItemVO[] getUserOrdersDetailsForOneOrder(
-            @Param("userId") long userId, @Param("orderId") long orderId);
-
-    @Select("SELECT *"
-            + " FROM orders.get_user_orders( #{ userId })")
-    OrderLineItemVO[] getAllUserOrdersDetails(
-            @Param("userId") long userId);
 }

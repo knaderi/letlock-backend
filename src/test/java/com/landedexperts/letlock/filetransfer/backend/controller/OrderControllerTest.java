@@ -147,7 +147,7 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem();
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("userId", userId).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("userId", userId).param("orderId", "1").param("userStatus", "active").param("orderStatus", "initiated").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();

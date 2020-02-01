@@ -47,7 +47,7 @@ public abstract class AbstractTest {
    @BeforeClass
    public static void setSystemProperty() {
        //Do not change this as this may cause braking the build in remote dev
-       String activeProfile = "dev";
+       String activeProfile = "local";
        String mvnCommandLineArgs = System.getenv().get("MAVEN_CMD_LINE_ARGS");
        if (!StringUtils.isEmpty(mvnCommandLineArgs)) {
            int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");

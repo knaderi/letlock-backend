@@ -1,6 +1,5 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,10 +125,10 @@ public class OrderController {
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_user_order_for_user_status_order_status", produces = {
+    @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = {
             "application/JSON" })
     public OrdersInfoResponse getUserOrders(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "orderId") final int orderId,
+            @RequestParam(value = "orderId") final long orderId,
             @RequestParam(value = "userStatus") final String userStatus,
             @RequestParam(value = "orderStatus") final String orderStatus) throws Exception {
         logger.info("getUserOrders.getUserOrders called for token " + token + "\n");
@@ -138,57 +137,10 @@ public class OrderController {
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            value = orderMapper.getUserOrdersDetailsForAnOrderAndUserStatusAndOrderStatus(userId, orderId, userStatus, orderStatus);
+           value = orderMapper.getUserOrders(userId, orderId, userStatus, orderStatus);
         }
 
         return new OrdersInfoResponse(value);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_user_order_for_user_status", produces = {
-            "application/JSON" })
-    public OrdersInfoResponse getUserOrders(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "order_id") final int orderId,
-            @RequestParam(value = "user_status") final String userStatus) throws Exception {
-        logger.info("getUserOrders.getUserOrders called for token " + token + "\n");
-
-        OrderLineItemVO[] value = null;
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            value = orderMapper.getUserOrdersDetailsForAnOrderAndUserStatus(userId, orderId, userStatus);
-        }
-
-        return new OrdersInfoResponse(value);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/get_user_order", produces = {
-            "application/JSON" })
-    public OrdersInfoResponse getUserOrders(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "order_id") final int orderId) throws Exception {
-        logger.info("getUserOrders.getUserOrders called for token " + token + "\n");
-
-        OrderLineItemVO[] value = null;
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            value = orderMapper.getUserOrdersDetailsForOneOrder(userId, orderId);
-        }
-
-        return new OrdersInfoResponse(value);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = {
-            "application/JSON" })
-    public OrdersInfoResponse getUserOrders(@RequestParam(value = "token") final String token) throws Exception {
-        logger.info("getUserOrders.getUserOrders called for token " + token + "\n");
-
-        OrderLineItemVO[] value = null;
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            value = orderMapper.getAllUserOrdersDetails(userId);
-        }
-
-        return new OrdersInfoResponse(value);
-    }
 }
