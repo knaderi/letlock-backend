@@ -10,7 +10,7 @@ public class OrderLineItemVO {
     private long user_id;
     private String user_status;
     private long order_id;
-    private String orderStatus;
+    private String order_status;
     private long package_id;
     private String package_name;
     private String package_desc;
@@ -27,8 +27,8 @@ public class OrderLineItemVO {
     private String province_code;
     private String  tax_percentage;
     private String tax_type;
-    private BigDecimal  order_subtotal;
-    private BigDecimal  order_total;
+    private String  order_subtotal;
+    private String  order_total;
     private Date create_dt;
     
     public long getUser_id() {
@@ -49,11 +49,11 @@ public class OrderLineItemVO {
     public void setOrder_id(long order_id) {
         this.order_id = order_id;
     }
-    public String getOrderStatus() {
-        return orderStatus;
+    public String getOrder_status() {
+        return order_status;
     }
-    public void setOrderStatus(String orderStatus) {
-        this.orderStatus = orderStatus;
+    public void setOrder_status(String orderStatus) {
+        this.order_status = orderStatus;
     }
     public long getPackage_id() {
         return package_id;
@@ -151,16 +151,16 @@ public class OrderLineItemVO {
     public void setTax_type(String tax_type) {
         this.tax_type = tax_type;
     }
-    public BigDecimal  getOrder_subtotal() {
+    public String  getOrder_subtotal() {
         return order_subtotal;
     }
-    public void setOrder_subtotal(Decimal order_subtotal) {
+    public void setOrder_subtotal(String order_subtotal) {
         this.order_subtotal = order_subtotal;
     }
-    public BigDecimal  getOrder_total() {
+    public String  getOrder_total() {
         return order_total;
     }
-    public void setOrder_total(Decimal order_total) {
+    public void setOrder_total(String order_total) {
         this.order_total = order_total;
     }
     public Date getCreate_dt() {
