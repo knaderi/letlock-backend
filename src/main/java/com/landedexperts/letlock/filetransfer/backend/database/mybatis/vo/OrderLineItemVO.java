@@ -1,10 +1,5 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import software.amazon.ion.Decimal;
-
 public class OrderLineItemVO {
     
     private long user_id;
@@ -29,7 +24,7 @@ public class OrderLineItemVO {
     private String tax_type;
     private String  order_subtotal;
     private String  order_total;
-    private Date create_dt;
+    private String order_create_dt;
     
     public long getUser_id() {
         return user_id;
@@ -163,11 +158,11 @@ public class OrderLineItemVO {
     public void setOrder_total(String order_total) {
         this.order_total = order_total;
     }
-    public Date getCreate_dt() {
-        return create_dt;
+    public String getCreate_dt() {
+        return order_create_dt;
     }
-    public void setCreate_dt(Date create_dt) {
-        this.create_dt = create_dt;
+    public void setCreate_dt(String create_dt) {
+        this.order_create_dt = create_dt;
     }    
 
 }
