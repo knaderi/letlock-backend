@@ -142,6 +142,19 @@ public class OrderControllerTest extends BaseControllerTest {
     } 
     
     @Test
+    public void buyPackageNowTest() throws Exception {
+        String uri = "/buy_package_now";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("package_id", "1").accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertForNoError("buyPackageNowTest", content);
+        //need to do better assertion than this.
+        assertTrue("There should be a new order returned", content.contains("orderId"));
+    } 
+    
+    @Test
     public void getUserOrders() throws Exception {
         createOrder();
         createOrderLineItem();

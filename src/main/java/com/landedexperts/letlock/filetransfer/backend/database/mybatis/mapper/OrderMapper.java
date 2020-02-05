@@ -3,6 +3,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.CreateOrderResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -49,5 +50,20 @@ public interface OrderMapper {
     OrderLineItemVO[] getUserOrders(
             @Param("userId") long userId, @Param("orderId") long orderId, @Param("userStatus") String userStatus,
             @Param("orderStatus") String orderStatus);
+    
+    @Select("SELECT *"
+            + " FROM orders.get_user_orders_usages( #{ userId })")
+    OrderLineItemVO[] getUsersAllOrdersUsageHistroy(
+            @Param("userId") long userId, @Param("orderId") long orderId, @Param("productType") String productType);
+    
+    @Select("SELECT *"
+            + " FROM orders.get_file_transfer_user_order_usage( #{ userId }, #{ orderId },)")
+    OrderLineItemVO[] getUsersOrderUsageHistroy(
+            @Param("userId") long userId, @Param("orderId") long orderId, @Param("productType") String productType);
+    
+    @Select("SELECT *"
+            + " FROM orders.buy_package_now( #{ userId }, #{ packageId })")
+    CreateOrderResponse buyPackageNow(
+            @Param("userId") long userId, @Param("packageId") int packageId);
 
 }

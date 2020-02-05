@@ -142,5 +142,24 @@ public class OrderController {
 
         return new OrdersInfoResponse(value);
     }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/buy_package_now", produces = { "application/JSON" })
+    public CreateOrderResponse buyPackageNow(@RequestParam(value = "token") final String token,  @RequestParam(value = "package_id") final int packageId ) throws Exception {
+        logger.info("OrderController.buyPackageNow called for token " + token);
+        long orderId = -1;
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
+
+        long userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            CreateOrderResponse answer = orderMapper.buyPackageNow(userId, packageId);
+
+            orderId = answer.getOrderId();
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+        }
+
+        return new CreateOrderResponse(orderId, returnCode, returnMessage);
+    }
 
 }
