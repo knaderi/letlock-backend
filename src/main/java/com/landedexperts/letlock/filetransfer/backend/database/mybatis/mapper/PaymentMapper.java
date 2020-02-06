@@ -11,11 +11,11 @@ public interface PaymentMapper {
             + " _payment_id AS id,"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM orders.payment_initiate( #{ userId }, #{ orderId }, #{ type }, #{ transactionId } )")
-    IdVO paymentInitiate(
+            + " FROM orders.payment_initiate( #{ userId }, #{ orderId }, CAST( #{ type } AS orders.tp_payment_type), #{ transactionId } )")
+    public IdVO paymentInitiate(
             @Param("userId") long userId,
-            @Param("orderId") int orderId,
-            @Param("type") int type,
+            @Param("orderId") long orderId,
+            @Param("type") String type,
             @Param("transactionId") String transactionId);
 
     @Select("SELECT"
@@ -32,6 +32,6 @@ public interface PaymentMapper {
             + " FROM orders.payment_process_success( #{ userId }, #{ paymentId } )")
     ReturnCodeMessageResponse paymentProcessSuccess(
             @Param("userId") long userId,
-            @Param("paymentId") int paymentId);
+            @Param("paymentId") long paymentId);
 
 }
