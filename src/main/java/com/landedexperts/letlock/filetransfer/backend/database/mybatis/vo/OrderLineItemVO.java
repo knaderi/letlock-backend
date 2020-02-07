@@ -22,6 +22,7 @@ public class OrderLineItemVO {
     private String province_code;
     private String  tax_percentage;
     private String tax_type;
+    private String tax_amount;
     private String  order_subtotal;
     private String  order_total;
     private String order_create_dt;
@@ -145,6 +146,12 @@ public class OrderLineItemVO {
     }
     public void setTaxType(String tax_type) {
         this.tax_type = tax_type;
+    }
+    public String getTaxAmount() {
+        return tax_amount;
+    }
+    public void setTaxAmount(String tax_amount) {
+        this.tax_amount = tax_amount;
     }
     public String  getOrderSubtotal() {
         return order_subtotal;
