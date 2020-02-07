@@ -15,6 +15,11 @@ public class OrdersInfoResponse extends ReturnCodeMessageResponse {
         this.result = result;
     }
 
+    public OrdersInfoResponse(final OrderLineItemVO[] result, final String returnCode, final String returnMessage) {
+        super(returnCode, returnMessage);
+        this.result = result;
+    }
+
     public OrderLineItemVO[] getResult() {
         return result;
     }

@@ -14,9 +14,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.TestUtils;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.PaymentMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersInfoResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 
@@ -26,6 +28,9 @@ public class OrderControllerTest extends BaseControllerTest {
 
     @Autowired
     PaymentMapper paymentMapper;
+    
+    @Autowired
+    private ObjectMapper objectMapper;
 
     String orderId = "0";
     String orderDetailId = "0";
@@ -82,12 +87,20 @@ public class OrderControllerTest extends BaseControllerTest {
 
     @Test
     public void createOrderDetailTest() throws Exception {
-//        createOrder();
-//        createOrderLineItem();
-//        updateOrderLineItem();
+        createOrder();
+        createOrderLineItem();
+        updateOrderLineItem();//updating location to Canada/BC
 
     }
 
+    @Test
+    public void deleteOrderDetailTest() throws Exception {
+        createOrder();
+        createOrderLineItem();
+        deleteOrderLineItem();//updating location to Canada/BC
+
+    }
+    
     private void createOrderLineItem() throws Exception, UnsupportedEncodingException {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
@@ -96,35 +109,39 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
+        OrdersInfoResponse response = objectMapper.readValue(content, OrdersInfoResponse.class);
         assertForNoError("createOrderDetailTest", content);
-        // assertContentForKeyValueLargerThanZero("createOrderTest", content,
-        // "orderLineItemId");
-        // orderDetailId = getValuesForGivenKey(content, "orderLineItemId");
+        assertTrue(response != null);
+        assertTrue(response.getResult() != null);
+        assertTrue(response.getResult().length>0);        
+        orderDetailId = String.valueOf(response.getResult()[0].getOrderLineItemId());
+        assertTrue(!orderDetailId.equals("0"));
     }
 
     private void updateOrderLineItem() throws Exception {
-        String uri = "/update_order_line_item";
+        String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_line_item_id", orderDetailId)
-                        .param("quantity", "2").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).param("package_id", "3")
+                        .param("quantity", "1").param("location_id", "3").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertForNoError("createOrderLineItemTest", content);
+        assertForNoError("createOrderDetailTest", content);
+        assertTrue(content.contains("\"orderLineItemId\":"));
+        assertTrue(content.contains("\"countryCode\":\"CA\""));
+        assertTrue(content.contains("\"provinceCode\":\"BC\""));
     }
 
-    @Test
-    public void deleteOrderDetailTest() throws Exception {
-//        createOrder();
-//        createOrderLineItem();
-//        String uri = "/delete_order_detail";
-//        ResultActions resultAction = mvc
-//                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_line_item_id", orderDetailId).accept(MediaType.APPLICATION_JSON_VALUE));
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//        String content = mvcResult.getResponse().getContentAsString();
-//        assertForNoError("deleteOrderDetailTest", content);
-    }// TODO: fix this
+    public void deleteOrderLineItem() throws Exception {
+        String uri = "/upsert_order_line_item";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).param("package_id", "3")
+                        .param("quantity", "0").param("location_id", "1").accept(MediaType.APPLICATION_JSON_VALUE));//set the quantity to zero
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(content.contains("\"result\":[]"));
+    }
 
     @Test
     public void getUserOrdersTest() throws Exception {

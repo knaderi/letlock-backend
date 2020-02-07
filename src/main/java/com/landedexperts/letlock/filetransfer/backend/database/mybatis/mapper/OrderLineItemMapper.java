@@ -33,14 +33,5 @@ public interface OrderLineItemMapper {
 		@Param("quantity") short quantity
 	);
 
-	@Select(
-		"SELECT"
-			+ " _return_code AS returnCode,"
-			+ " _return_message AS returnMessage"
-			+ " FROM orders.delete_order_line_item( #{ userId }, #{ orderLineItemId } )"
-	)
-	ReturnCodeMessageResponse deleteOrderLineItem(
-		@Param("userId") long userId,
-		@Param("orderLineItemId") long orderDetailId
-	);
+
 }

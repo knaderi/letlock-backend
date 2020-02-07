@@ -102,7 +102,7 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/upsert_order_line_item", produces = { "application/JSON" })
-    public BooleanResponse upsertOrderLineItem(@RequestParam(value = "token") final String token,
+    public OrdersInfoResponse upsertOrderLineItem(@RequestParam(value = "token") final String token,
             @RequestParam(value = "order_id") final int orderId,
             @RequestParam(value = "package_id") final int packageId,
             @RequestParam(value = "quantity") final short quantity,
@@ -121,8 +121,12 @@ public class OrderController {
 
             result = returnCode.equals("SUCCESS");
         }
+        if (returnCode.equals("SUCCESS")) {
+            return getUserOrders(token, orderId, "active", "initiated");
+        }else {
+            return new OrdersInfoResponse(new OrderLineItemVO[] {},returnCode, returnMessage) ;  
+        }
 
-        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = { "application/JSON" })
@@ -142,8 +146,7 @@ public class OrderController {
         return new OrdersInfoResponse(value);
     }
 
-    
-    @RequestMapping(method = RequestMethod.POST,value = "/get_user_ft_order_usage_history",produces = {"application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/get_user_ft_order_usage_history", produces = { "application/JSON" })
     public OrderUsageInfoResponse getUserOrderUsageHistroy(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId) throws Exception {
         logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
@@ -157,8 +160,8 @@ public class OrderController {
 
         return new OrderUsageInfoResponse(value);
     }
-    
-    @RequestMapping(method = RequestMethod.POST,value = "/get_all_user_ft_orders_usage_history",produces = {"application/JSON" })
+
+    @RequestMapping(method = RequestMethod.POST, value = "/get_all_user_ft_orders_usage_history", produces = { "application/JSON" })
     public OrderUsageInfoResponse getAllUserOrdersUsageHistroy(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
 

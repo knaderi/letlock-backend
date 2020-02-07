@@ -63,22 +63,4 @@ public class OrderDetailController {
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/delete_order_line_item", produces = { "application/JSON" })
-    public BooleanResponse deleteOrderDetail(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "order_line_item_id") final int orderLineItemId) throws Exception {
-        logger.info("OrderDetailController.deleteOrderDetail called for token " + token + " orderDetailId " + orderLineItemId);
-        boolean result = false;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-        	ReturnCodeMessageResponse answer = orderLineItemMapper.deleteOrderLineItem(userId, orderLineItemId);
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
-            result = returnCode.equals("SUCCESS");
-        }
-
-        return new BooleanResponse(result, returnCode, returnMessage);
-    }
 }
