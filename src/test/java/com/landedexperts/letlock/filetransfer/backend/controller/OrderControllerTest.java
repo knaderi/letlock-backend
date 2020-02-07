@@ -104,8 +104,8 @@ public class OrderControllerTest extends BaseControllerTest {
     private void createOrderLineItem() throws Exception, UnsupportedEncodingException {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).param("package_id", "3")
-                        .param("quantity", "1").param("location_id", "1").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", "3")
+                        .param("quantity", "1").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -121,8 +121,8 @@ public class OrderControllerTest extends BaseControllerTest {
     private void updateOrderLineItem() throws Exception {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).param("package_id", "3")
-                        .param("quantity", "1").param("location_id", "3").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", "3")
+                        .param("quantity", "1").param("locationId", "3").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -135,8 +135,8 @@ public class OrderControllerTest extends BaseControllerTest {
     public void deleteOrderLineItem() throws Exception {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).param("package_id", "3")
-                        .param("quantity", "0").param("location_id", "1").accept(MediaType.APPLICATION_JSON_VALUE));//set the quantity to zero
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", "3")
+                        .param("quantity", "0").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));//set the quantity to zero
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
