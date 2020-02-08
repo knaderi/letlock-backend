@@ -12,10 +12,11 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Or
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.CreateOrderResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrderUsageInfoResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrderFileTransferUsagesResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersFileTransfersCountsResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersInfoResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FTOrderUsageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferOrderLineItemUsageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderLineItemVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
@@ -100,7 +101,7 @@ public class OrderController {
         String value = orderMapper.getLocations();
         return new JsonResponse(value);
     }
-
+    
     @RequestMapping(method = RequestMethod.POST, value = "/upsert_order_line_item", produces = { "application/JSON" })
     public OrdersInfoResponse upsertOrderLineItem(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final int orderId,
@@ -129,6 +130,32 @@ public class OrderController {
 
     }
 
+//    @RequestMapping(method = RequestMethod.POST, value = "/upsert_order_line_item", produces = { "application/JSON" })
+//    public OrdersInfoResponse upsertOrderLineItem(@RequestParam(value = "token") final String token,
+//            @RequestParam(value = "orderId") final int orderId,
+//            @RequestParam(value = "packageId") final int packageId,
+//            @RequestParam(value = "quantity") final short quantity,
+//            @RequestParam(value = "locationId") final short locationId) throws Exception {
+//        logger.info("OrderController.upsertOrderLineItem called for token " + token + " and OrderId " + orderId);
+//        String returnCode = "TOKEN_INVALID";
+//        String returnMessage = "Invalid token";
+//
+//        long userId = SessionManager.getInstance().getUserId(token);
+//        if (userId > 0) {
+//            ReturnCodeMessageResponse answer = orderMapper.upsertOrderLineItem(userId, orderId, packageId, quantity, locationId);
+//
+//            returnCode = answer.getReturnCode();
+//            returnMessage = answer.getReturnMessage();
+//
+//        }
+//        if (returnCode.equals("SUCCESS")) {
+//            return getUserOrders(token, orderId, "active", "initiated");
+//        }else {
+//            return new OrdersInfoResponse(new OrdersFTVO(),returnCode, returnMessage) ;  
+//        }
+//
+//    }
+
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = { "application/JSON" })
     public OrdersInfoResponse getUserOrders(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId,
@@ -145,35 +172,49 @@ public class OrderController {
 
         return new OrdersInfoResponse(value);
     }
+    
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_ft_order_usage_history", produces = { "application/JSON" })
-    public OrderUsageInfoResponse getUserOrderUsageHistroy(@RequestParam(value = "token") final String token,
+    public OrderFileTransferUsagesResponse getUserOrderUsageHistroy(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId) throws Exception {
         logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
-
-        FTOrderUsageVO[] value = null;
-
+        FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
+        //TODO, should filter
+        OrdersFileTransfersCountsResponse ordersFTCounts = null;
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            value = orderMapper.getUsersFTOrderUsageHistroy(userId, orderId);
+            lineItemsUsageForOrderArray = orderMapper.getUsersFileTransferOrderUsageHistroy(userId, orderId);
+            ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);           
         }
 
-        return new OrderUsageInfoResponse(value);
+        return new OrderFileTransferUsagesResponse(orderId, lineItemsUsageForOrderArray, ordersFTCounts);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_all_user_ft_orders_usage_history", produces = { "application/JSON" })
-    public OrderUsageInfoResponse getAllUserOrdersUsageHistroy(@RequestParam(value = "token") final String token) throws Exception {
-        logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
-
-        FTOrderUsageVO[] value = null;
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            value = orderMapper.getUsersAllFTOrdersUsageHistroy(userId);
-        }
-
-        return new OrderUsageInfoResponse(value);
-    }
+    //TODO: Do thsi later to return all order usages.
+//    @RequestMapping(method = RequestMethod.POST, value = "/get_all_user_ft_orders_usage_history", produces = { "application/JSON" })
+//    public AllOrdersFileTransferUsagesResponse getAllUserOrdersUsageHistroy(@RequestParam(value = "token") final String token) throws Exception {
+//        logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
+//
+//        List<OrderUsageVO> value = new ArrayList<OrderUsageVO>();
+//        OrdersFileTransfersCountsResponse ordersFTCounts = null;
+//        FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
+//
+//        long userId = SessionManager.getInstance().getUserId(token);
+//        if (userId > 0) {
+//            lineItemsUsageForOrderArray = orderMapper.getUsersAllFileTransferOrdersUsageHistroy(userId);
+//            ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(-1); 
+//        }
+//        int arraySize = lineItemsUsageForOrderArray.length;
+//        Map<Integer,List<OrderUsageVO>> ordersUsageMap = new HashMap<Integer,List<OrderUsageVO>>();
+//        if(lineItemsUsageForOrderArray != null && arraySize>0) {
+//            for(int i; i<arraySize; i++) {
+//                ordersUsageMap.put(ordersUsageMap.put(lineItemsUsageForOrderArray[i].getOrderId value);
+//            }
+//            
+//        }
+//
+//        return new AllOrdersFileTransferUsagesResponse(value, ordersFTCounts);
+//    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/buy_package_now", produces = { "application/JSON" })
     public CreateOrderResponse buyPackageNow(@RequestParam(value = "token") final String token,

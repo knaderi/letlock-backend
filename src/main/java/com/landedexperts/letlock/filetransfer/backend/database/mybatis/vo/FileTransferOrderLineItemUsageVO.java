@@ -2,7 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
 import java.util.UUID;
 
-public class FTOrderUsageVO {
+public class FileTransferOrderLineItemUsageVO {
     private UUID uuid;
     private long order_line_item_id;
     private long sender_id;

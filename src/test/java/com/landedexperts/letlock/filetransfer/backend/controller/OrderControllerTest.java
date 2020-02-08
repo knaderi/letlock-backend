@@ -223,6 +223,8 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem();
         makeSuccessfulPayment();
         startFileTransfer();
+        startFileTransfer();
+        startFileTransfer();
         
         //check the usage history
         String uri = "/get_user_ft_order_usage_history";
@@ -231,31 +233,32 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(1, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));
+        assertEquals(3, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));        
+        assertTrue("There should be a sender", content.contains("\"availableTransferCounts\":17,\"originalTransferCounts\":20"));
         assertTrue("There should be a sender", content.contains("\"senderId\":" + userId + ","));
     }
     
-    @Test
-    public void getAllUserOrderUsages() throws Exception {
-        //Create test order
-        createOrder();
-        createOrderLineItem();        
-        makeSuccessfulPayment();
-        //start two file transfers
-        startFileTransfer();
-        startFileTransfer();
-        
-        //check the usage history.
-        String uri = "/get_all_user_ft_orders_usage_history";
-        ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-        String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(2, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));
-        assertTrue("There should be a sender", content.contains("\"senderId\":" + userId + ","));
-      
-    }
+//    @Test
+//    public void getAllUserOrderUsages() throws Exception {
+//        //Create test order
+//        createOrder();
+//        createOrderLineItem();        
+//        makeSuccessfulPayment();
+//        //start two file transfers
+//        startFileTransfer();
+//        startFileTransfer();
+//        
+//        //check the usage history.
+//        String uri = "/get_all_user_ft_orders_usage_history";
+//        ResultActions resultAction = mvc
+//                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+//        resultAction.andExpect(ok);
+//        MvcResult mvcResult = resultAction.andReturn();
+//        String content = mvcResult.getResponse().getContentAsString();
+//        assertEquals(2, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));
+//        assertTrue("There should be a sender", content.contains("\"senderId\":" + userId + ","));
+//      
+//    }
 
     private void startFileTransfer() {
         //start a file transfer

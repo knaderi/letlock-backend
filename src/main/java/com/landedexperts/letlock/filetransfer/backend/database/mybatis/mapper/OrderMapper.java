@@ -5,8 +5,9 @@ import org.apache.ibatis.annotations.Select;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.CreateOrderResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersFileTransfersCountsResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FTOrderUsageVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferOrderLineItemUsageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderLineItemVO;
 
@@ -53,13 +54,19 @@ public interface OrderMapper {
             @Param("orderStatus") String orderStatus);
     
     @Select("SELECT *"
+            + " FROM orders.get_orders_file_transfer_counts( #{ userId }, #{ orderId })")
+    OrdersFileTransfersCountsResponse getOrdersFileTransferUsageCounts(
+            @Param("userId") long userId, @Param("orderId") long orderId);
+    
+    
+    @Select("SELECT *"
             + " FROM gochain.get_file_transfer_user_orders_usages( #{ userId })")
-    FTOrderUsageVO[] getUsersAllFTOrdersUsageHistroy(
+    FileTransferOrderLineItemUsageVO[] getUsersAllFileTransferOrdersUsageHistroy(
             @Param("userId") long userId);
     
     @Select("SELECT *"
             + " FROM gochain.get_file_transfer_user_order_usage( #{ userId }, #{ orderId })")
-    FTOrderUsageVO[] getUsersFTOrderUsageHistroy(
+    FileTransferOrderLineItemUsageVO[] getUsersFileTransferOrderUsageHistroy(
             @Param("userId") long userId, @Param("orderId") long orderId);
     
     @Select("SELECT *"
