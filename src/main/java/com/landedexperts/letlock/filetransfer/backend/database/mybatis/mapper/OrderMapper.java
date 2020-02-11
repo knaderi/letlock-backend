@@ -2,6 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.json.JSONObject;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.CreateOrderResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
@@ -9,7 +10,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferOrderLineItemUsageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderLineItemVO;
 
 public interface OrderMapper {
     @Select("SELECT"
@@ -48,8 +48,17 @@ public interface OrderMapper {
     ReturnCodeMessageResponse upsertOrderLineItem(long userId, long orderId, int packageId, short quantity, short locationId);
 
     @Select("SELECT *"
-            + " FROM orders.get_user_orders( #{ userId }, #{ orderId }, CAST( #{ userStatus } AS users.tp_user_status ) , CAST( #{ orderStatus } AS orders.tp_order_status ))")
-    OrderLineItemVO[] getUserOrders(
+            + " FROM orders.get_user_order( #{ userId }, #{ orderId })")
+    JsonResponse getUserOrder(
+            @Param("userId") long userId, @Param("orderId") long orderId);
+
+    @Select("SELECT *"
+            + " FROM orders.get_user_orders( #{ userId })")
+    JsonResponse getUserOrders(
+            @Param("userId") long userId);
+    
+    @Select("")
+    JsonResponse getUserOrdersASJson(
             @Param("userId") long userId, @Param("orderId") long orderId, @Param("userStatus") String userStatus,
             @Param("orderStatus") String orderStatus);
     

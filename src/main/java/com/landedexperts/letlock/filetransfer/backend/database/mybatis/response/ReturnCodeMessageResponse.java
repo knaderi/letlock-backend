@@ -2,9 +2,9 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response
 
 public class ReturnCodeMessageResponse {
 
-    protected String returnCode;
+    protected String returnCode = "SUCCESS";
 
-    protected String returnMessage;
+    protected String returnMessage = "";
 
     public ReturnCodeMessageResponse(final String returnCode, final String returnMessage) {
         this.returnCode = returnCode != null ? returnCode : "";

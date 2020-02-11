@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.TestUtils;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.PaymentMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersInfoResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 
@@ -35,6 +38,7 @@ public class OrderControllerTest extends BaseControllerTest {
     String orderId = "0";
     String orderDetailId = "0";
     long paymentId = 0;
+    List<String> jsonKeyValues = new ArrayList<String>();
 
     @Override
     @Before
@@ -109,13 +113,8 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        OrdersInfoResponse response = objectMapper.readValue(content, OrdersInfoResponse.class);
+        assertHasValueForKey("orderLineItemId", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
         assertForNoError("createOrderDetailTest", content);
-        assertTrue(response != null);
-        assertTrue(response.getResult() != null);
-        assertTrue(response.getResult().length>0);        
-        orderDetailId = String.valueOf(response.getResult()[0].getOrderLineItemId());
-        assertTrue(!orderDetailId.equals("0"));
     }
 
     private void updateOrderLineItem() throws Exception {
@@ -127,9 +126,9 @@ public class OrderControllerTest extends BaseControllerTest {
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("createOrderDetailTest", content);
-        assertTrue(content.contains("\"orderLineItemId\":"));
-        assertTrue(content.contains("\"countryCode\":\"CA\""));
-        assertTrue(content.contains("\"provinceCode\":\"BC\""));
+        assertHasValueForKey("orderLineItemId", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("countryCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("provinceCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
     }
 
     public void deleteOrderLineItem() throws Exception {
@@ -140,7 +139,7 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(content.contains("\"result\":[]"));
+        assertTrue(StringUtils.isEmpty(content));
     }
 
     @Test
@@ -149,8 +148,7 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem();
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", "-1").param("userStatus", "active")
-                        .param("orderStatus", "initiated").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -164,7 +162,7 @@ public class OrderControllerTest extends BaseControllerTest {
     public void getPackagesTest() throws Exception {
         String uri = "/get_packages";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -193,11 +191,34 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem();
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("userStatus", "active")
-                        .param("orderStatus", "initiated").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
+        // TODO: complete test
+    }
+    
+    
+    @Test
+    public void getUserOrderTest() throws Exception {
+        createOrder();
+        createOrderLineItem();
+        String uri = "/get_user_order";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        // TODO: complete test
+    }
+    
+    public String getUserOrder() throws Exception {
+        String uri = "/get_user_order";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        return mvcResult.getResponse().getContentAsString();
         // TODO: complete test
     }
 
@@ -210,8 +231,10 @@ public class OrderControllerTest extends BaseControllerTest {
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("getLocationsTest", content);
+        
+      
         // need to do better assertion than this.
-        assertTrue("There should be a product returned", content.contains("countryName"));
+        assertTrue("There should be a product returned", content.contains("\\\"countryName\\\" : \\\"Canada\\\""));
         // TODO: complete test
     }
 
@@ -273,6 +296,6 @@ public class OrderControllerTest extends BaseControllerTest {
         paymentId = paymentIDVO.getId();
         paymentMapper.paymentProcessSuccess(Long.parseLong(userId), paymentId);
     }
-
+    
 
 }

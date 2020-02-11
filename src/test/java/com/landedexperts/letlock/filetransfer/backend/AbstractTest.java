@@ -1,9 +1,12 @@
 package com.landedexperts.letlock.filetransfer.backend;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.junit.BeforeClass;
@@ -21,6 +24,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
@@ -65,6 +70,13 @@ public abstract class AbstractTest {
             assertJsonForKeyValue(functionName, content, "result", "", "notEmpty");
         }
     }
+
+   protected void assertHasValueForKey(String key, String jsonString, List<String> list) throws Exception {
+       JsonParser p = new JsonParser();
+       JsonElement jsonElement = p.parse(jsonString);
+       check(key, jsonElement, list);
+       assertTrue(list.size() > 0);
+   }
    
    protected void assertContentForKeyValueLargerThanZero(String testName, String content, String keyName) throws Exception {
        assertJsonForKeyValue(testName, content, keyName, "0", "greaterThan" );
@@ -99,5 +111,36 @@ public abstract class AbstractTest {
     protected String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
         JSONObject jsonObject = new JSONObject(jsonArrayStr);
         return jsonObject.getString(key);
+   }
+    
+    protected static void check(String key, String jsonString, List<String> list) {
+        JsonParser p = new JsonParser();
+        JsonElement jsonElement = p.parse(jsonString);
+        check(key, jsonElement, list);
+    }
+
+     
+    private  static void check(String key, JsonElement jsonElement, List<String> list) {
+        if (jsonElement.isJsonArray()) {
+            for (JsonElement jsonElement1 : jsonElement.getAsJsonArray()) {
+                check(key, jsonElement1, list);
+            }
+        } else {
+            if (jsonElement.isJsonObject()) {
+                Set<Map.Entry<String, JsonElement>> entrySet = jsonElement
+                        .getAsJsonObject().entrySet();
+                for (Map.Entry<String, JsonElement> entry : entrySet) {
+                    String key1 = entry.getKey();
+                    if (key1.equals(key)) {
+                        list.add(entry.getValue().toString());
+                    }
+                    check(key, entry.getValue(), list);
+                }
+            } else {
+                if (jsonElement.toString().equals(key)) {
+                    list.add(jsonElement.toString());
+                }
+            }
+        }
     }
 }

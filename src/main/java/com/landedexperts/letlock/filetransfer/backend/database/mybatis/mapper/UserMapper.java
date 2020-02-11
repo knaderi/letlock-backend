@@ -7,7 +7,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderLineItemVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 
 public interface UserMapper {
@@ -57,9 +56,4 @@ public interface UserMapper {
     @Select("SELECT _reset_token as resetToken, _user_id as userId  FROM  users.get_user(#{email})")
     UserVO getUserObject(@Param("email") String email);
     
-    @Select("SELECT *"
-            + " FROM users.vw_user_orders"
-            + " WHERE users.vw_user_orders.user_id = #{userId}")
-    OrderLineItemVO[] getUserOrders(
-            @Param("userId") long userId);
 }

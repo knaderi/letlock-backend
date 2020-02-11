@@ -1,25 +1,52 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.util.StringUtils;
 
-public class JsonResponse extends ReturnCodeMessageResponse {
-    private final String result;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    public JsonResponse(final String result, final String returnCode, final String returnMessage) {
-        super(returnCode, returnMessage);
-        this.result = result;
+public class JsonResponse<T> extends ReturnCodeMessageResponse {
+    public void setResult(T result) {
+        this._result = result;
     }
 
-    public JsonResponse(final String result) {
+    public JsonResponse() {
+        super();
+        _result = null;
+    }
+
+    private T _result;
+
+    public JsonResponse(final T result, final String returnCode, final String returnMessage) {
+        super(returnCode, returnMessage);
+        this._result = result;
+    }
+
+    public JsonResponse(final T result) {
         super("SUCCESS", "");
         if(StringUtils.isEmpty(result)){
             setReturnCode("NO_LOCATION_FOUND");
             setReturnMessage("No location data was retrived from db.");
         }
-        this.result = result;
+        this._result = result;
     }
 
-    public String getResult() {
-        return result;
+    public T getResult() {
+        return _result;
+    }
+    
+    public static JsonResponse  getResult(Object jsonString) throws JsonParseException, JsonMappingException, IOException {
+        if(jsonString instanceof Map) {
+            return new JsonResponse(((HashMap)jsonString).get("value"));
+        }else {
+        JsonResponse response = new ObjectMapper().readValue(jsonString.toString(), JsonResponse.class);
+           return (JsonResponse)getResult(response.getResult());
+        }
+
     }
 }
