@@ -90,8 +90,8 @@ public class OrderController {
     @RequestMapping(method = RequestMethod.POST, value = "/get_packages", produces = { "application/JSON" })
     public JsonResponse getPackages() {
         logger.info("OrderController.getProducts called");
-        JsonResponse value = orderMapper.getPackages(false, false);
-        return value;
+        String value = orderMapper.getPackages(false, false);
+        return new JsonResponse(value);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_locations", produces = { "application/JSON" })
@@ -225,7 +225,7 @@ public class OrderController {
 //    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/buy_package_now", produces = { "application/JSON" })
-    public CreateOrderResponse buyPackageNow(@RequestParam(value = "token") final String token,
+    public JsonResponse buyPackageNow(@RequestParam(value = "token") final String token,
             @RequestParam(value = "package_id") final int packageId) throws Exception {
         logger.info("OrderController.buyPackageNow called for token " + token);
         long orderId = -1;
@@ -240,8 +240,12 @@ public class OrderController {
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
         }
+        if (returnCode.equals("SUCCESS")) {
+            return getUserOrders(token, orderId);
+        }else {
+            return new JsonResponse(orderId,returnCode, returnMessage) ;  
+        }
 
-        return new CreateOrderResponse(orderId, returnCode, returnMessage);
     }
 
 }

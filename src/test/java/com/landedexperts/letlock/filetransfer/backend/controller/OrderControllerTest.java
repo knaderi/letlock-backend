@@ -181,8 +181,10 @@ public class OrderControllerTest extends BaseControllerTest {
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("buyPackageNowTest", content);
-        // need to do better assertion than this.
-        assertTrue("There should be a new order returned", content.contains("orderId"));
+        assertForNoError("createOrderDetailTest", content);
+        assertHasValueForKey("orderLineItemId", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("countryCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("provinceCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
     }
 
     @Test
@@ -195,7 +197,9 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        // TODO: complete test
+        assertHasValueForKey("orderLineItemId", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("countryCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("provinceCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
     }
     
     
@@ -209,18 +213,11 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        // TODO: complete test
+        assertHasValueForKey("orderLineItemId", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("countryCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("provinceCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
     }
     
-    public String getUserOrder() throws Exception {
-        String uri = "/get_user_order";
-        ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-        return mvcResult.getResponse().getContentAsString();
-        // TODO: complete test
-    }
 
     @Test
     public void getLocations() throws Exception {
@@ -230,12 +227,9 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
+        assertHasValueForKey("countryCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
+        assertHasValueForKey("provinceCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
         assertForNoError("getLocationsTest", content);
-        
-      
-        // need to do better assertion than this.
-        assertTrue("There should be a product returned", content.contains("\\\"countryName\\\" : \\\"Canada\\\""));
-        // TODO: complete test
     }
 
 

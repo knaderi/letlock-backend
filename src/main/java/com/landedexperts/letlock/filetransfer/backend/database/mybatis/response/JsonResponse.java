@@ -29,7 +29,7 @@ public class JsonResponse<T> extends ReturnCodeMessageResponse {
 
     public JsonResponse(final T result) {
         super("SUCCESS", "");
-        if(StringUtils.isEmpty(result)){
+        if (StringUtils.isEmpty(result)) {
             setReturnCode("NO_LOCATION_FOUND");
             setReturnMessage("No location data was retrived from db.");
         }
@@ -39,14 +39,19 @@ public class JsonResponse<T> extends ReturnCodeMessageResponse {
     public T getResult() {
         return _result;
     }
-    
-    public static JsonResponse  getResult(Object jsonString) throws JsonParseException, JsonMappingException, IOException {
-        if(jsonString instanceof Map) {
-            return new JsonResponse(((HashMap)jsonString).get("value"));
-        }else {
-        JsonResponse response = new ObjectMapper().readValue(jsonString.toString(), JsonResponse.class);
-           return (JsonResponse)getResult(response.getResult());
-        }
 
+    public static JsonResponse getResult(Object jsonString) throws JsonParseException, JsonMappingException, IOException {
+        JsonResponse returnResponse = null;
+        try {
+            if (jsonString instanceof Map) {
+                returnResponse = new JsonResponse(((HashMap) jsonString).get("value"));
+            } else {
+                JsonResponse response = new ObjectMapper().readValue(jsonString.toString(), JsonResponse.class);
+                returnResponse = (JsonResponse) getResult(response.getResult());
+            }
+        } catch (Exception e) {
+            returnResponse = new JsonResponse(jsonString, "SUCCESS", "");
+        }
+        return returnResponse;
     }
 }

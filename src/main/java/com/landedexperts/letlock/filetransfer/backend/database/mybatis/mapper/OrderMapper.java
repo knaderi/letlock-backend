@@ -34,7 +34,7 @@ public interface OrderMapper {
     @Select("SELECT"
             + " * "
             + " FROM product.get_packages(#{isPackageDeleted}, #{isProductDeleted})")
-    JsonResponse getPackages(boolean isPackageDeleted, boolean isProductDeleted);
+    String getPackages(boolean isPackageDeleted, boolean isProductDeleted);
 
     @Select("SELECT"
             + " * "
