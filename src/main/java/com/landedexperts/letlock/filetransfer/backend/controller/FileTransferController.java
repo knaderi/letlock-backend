@@ -99,6 +99,7 @@ public class FileTransferController {
         return new UuidNameDateArrayResponse(value, returnCode, returnMessage);
     }
 
+    //TODO: write unit test for this.
     @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_active", produces = {
             "application/JSON" })
     public ReturnCodeMessageResponse setFileTransferActive(@RequestParam(value = "token") final String token,
@@ -118,6 +119,7 @@ public class FileTransferController {
         return new ReturnCodeMessageResponse(returnCode, returnMessage);
     }
 
+    //TODO: write unit test for this.
     @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_inactive", produces = {
             "application/JSON" })
     public ReturnCodeMessageResponse setFileTransferInactive(@RequestParam(value = "token") final String token,
@@ -157,6 +159,7 @@ public class FileTransferController {
         return new FileTransferSessionsResponse(value, returnCode, returnMessage);
     }
 
+    //TODO: write unit test
     @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_status", produces = { "application/JSON" })
     public FileTransferSessionResponse getFileTransferStatus(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
@@ -175,6 +178,7 @@ public class FileTransferController {
         return new FileTransferSessionResponse(answer.getFileTransferInfoRecord(), returnCode, returnMessage);
     }
 
+    //TODO: Missing  UNit test
     @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_receiver_address", produces = {
             "application/JSON" })
     public UuidResponse setFileTransferReceiverAddress(@RequestParam(value = "token") final String token,
@@ -212,6 +216,7 @@ public class FileTransferController {
         return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
     }
 
+    
     @RequestMapping(method = RequestMethod.POST, value = "/get_txn_status", produces = { "application/JSON" })
     public TransactionHashResponse searchTransactionHash(@RequestParam(value = "token") final String token,
             @RequestParam(value = "transactionHash") final String transactionHash) throws Exception {
