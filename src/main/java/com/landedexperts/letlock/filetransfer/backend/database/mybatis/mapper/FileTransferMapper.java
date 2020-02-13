@@ -136,7 +136,7 @@ public interface FileTransferMapper {
             + " FROM gochain.file_transfer_set_funding_step_pending("
             + " #{ fileTransferUuid },"
             + " DECODE( #{ walletAddress }, 'hex'),"
-            + " CAST( #{ step } AS gochain.tp_funding_step ),"
+            + " CAST( #{ step } AS gochain.tp_funding_step )"
             + " )")
     ReturnCodeMessageResponse fileTransferSetTransferStepPending(
             @Param("fileTransferUuid") UUID fileTransferUuid,
@@ -161,6 +161,9 @@ public interface FileTransferMapper {
 
     // These are the functions used to support dbGateway
     @Select("SELECT"
+            + " _return_code AS returnCode,"
+            + " _return_message AS returnMessage"
+            + " FROM "
             +
             " gochain.file_transfer_set_contract_address("
             +
@@ -169,7 +172,7 @@ public interface FileTransferMapper {
             " DECODE( #{fileTransferContractAddress }, 'hex' )"
             +
             " )")
-    BooleanVO fileTransferSetContractAddress(
+    ReturnCodeMessageResponse fileTransferSetContractAddress(
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("fileTransferContractAddress") String contractAddress);
 

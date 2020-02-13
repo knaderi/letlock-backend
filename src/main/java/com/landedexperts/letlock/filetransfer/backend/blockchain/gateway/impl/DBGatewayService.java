@@ -12,6 +12,7 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockCh
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 
 @Service
 public class DBGatewayService extends BlockChainGatewayService {
@@ -64,20 +65,35 @@ public class DBGatewayService extends BlockChainGatewayService {
 //        " $1," +
 //        " DECODE( $2, 'hex' )" +
 //        " )",
-        String smartContractAddres = receiverWalletAddress;
-        ReturnCodeMessageResponse answer = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, smartContractAddres);
-        fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, receiverWalletAddress, "step_1_rec_pubkey", createTransactionHash());
+        String senderAddressTrimmed = senderAddress.substring(0, 2).equals("0x") ? senderAddress.substring(2)
+                : senderAddress;
+        
+        String receiverAddressTrimmed = receiverAddress.substring(0, 2).equals("0x") ? receiverAddress.substring(2)
+                : receiverAddress;
+        
+        ReturnCodeMessageResponse answer = fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid, createSmartContractAddress());
+        if (null != answer && !answer.getReturnCode().equals("SUCCESS")) {
+            logger.error(answer.getReturnMessage());
+            throw new Exception(answer.getReturnMessage());
+        }
+        
+        
+        ReturnCodeMessageResponse response = fileTransferMapper.fileTransferSetTransferStepPending(fileTransferUuid, receiverAddressTrimmed, "step_1_rec_pubkey");
+        if (null != response && !response.getReturnCode().equals("SUCCESS")) {
+            logger.error(response.getReturnMessage());
+            throw new Exception(response.getReturnMessage());
+        }
+        IdVO result = fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, receiverAddressTrimmed, "step_1_rec_pubkey", createTransactionHash());
+        if (null != result && !result.getReturnCode().equals("SUCCESS")) {
+            logger.error(result.getReturnMessage());
+            throw new Exception(result.getReturnMessage());
+        }
+        return true;
        // fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, senderWalletAddress, "step_2_send_doc_info", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
         // BooleanVO returnValue =
         // fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid,
         // "BB9bc244D798123fDe783fCc1C72d3Bb8C189413");
-        if (null == answer || answer.getReturnCode().equals("SUCCESS")) {
-            return true;
-        } else {
-            logger.error(answer.getReturnMessage());
-            throw new Exception(answer.getReturnMessage());
-
-        }
+      
 
     }
 
@@ -102,6 +118,19 @@ public class DBGatewayService extends BlockChainGatewayService {
     }
     
     public String createTransactionHash() {
+        int number = 64;
+        char[] charArr = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };// hex digits array
+
+        Random rand = new Random();
+        String result = "";
+        for (int x = 0; x < number; x++) {
+            int resInt = rand.nextInt(charArr.length);// random array element
+            result += charArr[resInt];
+        }
+        return result;
+    }
+    
+    public String createSmartContractAddress() {
         return createWalletAddress();
     }
 
