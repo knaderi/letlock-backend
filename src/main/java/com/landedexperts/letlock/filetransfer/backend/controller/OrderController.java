@@ -37,7 +37,7 @@ public class OrderController {
         if (userId > 0) {
             IdVO answer = orderMapper.orderCreate(userId);
 
-            orderId = answer.getId();
+            orderId = answer.getResult().getId();
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
         }

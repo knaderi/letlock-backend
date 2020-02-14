@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -86,9 +87,16 @@ public class UserControllerTest extends BaseControllerTest {
         assertTrue("logoutTestForBadToken: result should be false", content.contains("\"result\":false"));
     }
 
-    public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
+    public String getValuesForGivenKey(String jsonArrayStr, String key, String parent) throws Exception {
         JSONObject jsonObject = new JSONObject(jsonArrayStr);
+        if(!StringUtils.isBlank(parent)) {
+            return jsonObject.getJSONObject(parent).getString(key);
+        }
         return jsonObject.getString(key);
+    }
+    
+    public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
+        return getValuesForGivenKey(jsonArrayStr, key, "");
     }
 
     @Test

@@ -60,7 +60,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         String content = mvcResult.getResponse().getContentAsString();
         assertTrue("Json content is empty ", content.length() > 0);        
         assertForNoError("registerUser", content);
-        userId = getValuesForGivenKey(content, "id");
+        userId = getValuesForGivenKey(content, "id", "result");
         
         
     }
@@ -76,7 +76,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        token = getValuesForGivenKey(content, "token");
+        token = getValuesForGivenKey(content, "token", "result");
         assertForNoError("login", content);
         assertTrue("loginTest: content length should be larger than zero", content.length() > 0);
         assertTrue("loginTest: returnCode should be SUCCESS", content.contains("\"returnCode\":\"SUCCESS\""));

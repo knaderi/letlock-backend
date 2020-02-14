@@ -1,12 +1,34 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
 public class SessionTokenResponse extends ReturnCodeMessageResponse {
-	private final String token;
 
-	public SessionTokenResponse(final String token, final String returnCode, final String returnMessage) {
-		super(returnCode, returnMessage);
-		this.token = token != null ? token : "";
-	}
+    private ResultObject result = new ResultObject();
 
-	public String getToken() { return this.token; }
+    public SessionTokenResponse(String token, String returnCode, String returnMessage) {
+        super(returnCode, returnMessage);
+        setToken(token);
+    }
+
+    public ResultObject getResult() {
+        return result;
+    }
+
+    public void setToken(String token) {
+        result.setToken(token);
+    }
+
+    public class ResultObject {
+        private String token;
+
+        public ResultObject() {
+        }
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+    }
 }

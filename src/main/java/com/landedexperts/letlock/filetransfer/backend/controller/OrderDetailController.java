@@ -34,7 +34,7 @@ public class OrderDetailController {
         if (userId > 0) {
             IdVO answer = orderLineItemMapper.addOrderLineItem(userId, orderId, productId, quantity);
 
-            orderLineItemId = answer.getId();
+            orderLineItemId = answer.getResult().getId();
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
         }

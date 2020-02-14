@@ -83,7 +83,7 @@ public class UserController {
         logger.info("UserController.login called for loginName " + loginName);
         IdVO answer = userMapper.login(loginName, password);
 
-        long userId = answer.getId();
+        long userId = answer.getResult().getId();
         String returnCode = answer.getReturnCode();
         String returnMessage = answer.getReturnMessage();
 
