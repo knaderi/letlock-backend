@@ -54,5 +54,14 @@ public abstract class BlockChainGatewayService {
      * @throws Exception
      */
     public abstract String fund(UUID fileTransferUuid, String signedTransactionHex, String step) throws Exception;
+    
+  
+
+    /**
+     * 
+     * @return
+     * @throws Exception
+     */
+    public abstract String getType() throws Exception;
 
 }

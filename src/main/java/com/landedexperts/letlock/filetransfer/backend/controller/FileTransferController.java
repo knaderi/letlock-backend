@@ -43,8 +43,11 @@ public class FileTransferController {
 
     private final Logger logger = LoggerFactory.getLogger(FileTransferController.class);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/start_file_transfer_session", produces = {
-            "application/JSON" })
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/start_file_transfer_session",
+            produces = {
+                    "application/JSON" })
     public ConsumeResponse startFileTransferSession(@RequestParam(value = "token") final String token,
             @RequestParam(value = "wallet_address") final String walletAddress,
             @RequestParam(value = "receiver_login_name") final String receiverLoginName) throws Exception {
@@ -59,11 +62,8 @@ public class FileTransferController {
             String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
                     : walletAddress;
 
-//            FileTransferSessionVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId,
-//                    walletAddressTrimmed, receiverLoginName);
-            
             FileTransferInfoVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId,
-                    walletAddressTrimmed, receiverLoginName);
+                    walletAddressTrimmed, receiverLoginName, getBlockChainGateWayService().getType());
 
             fileTransferUuid = answer.getFileTransferUuid();
             walletAddressUuid = answer.getReceiverWalletAddressUuid();
@@ -74,8 +74,11 @@ public class FileTransferController {
         return new ConsumeResponse(fileTransferUuid, walletAddressUuid, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/is_file_transfer_waiting_receiver_address", produces = {
-            "application/JSON" })
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/is_file_transfer_waiting_receiver_address",
+            produces = {
+                    "application/JSON" })
     public UuidNameDateArrayResponse isFileTransferWaitingForReceiverAddress(
             @RequestParam(value = "token") final String token) {
         logger.info("FileTransferController.isFileTransferWaitingForReceiverAddress called for token " + token);
@@ -99,9 +102,12 @@ public class FileTransferController {
         return new UuidNameDateArrayResponse(value, returnCode, returnMessage);
     }
 
-    //TODO: write unit test for this.
-    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_active", produces = {
-            "application/JSON" })
+    // TODO: write unit test for this.
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/set_file_transfer_active",
+            produces = {
+                    "application/JSON" })
     public ReturnCodeMessageResponse setFileTransferActive(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileTransferController.setFileTransferAsActive called for token " + token);
@@ -110,7 +116,7 @@ public class FileTransferController {
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferAsActive(userId, fileTransferUuid);
+            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferAsActive(userId, fileTransferUuid);
 
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
@@ -119,9 +125,12 @@ public class FileTransferController {
         return new ReturnCodeMessageResponse(returnCode, returnMessage);
     }
 
-    //TODO: write unit test for this.
-    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_inactive", produces = {
-            "application/JSON" })
+    // TODO: write unit test for this.
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/set_file_transfer_inactive",
+            produces = {
+                    "application/JSON" })
     public ReturnCodeMessageResponse setFileTransferInactive(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileTransferController.setFileTransferInactive called for token " + token);
@@ -130,7 +139,7 @@ public class FileTransferController {
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferInactive(userId, fileTransferUuid);
+            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferInactive(userId, fileTransferUuid);
 
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
@@ -139,8 +148,33 @@ public class FileTransferController {
         return new ReturnCodeMessageResponse(returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_sessions_for_user", produces = {
-            "application/JSON" })
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/set_file_transfer_file_hashes",
+            produces = {
+                    "application/JSON" })
+    public ReturnCodeMessageResponse setFileTransferFileHashes(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "clearFileHash") final String clearFileHash, @RequestParam(value = "encryptedFileHash") final String encryptedFileHash) throws Exception {
+        logger.info("FileTransferController.setFileTransferFilesHash called for token " + token);
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
+
+        long userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferFileHashes(userId, fileTransferUuid, clearFileHash, encryptedFileHash);
+
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+        }
+
+        return new ReturnCodeMessageResponse(returnCode, returnMessage);
+    }
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/get_file_transfer_sessions_for_user",
+            produces = {
+                    "application/JSON" })
     public FileTransferSessionsResponse getFileTransferSessionsForUser(
             @RequestParam(value = "token") final String token) throws Exception {
         logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
@@ -151,7 +185,7 @@ public class FileTransferController {
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	value = fileTransferMapper.getFileTransferSessionsForUser(userId);
+            value = fileTransferMapper.getFileTransferSessionsForUser(userId);
             returnCode = "SUCCESS";
             returnMessage = "";
         }
@@ -159,7 +193,7 @@ public class FileTransferController {
         return new FileTransferSessionsResponse(value, returnCode, returnMessage);
     }
 
-    //TODO: write unit test
+    // TODO: write unit test
     @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_status", produces = { "application/JSON" })
     public FileTransferSessionResponse getFileTransferStatus(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
@@ -178,9 +212,12 @@ public class FileTransferController {
         return new FileTransferSessionResponse(answer.getFileTransferInfoRecord(), returnCode, returnMessage);
     }
 
-    //TODO: Missing  UNit test
-    @RequestMapping(method = RequestMethod.POST, value = "/set_file_transfer_receiver_address", produces = {
-            "application/JSON" })
+    // TODO: Missing UNit test
+    @RequestMapping(
+            method = RequestMethod.POST,
+            value = "/set_file_transfer_receiver_address",
+            produces = {
+                    "application/JSON" })
     public UuidResponse setFileTransferReceiverAddress(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "wallet_address") final String walletAddress) throws Exception {
@@ -216,7 +253,6 @@ public class FileTransferController {
         return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
     }
 
-    
     @RequestMapping(method = RequestMethod.POST, value = "/get_txn_status", produces = { "application/JSON" })
     public TransactionHashResponse searchTransactionHash(@RequestParam(value = "token") final String token,
             @RequestParam(value = "transactionHash") final String transactionHash) throws Exception {

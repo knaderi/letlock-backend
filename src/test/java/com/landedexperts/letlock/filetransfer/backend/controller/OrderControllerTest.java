@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.TestUtils;
+import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.PaymentMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
@@ -281,7 +282,7 @@ public class OrderControllerTest extends BaseControllerTest {
         //start a file transfer
         String walletAddressTrimmed = TestUtils.createWalletAddress();
         FileTransferInfoVO vo = fileTransferMapper.insertFileTransferSessionRecord(Long.parseLong(userId),
-                walletAddressTrimmed, "Bob1111");
+                walletAddressTrimmed, "Bob1111", BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue());
         System.out.println(vo);
     }
 

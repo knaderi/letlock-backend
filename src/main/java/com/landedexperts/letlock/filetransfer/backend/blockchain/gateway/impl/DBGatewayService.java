@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
+import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
@@ -134,7 +135,9 @@ public class DBGatewayService extends BlockChainGatewayService {
         return createWalletAddress();
     }
 
-//    client.query(
-//            "SELECT gochain.get_undeployed_smart_contract()",
+    @Override
+    public String getType() throws Exception {
+        return BlockChainGatewayServiceTypeEnum.DB_GATEWAY.getValue();
+    }
 
 }

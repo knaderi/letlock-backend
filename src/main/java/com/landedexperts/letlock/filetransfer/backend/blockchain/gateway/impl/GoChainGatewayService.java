@@ -18,6 +18,7 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.ResultJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.TransactionHashJson;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.WalletAddress;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
+import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 
 @Service
@@ -151,6 +152,11 @@ public class GoChainGatewayService extends BlockChainGatewayService {
             logger.error("Error closing Stream " + e.getMessage());
         }
 
+    }
+
+    @Override
+    public String getType() throws Exception {
+        return BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue();
     }
 
 }

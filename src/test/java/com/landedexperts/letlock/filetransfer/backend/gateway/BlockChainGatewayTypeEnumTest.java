@@ -18,14 +18,14 @@ public class BlockChainGatewayTypeEnumTest extends AbstractTest {
     
     @Test
     public void testGetValue() {
-        assertEquals("testGetValue: It should be gochain-gateway", "gochain-gateway", BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue());
-        assertEquals("testGetValue: It should be db-gateway", "db-gateway", BlockChainGatewayServiceTypeEnum.DB_GATEWAY.getValue());      
+        assertEquals("testGetValue: It should be gochain-gateway", "gochain_gateway", BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue());
+        assertEquals("testGetValue: It should be db-gateway", "db_gateway", BlockChainGatewayServiceTypeEnum.DB_GATEWAY.getValue());      
     }
     
     @Test
     public void testEnum() {
-        assertEquals("testEnum: It should be GoChian Gateway",BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("gochain-gateway"));
-        assertEquals("testEnum: It should be DB Gateway",BlockChainGatewayServiceTypeEnum.DB_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("db-gateway") );
+        assertEquals("testEnum: It should be GoChian Gateway",BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("gochain_gateway"));
+        assertEquals("testEnum: It should be DB Gateway",BlockChainGatewayServiceTypeEnum.DB_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("db_gateway") );
         assertNull("testEnum: It should be invalid value",BlockChainGatewayServiceTypeEnum.fromValue("invalid-value") ); 
     }
     

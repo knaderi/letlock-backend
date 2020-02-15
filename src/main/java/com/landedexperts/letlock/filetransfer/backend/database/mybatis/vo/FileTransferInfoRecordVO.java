@@ -18,7 +18,34 @@ public class FileTransferInfoRecordVO {
 	private String funding3RecFinalStatus;
 	private String funding3RecFinalTransactionHash;
 	private boolean fileTransferIsActive;
-	private Date fileTransferCreate;
+	private String gateway;
+	private String clearFileHash;
+	private String encryptedFileHash;
+	public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
+    }
+
+    public String getClearFileHash() {
+        return clearFileHash;
+    }
+
+    public void setClearFileHash(String clearFileHash) {
+        this.clearFileHash = clearFileHash;
+    }
+
+    public String getEncryptedFileHash() {
+        return encryptedFileHash;
+    }
+
+    public void setEncryptedFileHash(String encryptedFileHash) {
+        this.encryptedFileHash = encryptedFileHash;
+    }
+
+    private Date fileTransferCreate;
 	private Date fileTransferUpdate;
 	
 	public String getFileTransferUuid() {

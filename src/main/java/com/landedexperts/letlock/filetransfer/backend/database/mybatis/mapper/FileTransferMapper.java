@@ -19,11 +19,12 @@ public interface FileTransferMapper {
             + " CAST( _wallet_address_uuid AS text ) AS walletAddressUuid,"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM \"users\".insert_start_file_transfer_session_record( #{ userId } , CAST ( DECODE( #{walletAddress}, 'hex' ) AS gochain.address), #{ receiverLoginName } )")
+            + " FROM gochain.insert_start_file_transfer_session_record( #{ userId } , CAST ( DECODE( #{walletAddress}, 'hex' ) AS gochain.address), #{ receiverLoginName }, CAST(#{gateway} AS gochain.tp_gateway))")
     FileTransferInfoVO insertFileTransferSessionRecord(
             @Param("userId") long userId,
             @Param("walletAddress") String walletAddress,
-            @Param("receiverLoginName") String receiverLoginName);
+            @Param("receiverLoginName") String receiverLoginName,
+            @Param("gateway") String gateway);
 
     @Select("SELECT"
             + " CAST( file_transfer_uuid AS text ) AS uuid,"
@@ -40,6 +41,19 @@ public interface FileTransferMapper {
     ReturnCodeMessageResponse setFileTransferAsActive(
             @Param("userId") long userId,
             @Param("fileTransferUuid") UUID fileTransferUuid);
+    
+    
+    
+    @Select("SELECT"
+            + " _return_code AS returnCode,"
+            + " _return_message AS returnMessage"
+            + " FROM gochain.set_file_transfer_file_hashes( #{ userId }, #{ fileTransferUuid }, #{clearFileHash} AS gochain.address, #{encryptedFileHash} AS gochain.address )")
+    ReturnCodeMessageResponse setFileTransferFileHashes(
+            @Param("userId") long userId,
+            @Param("fileTransferUuid") UUID fileTransferUuid,
+            @Param("clearFileHash") String clearFileHash,
+            @Param("encryptedFileHash") String encryptedFileHash);
+    
 
     @Select("SELECT"
             + " _return_code AS returnCode,"
@@ -65,6 +79,9 @@ public interface FileTransferMapper {
             + " _funding_3_rec_final_status AS funding3RecFinalStatus,"
             + " _funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,"
             + " _file_transfer_is_active AS fileTransferIsActive,"
+            + " _clear_file_hash AS clearFileHash,"
+            + " _encrypted_file_hash AS encryptedFileHash,"
+            + " _gateway AS gateway,"
             + " _file_transfer_create_dt AS fileTransferCreate,"
             + " _file_transfer_update_dt AS fileTransferUpdate,"
             + " _return_code AS returnCode,"

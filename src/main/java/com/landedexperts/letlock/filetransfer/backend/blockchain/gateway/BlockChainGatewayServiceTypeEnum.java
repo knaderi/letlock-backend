@@ -2,8 +2,8 @@ package com.landedexperts.letlock.filetransfer.backend.blockchain.gateway;
 
 public enum BlockChainGatewayServiceTypeEnum {
     
-    GOCHAIN_GATEWAY("gochain-gateway"),
-    DB_GATEWAY("db-gateway");
+    GOCHAIN_GATEWAY("gochain_gateway"),
+    DB_GATEWAY("db_gateway");
     
     private String gatewayType;
     
