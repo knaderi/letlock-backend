@@ -287,8 +287,9 @@ public class OrderControllerTest extends BaseControllerTest {
     }
 
     private void makeSuccessfulPayment() {
-        IdVO paymentIDVO = paymentMapper.paymentInitiate(Long.parseLong(userId), Long.parseLong(orderId), "paypal", TestUtils.createPayPalTransactionId());
+        IdVO paymentIDVO = paymentMapper.paymentInitiate(Long.parseLong(userId), Long.parseLong(orderId), "paypal");
         paymentId = paymentIDVO.getResult().getId();
+        //do the paypal payment.
         paymentMapper.paymentProcessSuccess(Long.parseLong(userId), paymentId);
     }
     

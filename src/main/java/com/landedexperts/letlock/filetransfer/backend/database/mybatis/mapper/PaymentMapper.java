@@ -5,18 +5,18 @@ import org.apache.ibatis.annotations.Select;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderPaymentVO;
 
 public interface PaymentMapper {
     @Select("SELECT"
             + " _payment_id AS id,"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM orders.payment_initiate( #{ userId }, #{ orderId }, CAST( #{ type } AS orders.tp_payment_type), #{ transactionId } )")
+            + " FROM orders.payment_initiate( #{ userId }, #{ orderId }, CAST( #{ type } AS orders.tp_payment_type))")
     public IdVO paymentInitiate(
             @Param("userId") long userId,
             @Param("orderId") long orderId,
-            @Param("type") String type,
-            @Param("transactionId") String transactionId);
+            @Param("type") String type);
 
     @Select("SELECT"
             + " _return_code AS returnCode,"
@@ -33,5 +33,14 @@ public interface PaymentMapper {
     ReturnCodeMessageResponse paymentProcessSuccess(
             @Param("userId") long userId,
             @Param("paymentId") long paymentId);
+    
+    
+    @Select("SELECT"
+            + " _return_code AS returnCode,"
+            + " _return_message AS returnMessage"
+            + " FROM orders.get_user_order_payment( #{ userId }, #{ orderId } )")
+    OrderPaymentVO getUserOrderPayment(
+            @Param("userId") long userId,
+            @Param("orderId") long orderId);
 
 }
