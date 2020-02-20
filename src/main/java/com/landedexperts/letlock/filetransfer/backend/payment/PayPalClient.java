@@ -1,12 +1,16 @@
 package com.landedexperts.letlock.filetransfer.backend.payment;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderPaymentVO;
 import com.paypal.api.payments.Amount;
@@ -20,6 +24,7 @@ import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 
+@Component
 public class PayPalClient {
     
     private final Logger logger = LoggerFactory.getLogger(PayPalClient.class);
@@ -28,7 +33,7 @@ public class PayPalClient {
     private String clientId;
     
     @Value("${payment.paypal.client.secret}")
-    private String secretId;
+    private String clientSecret;
     
     @Value("${payment.paypal.mode}")
     private String mode;
@@ -36,12 +41,12 @@ public class PayPalClient {
     @Value("${payment.paypal.return.link}")
     private String returnLink;
     
-    @Value("${payment.paypal.approval.link}")
+    @Value("${payment.paypal.cancel.link}")
     private String cancelLink;
 
-  public void initiatePayment(String token, OrderPaymentVO paymentVO) {
-
-      APIContext context = new APIContext(clientId, secretId, mode);
+  public Map<String, Object> initiatePayment(String token, OrderPaymentVO paymentVO) {
+      Map<String, Object> response = new HashMap<String, Object>();
+      APIContext context = new APIContext(clientId, clientSecret, mode);
       
       ////////////////////////////////////Define payment
       // Set payer details
@@ -78,38 +83,54 @@ public class PayPalClient {
 
       // Add payment details
       Payment payment = new Payment();
-      payment.setIntent("sale");
+      payment.setIntent("SALE");
       payment.setPayer(payer);
       payment.setRedirectUrls(redirectUrls);
       payment.setTransactions(transactions);
+      Payment createdPayment;
       
       // Create payment
       try {
-        Payment createdPayment = payment.create(context);
-
-        Iterator<?> links = createdPayment.getLinks().iterator();
-        while (links.hasNext()) {
-          Links link = (Links)links.next();
-          //TODO: check this.
-          if (link.getRel().equalsIgnoreCase("approval_url")) {
-            // Redirect the customer to link.getHref()
+          String redirectUrl = "";
+          createdPayment = payment.create(context);
+          if(createdPayment!=null){
+              List<Links> links = createdPayment.getLinks();
+              for (Links link:links) {
+                  if(link.getRel().equals("approval_url")){
+                      redirectUrl = link.getHref();
+                      break;
+                  }
+              }
+              response.put("status", "success");
+              response.put("redirect_url", redirectUrl);
           }
-        }
       } catch (PayPalRESTException e) {
-          System.err.println(e.getDetails());
+          logger.error("PayPalClient.initiatePayment!", e);
+          response.put("status", "failed");
       }
-      
-      //execute Payment
-      payment.setId(paymentVO.getPaymentId());
-
-      PaymentExecution paymentExecution = new PaymentExecution();
-      paymentExecution.setPayerId(token);
-      try {
-        Payment createdPayment = payment.execute(context, paymentExecution);
-        logger.debug(createdPayment.toString());
-      } catch (PayPalRESTException e) {
-        logger.error(e.getDetails().getMessage());
-      }
+      return response;
   }
+  
+  
+  public Map<String, Object> completePayment(HttpServletRequest req){
+      Map<String, Object> response = new HashMap<String, Object>();
+      Payment payment = new Payment();
+      payment.setId(req.getParameter("paymentId"));
+      PaymentExecution paymentExecution = new PaymentExecution();
+      paymentExecution.setPayerId(req.getParameter("payerId"));
+      try {
+          APIContext context = new APIContext(clientId, clientSecret, "sandbox");
+          Payment createdPayment = payment.execute(context, paymentExecution);
+          if(createdPayment!=null){
+              response.put("status", "success");
+              response.put("payment", createdPayment);
+          }
+      } catch (PayPalRESTException e) {
+          logger.error("PayPalClient.completePayment!", e);
+          response.put("status", "failed");
+      }
+      return response;
+  }
+
 }
 

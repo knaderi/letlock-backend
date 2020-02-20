@@ -22,6 +22,7 @@ import com.landedexperts.letlock.filetransfer.backend.TestUtils;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.PaymentMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.CompletePayPalPaymentResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -239,7 +240,7 @@ public class OrderControllerTest extends BaseControllerTest {
         //Create test order
         createOrder();
         createOrderLineItem();
-        makeSuccessfulPayment();
+        makeDummySuccessfulPayment();
         startFileTransfer();
         startFileTransfer();
         startFileTransfer();
@@ -286,12 +287,35 @@ public class OrderControllerTest extends BaseControllerTest {
         System.out.println(vo);
     }
 
-    private void makeSuccessfulPayment() {
-        IdVO paymentIDVO = paymentMapper.paymentInitiate(Long.parseLong(userId), Long.parseLong(orderId), "paypal");
+    private void makeDummySuccessfulPayment() {
+        IdVO paymentIDVO = paymentMapper.setPaymentInitiate(Long.parseLong(userId), Long.parseLong(orderId), "paypal");
         paymentId = paymentIDVO.getResult().getId();
         //do the paypal payment.
-        paymentMapper.paymentProcessSuccess(Long.parseLong(userId), paymentId);
+        CompletePayPalPaymentResponse response = paymentMapper.setPaymentProcessSuccess(Long.parseLong(userId), paymentId , TestUtils.createPayPalTransactionId());
     }
     
+    @Test
+    public void initiatePaymentTest() throws Exception  {        
+        createOrder();
+        createOrderLineItem();
+        String uri = "/paypal/make/payment";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(!StringUtils.isBlank(content));
+        assertTrue(getValuesForGivenKey(content, "responseMap", "result").contains("\"status\":\"success\""));       
+    }
+    
+    @Test
+    public void CompletePaymentTest() throws Exception  {        
+        String uri = "/paypal/complete/payment";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("paymentId", paymentId+"").param("paypalToken", "EC-08C0391618037304B").param("payPalPaymentId", "PAYID-LZG53DA0ST70322U14705837&").accept(MediaType.APPLICATION_JSON_VALUE));
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertTrue(!StringUtils.isBlank(content));
+        assertTrue(getValuesForGivenKey(content, "returnCode").equals("PAYMENT_NOT_FOUND"));       
+    }
 
 }

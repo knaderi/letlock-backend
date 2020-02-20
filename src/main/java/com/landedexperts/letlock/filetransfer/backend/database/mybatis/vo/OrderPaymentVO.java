@@ -1,5 +1,7 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 
 public class OrderPaymentVO  extends ReturnCodeMessageResponse {
@@ -74,6 +76,13 @@ public class OrderPaymentVO  extends ReturnCodeMessageResponse {
     }
     public void setOrderDescription(String orderDescription) {
         this.orderDescription = orderDescription;
+    }
+    
+    public boolean isValid() {
+        if(StringUtils.isBlank(orderId) || StringUtils.isBlank(orderTotal)|| StringUtils.isBlank(orderSubtotal) ||StringUtils.isBlank(orderTotal)|| StringUtils.isBlank(paymentId) )
+            return false;
+        return true;
+            
     }
 
 }

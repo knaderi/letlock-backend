@@ -188,11 +188,14 @@ public class OrderController {
         logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
         FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
         //TODO, should filter
-        OrdersFileTransfersCountsResponse ordersFTCounts = null;
+        OrdersFileTransfersCountsResponse ordersFTCounts = new OrdersFileTransfersCountsResponse();
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             lineItemsUsageForOrderArray = orderMapper.getUsersFileTransferOrderUsageHistroy(userId, orderId);
-            ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);           
+            ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId); 
+            if(null == ordersFTCounts) {
+                ordersFTCounts =  new OrdersFileTransfersCountsResponse();
+            }
         }
 
         return new OrderFileTransferUsagesResponse(orderId, lineItemsUsageForOrderArray, ordersFTCounts);
