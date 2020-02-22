@@ -58,12 +58,12 @@ public interface PaymentMapper {
     
     @Update("UPDATE orders.payment"  
             + " SET status = 'success', transaction_id = #{transactionId}" 
-            + " WHERE order_id = #{orderId};")//+ 
-//            "            UPDATE orders.\"order\"" + 
-//            "                SET status = 'completed'" + 
-//            "                WHERE order_id = #{orderId};")
+            + " WHERE order_id = #{orderId};"
+            + "            UPDATE orders.\"order\"" 
+            + "                SET status = 'completed'" 
+            + "                WHERE order_id = #{orderId};")
 
-    CompletePayPalPaymentResponse setPaymentProcessSuccessForTest(
+    void setPaymentProcessSuccessForTest(
             @Param("orderId") long userId,
             @Param("transactionId") String transactionId);
     
