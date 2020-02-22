@@ -1,8 +1,9 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.json.JSONObject;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.CreateOrderResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
@@ -49,16 +50,16 @@ public interface OrderMapper {
 
     @Select("SELECT *"
             + " FROM orders.get_user_order( #{ userId }, #{ orderId })")
-    JsonResponse getUserOrder(
+    JsonResponse<String> getUserOrder(
             @Param("userId") long userId, @Param("orderId") long orderId);
 
     @Select("SELECT *"
-            + " FROM orders.get_user_orders( #{ userId })")
-    JsonResponse getUserOrders(
-            @Param("userId") long userId);
+            + " FROM orders.get_user_orders( #{ userId }, cast(#{orderStatus} AS orders.tp_order_status))")
+    JsonResponse<Map<String, String>> getUserOrders(
+            @Param("userId") long userId, @Param("orderStatus") String orderStatus);
     
     @Select("")
-    JsonResponse getUserOrdersASJson(
+    JsonResponse<String> getUserOrdersASJson(
             @Param("userId") long userId, @Param("orderId") long orderId, @Param("userStatus") String userStatus,
             @Param("orderStatus") String orderStatus);
     

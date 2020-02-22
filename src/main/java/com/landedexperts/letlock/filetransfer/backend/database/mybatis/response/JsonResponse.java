@@ -17,11 +17,10 @@ public class JsonResponse<T> extends ReturnCodeMessageResponse {
 
     public JsonResponse() {
         super();
-        _result = null;
     }
 
-    private T _result;
-
+    private T _result = (T)"{}";
+    
     public JsonResponse(final T result, final String returnCode, final String returnMessage) {
         super(returnCode, returnMessage);
         this._result = result;
@@ -40,18 +39,18 @@ public class JsonResponse<T> extends ReturnCodeMessageResponse {
         return _result;
     }
 
-    public static JsonResponse getResult(Object jsonString) throws JsonParseException, JsonMappingException, IOException {
-        JsonResponse returnResponse = null;
+    public static JsonResponse<Object> getResult(Object jsonString) throws JsonParseException, JsonMappingException, IOException {
         try {
             if (jsonString instanceof Map) {
-                returnResponse = new JsonResponse(((HashMap) jsonString).get("value"));
+                HashMap<String, String> hashMap = (HashMap<String, String>) jsonString;
+                return  new JsonResponse<Object>(hashMap.get("value"));
             } else {
                 JsonResponse response = new ObjectMapper().readValue(jsonString.toString(), JsonResponse.class);
-                returnResponse = (JsonResponse) getResult(response.getResult());
+                return (JsonResponse<Object>) getResult(response.getResult());
             }
         } catch (Exception e) {
-            returnResponse = new JsonResponse(jsonString, "SUCCESS", "");
+            return new JsonResponse<Object>(jsonString, "SUCCESS", "");
         }
-        return returnResponse;
+
     }
 }

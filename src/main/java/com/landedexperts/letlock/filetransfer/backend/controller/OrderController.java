@@ -1,5 +1,7 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import java.util.Map;
+
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,16 +90,16 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_packages", produces = { "application/JSON" })
-    public JsonResponse getPackages() {
+    public JsonResponse<String> getPackages() {
         logger.info("OrderController.getProducts called");
         String value = orderMapper.getPackages(false, false);
-        return new JsonResponse(value);
+        return new JsonResponse<String>(value);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_locations", produces = { "application/JSON" })
-    public JsonResponse getLocations() throws JSONException {
+    public JsonResponse<String> getLocations() throws JSONException {
         logger.info("OrderController.getLocations called");
-        return new JsonResponse(orderMapper.getLocations());
+        return new JsonResponse<String>(orderMapper.getLocations());
     }
     
 //    @RequestMapping(method = RequestMethod.POST, value = "/upsert_order_line_item", produces = { "application/JSON" })
@@ -126,7 +128,7 @@ public class OrderController {
 //    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/upsert_order_line_item", produces = { "application/JSON" })
-    public JsonResponse upsertOrderLineItem(@RequestParam(value = "token") final String token,
+    public JsonResponse<String> upsertOrderLineItem(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final int orderId,
             @RequestParam(value = "packageId") final int packageId,
             @RequestParam(value = "quantity") final short quantity,
@@ -144,22 +146,25 @@ public class OrderController {
 
         }
         if (returnCode.equals("SUCCESS")) {
-            return getUserOrders(token, orderId);
+            return getUserOrder(token, orderId);
         }else {
-            return new JsonResponse("",returnCode, returnMessage) ;  
+            return new JsonResponse<String>("",returnCode, returnMessage) ;  
         }
 
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = { "application/JSON" })
-    public JsonResponse getUserOrders(@RequestParam(value = "token") final String token) throws Exception {
+    public JsonResponse<Map<String, String>> getUserOrders(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
 
-        JsonResponse value = null;
+        JsonResponse<Map<String, String>> value = new JsonResponse<Map<String, String>>();
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            value = orderMapper.getUserOrders(userId);
+            value = orderMapper.getUserOrders(userId, "any");
+        }else {
+            value.setReturnCode("USER_NOT_FOUND");
+            value.setReturnMessage("User does not exist.");
         }
 
         return value;
@@ -167,15 +172,18 @@ public class OrderController {
     
     
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_order", produces = { "application/JSON" })
-    public JsonResponse getUserOrders(@RequestParam(value = "token") final String token,
+    public JsonResponse<String> getUserOrder(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId) throws Exception {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
 
-        JsonResponse value = null;
+        JsonResponse<String> value = new JsonResponse<String>();
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             value = orderMapper.getUserOrder(userId, orderId);
+        }else {
+            value.setReturnCode("USER_NOT_FOUND");
+            value.setReturnMessage("User does not exist.");
         }
 
         return value;
@@ -244,7 +252,7 @@ public class OrderController {
             returnMessage = answer.getReturnMessage();
         }
         if (returnCode.equals("SUCCESS")) {
-            return getUserOrders(token, orderId);
+            return getUserOrder(token, orderId);
         }else {
             return new JsonResponse(orderId,returnCode, returnMessage) ;  
         }
