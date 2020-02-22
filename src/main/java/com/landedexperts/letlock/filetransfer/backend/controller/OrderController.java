@@ -152,16 +152,15 @@ public class OrderController {
         }
 
     }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = { "application/JSON" })
-    public JsonResponse<Map<String, String>> getUserOrders(@RequestParam(value = "token") final String token) throws Exception {
+    
+    public JsonResponse<Map<String, String>> getUserOrdersForStatus(@RequestParam(value = "token") final String token, final String status) throws Exception {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
 
         JsonResponse<Map<String, String>> value = new JsonResponse<Map<String, String>>();
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            value = orderMapper.getUserOrders(userId, "any");
+            value = orderMapper.getUserOrders(userId, status);
         }else {
             value.setReturnCode("USER_NOT_FOUND");
             value.setReturnMessage("User does not exist.");
@@ -170,6 +169,20 @@ public class OrderController {
         return value;
     }
     
+    @RequestMapping(method = RequestMethod.POST, value = "/get_all_user_orders", produces = { "application/JSON" })
+    public JsonResponse<Map<String, String>> getAllUserOrders(@RequestParam(value = "token") final String token) throws Exception {
+        logger.info("OrderController.getAllUserOrders called for token " + token + "\n");
+
+        return getUserOrdersForStatus(token, "any");
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = { "application/JSON" })
+    public JsonResponse<Map<String, String>> getUserOrders(@RequestParam(value = "token") final String token) throws Exception {
+        logger.info("OrderController.getUserOrders called for token " + token + "\n");
+        return getUserOrdersForStatus(token, "completed");
+    }
+
+   
     
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_order", produces = { "application/JSON" })
     public JsonResponse<String> getUserOrder(@RequestParam(value = "token") final String token,
