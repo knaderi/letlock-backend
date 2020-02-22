@@ -2,6 +2,7 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.CompletePayPalPaymentResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -21,19 +22,19 @@ public interface PaymentMapper {
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM orders.payment_process_failure( #{ userId }, #{ paymentId } )")
+            + " FROM orders.payment_process_failure( #{ userId }, #{ paymentId }, #{ transactionId } )")
     CompletePayPalPaymentResponse setPaymentProcessFailure(
             @Param("userId") long userId,
-            @Param("paymentId") long paymentId);
+            @Param("paymentId") long paymentId,
+            @Param("transactionId") String transactionId);
 
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM orders.payment_process_success( #{ userId }, #{ paymentId }, #{ paypalPaymentId } )")
+            + " FROM orders.payment_process_success( #{ userId }, #{ transactionId } )")
     CompletePayPalPaymentResponse setPaymentProcessSuccess(
             @Param("userId") long userId,
-            @Param("paymentId") long paymentId,
-            @Param("paypalPaymentId") String paypalPaymentId);
+            @Param("transactionId") String transactionId);
     
     
     @Select("SELECT"
@@ -53,5 +54,19 @@ public interface PaymentMapper {
     OrderPaymentVO getUserOrderPayment(
             @Param("userId") long userId,
             @Param("orderId") long orderId);
+    
+    
+    @Update("UPDATE orders.payment"  
+            + " SET status = 'success', transaction_id = #{transactionId}" 
+            + " WHERE order_id = #{orderId};")//+ 
+//            "            UPDATE orders.\"order\"" + 
+//            "                SET status = 'completed'" + 
+//            "                WHERE order_id = #{orderId};")
+
+    CompletePayPalPaymentResponse setPaymentProcessSuccessForTest(
+            @Param("orderId") long userId,
+            @Param("transactionId") String transactionId);
+    
+    
 
 }

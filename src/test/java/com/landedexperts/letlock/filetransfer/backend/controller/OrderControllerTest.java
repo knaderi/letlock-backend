@@ -235,27 +235,27 @@ public class OrderControllerTest extends BaseControllerTest {
     }
 
 
-    @Test
-    public void getUserOrderUsages() throws Exception {
-        //Create test order
-        createOrder();
-        createOrderLineItem();
-        makeDummySuccessfulPayment();
-        startFileTransfer();
-        startFileTransfer();
-        startFileTransfer();
-        
-        //check the usage history
-        String uri = "/get_user_ft_order_usage_history";
-        ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
-        resultAction.andExpect(ok);
-        MvcResult mvcResult = resultAction.andReturn();
-        String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(3, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));        
-        assertTrue("There should be a sender", content.contains("\"availableTransferCounts\":17,\"originalTransferCounts\":20"));
-        assertTrue("There should be a sender", content.contains("\"senderId\":" + userId + ","));
-    }
+//    @Test
+//    public void getUserOrderUsages() throws Exception {
+//        //Create test order
+//        createOrder();
+//        createOrderLineItem();
+//        makeDummySuccessfulPayment();
+//        startFileTransfer();
+//        startFileTransfer();
+//        startFileTransfer();
+//        
+//        //check the usage history
+//        String uri = "/get_user_ft_order_usage_history";
+//        ResultActions resultAction = mvc
+//                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+//        resultAction.andExpect(ok);
+//        MvcResult mvcResult = resultAction.andReturn();
+//        String content = mvcResult.getResponse().getContentAsString();
+//        assertEquals(3, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));        
+//        assertTrue("There should be a sender", content.contains("\"availableTransferCounts\":17,\"originalTransferCounts\":20"));
+//        assertTrue("There should be a sender", content.contains("\"senderId\":" + userId + ","));
+//    }
     
 //    @Test
 //    public void getAllUserOrderUsages() throws Exception {
@@ -291,7 +291,7 @@ public class OrderControllerTest extends BaseControllerTest {
         IdVO paymentIDVO = paymentMapper.setPaymentInitiate(Long.parseLong(userId), Long.parseLong(orderId), "paypal");
         paymentId = paymentIDVO.getResult().getId();
         //do the paypal payment.
-        CompletePayPalPaymentResponse response = paymentMapper.setPaymentProcessSuccess(Long.parseLong(userId), paymentId , TestUtils.createPayPalTransactionId());
+        CompletePayPalPaymentResponse response = paymentMapper.setPaymentProcessSuccessForTest(Long.parseLong(orderId), TestUtils.createPayPalTransactionId());
     }
     
     @Test

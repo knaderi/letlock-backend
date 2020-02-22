@@ -53,7 +53,7 @@ public class PayPalController {
                     if (isSuccess(initiationMap)) {
                         response.setResponseMap(initiationMap);
                     }else {
-                        paymentMapper.setPaymentProcessFailure(userId, paymentId);//set failure only if paypal api fails.
+                        paymentMapper.setPaymentProcessFailure(userId, paymentId, "");//set failure only if paypal api fails.
                         response = new InitiatePaypalPaymentResponse("PAYPAL_INITIATE_PAYMENT_FAILED", "Paypal initiate payment failed.");
                     }
                 }
@@ -71,20 +71,19 @@ public class PayPalController {
     @RequestMapping(method = RequestMethod.POST, value = "/complete/payment", produces = { "application/JSON" })
     public CompletePayPalPaymentResponse completePayPalPayment(HttpServletRequest request,
             @RequestParam(value = "token") final String token,
-            @RequestParam(value = "paymentId") final long paymentId,
             @RequestParam(value = "paypalToken") final String payPalToken,
             @RequestParam(value = "payPalPaymentId") final String payPalPaymentId) throws Exception {
         long userId = SessionManager.getInstance().getUserId(token);
         CompletePayPalPaymentResponse response = new CompletePayPalPaymentResponse("SUCCESS", "");
         if (userId > 0) {
             logger.info("OrderController.setPaymentSuccess called for token " + token);
-            response = paymentMapper.setPaymentProcessSuccess(userId, paymentId, payPalPaymentId);
+            response = paymentMapper.setPaymentProcessSuccess(userId,payPalPaymentId);
             if(response.getReturnCode().equals("SUCCESS")) {
                 Map<String, Object> completeMap = payPalClient.completePayment(request);
                 if (isSuccess(completeMap)) {
                     response.setResponseMap(completeMap);
                 }else {
-                    paymentMapper.setPaymentProcessFailure(userId, paymentId);//set failure only if paypal api fails.
+                    paymentMapper.setPaymentProcessFailure(userId, -1, payPalPaymentId);//set failure only if paypal api fails.
                     response = new CompletePayPalPaymentResponse("PAYPAL_PAYMENT_FAILED", "Paypal  complete payment failed.");
                 }
             }else {
