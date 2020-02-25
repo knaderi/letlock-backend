@@ -73,7 +73,7 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
 
     public  String getSecret() {
 
-        String secretName = env + "/Appdata/letlock/postgres";
+        String secretName = "dev" + "/Appdata/letlock/postgres";
         String region = "us-west-2";
 
         // Create a Secrets Manager client
@@ -107,6 +107,10 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
             // Deal with the exception here, and/or rethrow at your discretion.
             throw e;
         } catch (ResourceNotFoundException e) {
+            // We can't find the resource that you asked for.
+            // Deal with the exception here, and/or rethrow at your discretion.
+            throw e;
+        }catch (Exception e) {
             // We can't find the resource that you asked for.
             // Deal with the exception here, and/or rethrow at your discretion.
             throw e;
