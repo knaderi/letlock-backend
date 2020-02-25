@@ -9,10 +9,10 @@
 		http://www.springframework.org/schema/context/spring-context.xsd">
  
     <context:property-placeholder
-        location="classpath:properties/application-default.properties, classpath:properties/application-${spring.profiles.active}.properties"
+        location="classpath:properties/application-${spring.profiles.active}.properties"
         ignore-unresolvable="true" />
         
-	<bean id="dataSource" class="org.postgresql.ds.PGSimpleDataSource">
+	<bean id="dataSource" class="com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource">
 		<property name="serverName" value="${db.serverName}"/>
 		<property name="portNumber" value="${db.portNumber}"/>
 		<property name="databaseName" value="${db.databaseName}"/>

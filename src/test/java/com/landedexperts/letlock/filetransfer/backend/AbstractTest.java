@@ -4,12 +4,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONObject;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
@@ -160,4 +163,6 @@ public abstract class AbstractTest {
             }
         }
     }
+    
+    
 }

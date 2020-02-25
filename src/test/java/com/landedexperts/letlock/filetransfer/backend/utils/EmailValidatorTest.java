@@ -3,8 +3,13 @@ package com.landedexperts.letlock.filetransfer.backend.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.sql.SQLException;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource;
 
 
 public class EmailValidatorTest {

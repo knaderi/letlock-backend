@@ -3,8 +3,10 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import com.github.javafaker.Faker;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 import com.landedexperts.letlock.filetransfer.backend.LetlockFiletransferBackendApplication;
+import com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
@@ -82,5 +85,4 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         assertTrue("loginTest: returnCode should be SUCCESS", content.contains("\"returnCode\":\"SUCCESS\""));
     }
     
-
 }
