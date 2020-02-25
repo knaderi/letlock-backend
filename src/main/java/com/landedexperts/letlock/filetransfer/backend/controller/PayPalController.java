@@ -72,13 +72,14 @@ public class PayPalController {
     public CompletePayPalPaymentResponse completePayPalPayment(HttpServletRequest request,
             @RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId,
-            @RequestParam(value = "paypalToken") final String payPalToken,
-            @RequestParam(value = "payPalPaymentId") final String payPalPaymentId) throws Exception {
+            @RequestParam(value = "paypalToken") final String paypalToken,
+            @RequestParam(value = "paypalPayerId") final String paypalPayerId,
+            @RequestParam(value = "paypalPaymentId") final String paypalPaymentId) throws Exception {
         long userId = SessionManager.getInstance().getUserId(token);
         CompletePayPalPaymentResponse response = new CompletePayPalPaymentResponse("SUCCESS", "");
         if (userId > 0) {
             logger.info("OrderController.setPaymentSuccess called for token " + token);
-            response = paymentMapper.setPaymentProcessSuccess(userId, orderId, payPalPaymentId);
+            response = paymentMapper.setPaymentProcessSuccess(userId, orderId, paypalPaymentId);
             if(response.getReturnCode().equals("SUCCESS")) {
                 Map<String, Object> completeMap = payPalClient.completePayment(request);
                 if (isSuccess(completeMap)) {
@@ -94,15 +95,16 @@ public class PayPalController {
         } else {
             response = new CompletePayPalPaymentResponse("USER_NOT_FOUND", "user does not exist.");
         }
+        //TODO: log the value of Payment Json object to the database upon successful payment.
         return response;
     }
     
-    @RequestMapping(method = RequestMethod.POST, value = "/cancelLink", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.GET, value = "/cancel", produces = { "application/JSON" })
     public BooleanResponse handleCancelPayment() throws Exception {
         return new BooleanResponse(true, "Success", "");
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/returnLink", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.GET, value = "/return", produces = { "application/JSON" })
     public BooleanResponse handleReturnLink() throws Exception {
         return new BooleanResponse(true, "Success", "");
     }

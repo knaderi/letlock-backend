@@ -176,7 +176,7 @@ public class OrderControllerTest extends BaseControllerTest {
     public void buyPackageNowTest() throws Exception {
         String uri = "/buy_package_now";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("package_id", "1")
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("packageId", "1")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -310,7 +310,7 @@ public class OrderControllerTest extends BaseControllerTest {
     public void CompletePaymentTest() throws Exception  {        
         String uri = "/paypal/complete/payment";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId+"").param("paypalToken", "EC-08C0391618037304B").param("payPalPaymentId", "PAYID-LZG53DA0ST70322U14705837&").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId+"").param("paypalToken", "EC-08C0391618037304B").param("paypalPaymentId", "PAYID-LZG53DA0ST70322U14705837&").param("paypalPayerId", "TNF9ZSF9L9YL4").accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertTrue(!StringUtils.isBlank(content));

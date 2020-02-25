@@ -115,15 +115,15 @@ public class PayPalClient {
   public Map<String, Object> completePayment(HttpServletRequest req){
       Map<String, Object> response = new HashMap<String, Object>();
       Payment payment = new Payment();
-      payment.setId(req.getParameter("paymentId"));
+      payment.setId(req.getParameter("paypalPaymentId"));
       PaymentExecution paymentExecution = new PaymentExecution();
-      paymentExecution.setPayerId(req.getParameter("payerId"));
+      paymentExecution.setPayerId(req.getParameter("paypalPayerId"));
       try {
           APIContext context = new APIContext(clientId, clientSecret, "sandbox");
           Payment createdPayment = payment.execute(context, paymentExecution);
           if(createdPayment!=null){
               response.put("status", "success");
-              response.put("payment", createdPayment);
+              response.put("payment", createdPayment.toJSON());
           }
       } catch (PayPalRESTException e) {
           logger.error("PayPalClient.completePayment!", e);

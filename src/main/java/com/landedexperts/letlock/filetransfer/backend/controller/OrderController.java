@@ -70,7 +70,7 @@ public class OrderController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/update_order_status_to_initiated", produces = { "application/JSON" })
     public BooleanResponse UpdateOrderStatusCancelledToInitiated(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "order_id") final int orderId) throws Exception {
+            @RequestParam(value = "orderId") final int orderId) throws Exception {
         logger.info("OrderController.UpdateOrderStatusCancelledToInitiated called for token " + token + " and OrderId " + orderId);
         Boolean result = false;
         String returnCode = "TOKEN_INVALID";
@@ -250,7 +250,7 @@ public class OrderController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/buy_package_now", produces = { "application/JSON" })
     public JsonResponse buyPackageNow(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "package_id") final int packageId) throws Exception {
+            @RequestParam(value = "packageId") final int packageId) throws Exception {
         logger.info("OrderController.buyPackageNow called for token " + token);
         long orderId = -1;
         String returnCode = "TOKEN_INVALID";
