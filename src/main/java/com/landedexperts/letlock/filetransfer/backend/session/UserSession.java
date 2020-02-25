@@ -3,7 +3,7 @@ package com.landedexperts.letlock.filetransfer.backend.session;
 import java.util.Date;
 
 public class UserSession {
-	private static long timeout = 300000L; /*Timeout in milliseconds, 5 mins*/
+	private static long timeout = 3000000L; /*Timeout in milliseconds, 50 mins*/
 	private static Date newExpire() {
 		return new Date((new Date()).getTime() + UserSession.timeout);
 	}
