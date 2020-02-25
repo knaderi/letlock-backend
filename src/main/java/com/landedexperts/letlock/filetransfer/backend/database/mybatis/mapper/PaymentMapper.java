@@ -22,18 +22,19 @@ public interface PaymentMapper {
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM orders.payment_process_failure( #{ userId }, #{ paymentId }, #{ transactionId } )")
+            + " FROM orders.payment_process_failure( #{ userId }, #{ orderId }, #{ transactionId } )")
     CompletePayPalPaymentResponse setPaymentProcessFailure(
             @Param("userId") long userId,
-            @Param("paymentId") long paymentId,
+            @Param("orderId") long orderId,
             @Param("transactionId") String transactionId);
 
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM orders.payment_process_success( #{ userId }, #{ transactionId } )")
+            + " FROM orders.payment_process_success( #{ userId }, #{ orderId }, #{ transactionId } )")
     CompletePayPalPaymentResponse setPaymentProcessSuccess(
             @Param("userId") long userId,
+            @Param("orderId") long orderId,
             @Param("transactionId") String transactionId);
     
     
