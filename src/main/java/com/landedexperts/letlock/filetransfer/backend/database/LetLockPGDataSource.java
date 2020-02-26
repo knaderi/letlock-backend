@@ -6,6 +6,8 @@ import java.util.Base64;
 import java.util.Properties;
 
 import org.postgresql.ds.PGSimpleDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +21,12 @@ import com.amazonaws.services.secretsmanager.model.DecryptionFailureException;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.google.gson.Gson;
+import com.landedexperts.letlock.filetransfer.backend.controller.OrderController;
 
 @Component
 public class LetLockPGDataSource extends PGSimpleDataSource {
-
+    private final Logger logger = LoggerFactory.getLogger(LetLockPGDataSource.class);
+    
     public LetLockPGDataSource() {
         super();
     }
@@ -111,9 +115,8 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
             // Deal with the exception here, and/or rethrow at your discretion.
             throw e;
         }catch (Exception e) {
-            // We can't find the resource that you asked for.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
+            e.printStackTrace();
+            logger.error("very bad error occured", e.getMessage());
         }
 
         // Decrypts secret using the associated KMS CMK.
