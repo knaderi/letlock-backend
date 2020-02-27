@@ -45,17 +45,18 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
     @Value("${spring.profiles.active}")
     private String env;
 
-    @Value("${db.serverName}")
-    private String localDBHost;
 
-    @Value("${db.portNumber}")
-    private int localDBPortNumber;
+    private String localDBHost = "localhost";
 
-    @Value("${db.user}")
-    private String localDBUserName;
 
-    @Value("${db.password}")
-    private String localDBPassword;
+    private int localDBPortNumber = 5432;
+
+
+    private String localDBUserName = "letlock_backend";
+
+
+    private String localDBPassword = "Ai#~eq:*|G?|b%t[qJBh8f6[";
+
 
     private static String remoteDataSourceProperties = null;
 
