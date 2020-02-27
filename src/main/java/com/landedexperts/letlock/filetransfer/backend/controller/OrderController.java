@@ -169,11 +169,10 @@ public class OrderController {
         return value;
     }
     
-    @RequestMapping(method = RequestMethod.POST, value = "/get_all_user_orders", produces = { "application/JSON" })
-    public JsonResponse<Map<String, String>> getAllUserOrders(@RequestParam(value = "token") final String token) throws Exception {
-        logger.info("OrderController.getAllUserOrders called for token " + token + "\n");
-
-        return getUserOrdersForStatus(token, "any");
+    @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders_by_status", produces = { "application/JSON" })
+    public JsonResponse<Map<String, String>> getUserOrdersByStatus(@RequestParam(value = "token") final String token, @RequestParam(value = "orderStatus") final String orderStatus) throws Exception {
+        logger.info("OrderController.getUserOrders called for token " + token + "\n");
+        return getUserOrdersForStatus(token, orderStatus);
     }
     
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = { "application/JSON" })

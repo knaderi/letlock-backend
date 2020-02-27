@@ -153,10 +153,22 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertForNoError("getUserOrdersTest", content);
-        // need to do better assertion than this.
-        // assertTrue("There should be a product returned",
-        // content.contains("productName"));
+        assertTrue("content should be empty since user does not have completed orders", content.length()== 0);
+
+    }
+    
+    @Test
+    public void getUsersOrdersForStatusTest() throws Exception {
+        createOrder();
+        createOrderLineItem();
+        String uri = "/get_user_orders_by_status";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderStatus", "initiated").accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertForNoError("getUsersAllOrdersTest", content);
+
     }
 
     @Test

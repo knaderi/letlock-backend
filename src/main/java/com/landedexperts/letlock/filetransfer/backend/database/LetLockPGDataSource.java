@@ -1,36 +1,43 @@
 package com.landedexperts.letlock.filetransfer.backend.database;
 
+import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_HOST_SECRET_KEY;
+import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_PASSWORD_SECRET_KEY;
+import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_PORT_SECRET_KEY;
+import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_USER_SECRET_KEY;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Base64;
 import java.util.Properties;
 
 import org.postgresql.ds.PGSimpleDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.services.acmpca.model.InvalidRequestException;
-import com.amazonaws.services.acmpca.model.ResourceNotFoundException;
-import com.amazonaws.services.applicationdiscovery.model.InvalidParameterException;
-import com.amazonaws.services.datapipeline.model.InternalServiceErrorException;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.DecryptionFailureException;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.google.gson.Gson;
-import com.landedexperts.letlock.filetransfer.backend.controller.OrderController;
+import com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade;
 
+/**
+ * This class overwrite PGSimpleDataSource that is used by mybatis in beans.xml.
+ * This class allows to initialized local datasource using the
+ * application-local.properties and initialize the datasource for remote servers
+ * (prod, qa, dev) using AWS secret manager
+ * 
+ * @author knaderi
+ *
+ */
 @Component
 public class LetLockPGDataSource extends PGSimpleDataSource {
-    private final Logger logger = LoggerFactory.getLogger(LetLockPGDataSource.class);
-    
+
+    private static final String COULDN_T_OPEN_DATABASE_CONNECTION_ERROR = "couldn't open database connection: ";
+
+    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
+
+    private static final String LOCAL_ENV_NAME = "local";
+
     public LetLockPGDataSource() {
         super();
     }
-
+    
     private static final String LETLOCK_FILETRANSFER = "letlock_filetransfer";
 
     private static final long serialVersionUID = 4425173994723283055L;
@@ -38,99 +45,92 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
     @Value("${spring.profiles.active}")
     private String env;
 
-    private static String secretValueResult = null;
+    @Value("${db.serverName}")
+    private String localDBHost;
 
-    public  String getSecretValueResult() {
+    @Value("${db.portNumber}")
+    private int localDBPortNumber;
 
-        if (secretValueResult == null) {
-            secretValueResult = getSecret();
+    @Value("${db.user}")
+    private String localDBUserName;
+
+    @Value("${db.password}")
+    private String localDBPassword;
+
+    private static String remoteDataSourceProperties = null;
+
+    public String getRemoteDataSourceProperties() {
+
+        if (remoteDataSourceProperties == null) {
+            remoteDataSourceProperties = AWSSecretManagerFacade.getDataSourceProperties(env);
         }
-        return secretValueResult;
+        return remoteDataSourceProperties;
     }
 
+    /**
+     * This method creates and returns a connection for the specific environment the
+     * application is deployed to
+     */
     @Override
-    public Connection getConnection()throws SQLException {
-        if ("local".equals(env) || "local".contentEquals(System.getProperty("spring.profiles.active"))) {
-            return super.getConnection();
-        } else{
-            PGSimpleDataSource dataSource = new PGSimpleDataSource();
-            Properties dataSourceProperties = getJsonASPropererities(getSecretValueResult());
-
-            dataSource
-                    .setServerName(dataSourceProperties.getProperty("host"));
-            dataSource.setDatabaseName(LETLOCK_FILETRANSFER);
-            dataSource.setPortNumber(Integer.parseInt(dataSourceProperties.getProperty("port")));
-            // Get these from AWS secret manager
-            dataSource.setUser(dataSourceProperties.getProperty("username"));
-            dataSource.setPassword(dataSourceProperties.getProperty("password"));
-
-            try {
-                return dataSource.getConnection();
-            } catch (Exception e) {
-                IllegalArgumentException e1 = new IllegalArgumentException(
-                        "couldn't open database connection: " + e.getMessage());
-                e1.initCause(e);
-                throw e1;
-            }
-        }
-    }
-
-    public  String getSecret() {
-
-        String secretName = "dev" + "/Appdata/letlock/postgres";
-        String region = "us-west-2";
-
-        // Create a Secrets Manager client
-        AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
-                .withRegion(region)
-                .build();
-
-
-        GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest()
-                .withSecretId(secretName);
-        GetSecretValueResult getSecretValueResult = null;
-
+    public Connection getConnection() throws SQLException {
+        PGSimpleDataSource dataSource = null;
         try {
-            getSecretValueResult = client.getSecretValue(getSecretValueRequest);
-        } catch (DecryptionFailureException e) {
-            // Secrets Manager can't decrypt the protected secret text using the provided
-            // KMS key.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (InternalServiceErrorException e) {
-            // An error occurred on the server side.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (InvalidParameterException e) {
-            // You provided an invalid value for a parameter.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (InvalidRequestException e) {
-            // You provided a parameter value that is not valid for the current state of the
-            // resource.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (ResourceNotFoundException e) {
-            // We can't find the resource that you asked for.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        }catch (Exception e) {
-            e.printStackTrace();
-            logger.error("very bad error occured", e.getMessage());
-        }
+            if (isLocalEnv()) {
+                dataSource = getLocalEnvDataSource();
 
-        // Decrypts secret using the associated KMS CMK.
-        // Depending on whether the secret is a string or binary, one of these fields
-        // will be populated.
-        if (getSecretValueResult.getSecretString() != null) {
-            return getSecretValueResult.getSecretString();
-        } else {
-            return new String(Base64.getDecoder().decode(getSecretValueResult.getSecretBinary()).array());
+            } else {
+                dataSource = getRemoteEnvDataSource();
+            }
+            return dataSource.getConnection();
+        } catch (Exception e) {
+            IllegalArgumentException e1 = new IllegalArgumentException(
+                    COULDN_T_OPEN_DATABASE_CONNECTION_ERROR + e.getMessage());
+            e1.initCause(e);
+            throw e1;
         }
-
     }
 
-    private  Properties getJsonASPropererities(String json) {
+    private boolean isLocalEnv() {
+        return LOCAL_ENV_NAME.equals(env) || LOCAL_ENV_NAME.contentEquals(System.getProperty(SPRING_PROFILES_ACTIVE));
+    }
+
+    /**
+     * Initializes remote server datasource object using the datasource properties read from AWS secret manager
+     * @return PGSimpleDataSource
+     */
+    private PGSimpleDataSource getRemoteEnvDataSource() {
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        String remoteDataSourceProps = getRemoteDataSourceProperties();
+        Properties dataSourceProperties = getJsonASProperties(remoteDataSourceProps);
+        dataSource.setServerName(dataSourceProperties.getProperty(DS_HOST_SECRET_KEY));
+        dataSource.setDatabaseName(LETLOCK_FILETRANSFER);
+        dataSource.setPortNumber(Integer.parseInt(dataSourceProperties.getProperty(DS_PORT_SECRET_KEY)));
+        // Get these from AWS secret manager
+        dataSource.setUser(dataSourceProperties.getProperty(DS_USER_SECRET_KEY));
+        dataSource.setPassword(dataSourceProperties.getProperty(DS_PASSWORD_SECRET_KEY));
+        return dataSource;
+    }
+
+    /**
+     * Initializes local datasource object using application-local.properties
+     * @return PGSimpleDataSource
+     */
+    private PGSimpleDataSource getLocalEnvDataSource() {
+        PGSimpleDataSource dataSource = new PGSimpleDataSource();
+        dataSource.setServerName(localDBHost);
+        dataSource.setDatabaseName(LETLOCK_FILETRANSFER);
+        dataSource.setPortNumber(localDBPortNumber);
+        dataSource.setUser(localDBUserName);
+        dataSource.setPassword(localDBPassword);
+        return dataSource;
+    }
+
+    /**
+     * This method creates a Java properties object using a json input
+     * @param json
+     * @return
+     */
+    private Properties getJsonASProperties(final String json) {
         Gson gson = new Gson();
         return gson.fromJson(json, Properties.class);
     }

@@ -13,11 +13,11 @@
         ignore-unresolvable="true" />
         
 	<bean id="dataSource" class="com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource">
-		<property name="serverName" value="${db.serverName}"/>
+		<!-- <property name="serverName" value="${db.serverName}"/>
 		<property name="portNumber" value="${db.portNumber}"/>
 		<property name="databaseName" value="${db.databaseName}"/>
 		<property name="user" value="${db.user}"/>
-		<property name="password" value="${db.password}"/>
+		<property name="password" value="${db.password}"/>-->
 	</bean>
 
 
