@@ -3,11 +3,10 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,7 +22,7 @@ import com.github.javafaker.Faker;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 import com.landedexperts.letlock.filetransfer.backend.LetlockFiletransferBackendApplication;
-import com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
@@ -63,10 +62,30 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         String content = mvcResult.getResponse().getContentAsString();
         assertTrue("Json content is empty ", content.length() > 0);        
         assertForNoError("registerUser", content);
-        userId = getValuesForGivenKey(content, "id", "result");
+        userId = getValuesForGivenKey(content, "id", "result");   
         
+        //test login fails at this point since reset-Token has not been confirmed.
+        
+        String uri3 = "/get_user_object";
+        ResultActions resultAction3 = mvc.perform(MockMvcRequestBuilders.post(uri3).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction3.andExpect(ok);
+        MvcResult mvcResult3 = resultAction3.andReturn();
+        String content3 = mvcResult3.getResponse().getContentAsString();
+        String reset_token = getValuesForGivenKey(content3, "resetToken", ""); 
+        
+        String uri2 = "/confirm_signup";
+        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2)
+                .param("email", userEmail).param("resetToken", reset_token).accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction2.andExpect(ok);
+        MvcResult mvcResult2 = resultAction2.andReturn();
+        String content2 = mvcResult2.getResponse().getContentAsString();
+        assertTrue("Json content is empty ", content2.length() > 0);        
+        assertForNoError("registerUser", content2);
+        String userActive = getValuesForGivenKey(content, "id", "result");  
         
     }
+    
+  
 
     
     protected void login() throws Exception {

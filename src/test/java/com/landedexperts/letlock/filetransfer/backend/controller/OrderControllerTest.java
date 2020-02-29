@@ -22,6 +22,7 @@ import com.landedexperts.letlock.filetransfer.backend.TestUtils;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.PaymentMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -35,6 +36,9 @@ public class OrderControllerTest extends BaseControllerTest {
     
     @Autowired
     private ObjectMapper objectMapper;
+    
+    @Autowired
+    UserMapper userMapper;
 
     String orderId = "0";
     String orderDetailId = "0";
@@ -43,7 +47,6 @@ public class OrderControllerTest extends BaseControllerTest {
 
     @Override
     @Before
-    @Transactional
     public void setUp() throws Exception {
         super.setUp();
         registerUser();

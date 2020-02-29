@@ -15,6 +15,7 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockCh
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceFactory;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ConsumeResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.FileTransferSessionResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.FileTransferSessionsResponse;
@@ -23,7 +24,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UuidNameDate;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UuidNameDateArrayResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UuidResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoRecordVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.GochainAddressVO;
@@ -286,14 +286,14 @@ public class FileTransferController {
             walletAddress = walletAddress.substring(2);
         }
 
-        BooleanVO isAvailable = fileTransferMapper.setFileTransferStepAvailability(fileTransferUuid, walletAddress,
+        BooleanResponse isAvailable = fileTransferMapper.setFileTransferStepAvailability(fileTransferUuid, walletAddress,
                 step);
 
         returnCode = isAvailable.getReturnCode();
         returnMessage = isAvailable.getReturnMessage();
 
         String transactionHash = "";
-        if (returnCode.equals("SUCCESS") && isAvailable.getValue()) {
+        if (returnCode.equals("SUCCESS") && isAvailable.getResult().getValue()) {
             transactionHash = getBlockChainGateWayService().fund(fileTransferUuid, signedTransactionHex, step);
         }
 

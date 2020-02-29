@@ -23,6 +23,7 @@ public class EmailServiceFacade {
     private final Logger logger = LoggerFactory.getLogger(EmailServiceFacade.class);
 
     private static String FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset Your Password";
+    private static String CONFIRM_SIGNUP_EMAIL_SUBJECT = "Confirm Your Email";
     static String RESET_TOKEN = "%RESET_TOKEN%";
     static String VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN = "%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%";
     static String LETLOCK_LOGO_URL_TOKEN = "%LETLOCK_LOGO_URL_TOKEN%";
@@ -30,6 +31,10 @@ public class EmailServiceFacade {
 
     @Value("${validate.reset.password.token.url}")
     String validateResetPasswordTokenURL;
+    
+    
+    @Value("${validate.confirm.signup.url}")
+    String confirmSignupURL;
     
     @Value("${spring.profiles.active}")
     private String env;
@@ -42,7 +47,11 @@ public class EmailServiceFacade {
     
     @Value("${forgot.password.email.template}")
     private String forgotPasswordEmailTemplate;
+
+    @Value("${confirm.signup.email.template}")
+    private String confirmSignupEmailTemplate;
     
+
     @Value("${letlock.logo.url}")
     String letlockLogoURL;
     
@@ -51,34 +60,69 @@ public class EmailServiceFacade {
     
     void sendForgotPasswordHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
 
-//        Email email = new Email();
-//        email.setFrom(letlockNotificationEmail);
-//        
-//        if("prd".equals(env)) {
-//            email.setTo(recepientEmail);            
-//        }else {
-//            logger.info("replacing recipient email: " + recepientEmail);
-//            email.setTo(nonProdReceipientEmail);   
-//        }
-//             
-//        email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
-//        email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken));
-//        letLockEmailService.sendHTMLMail(email);
+        Email email = new Email();
+        email.setFrom(letlockNotificationEmail);
+        
+        if("prd".equals(env)) {
+            email.setTo(recepientEmail);            
+        }else {
+            logger.info("replacing recipient email: " + recepientEmail);
+            email.setTo(nonProdReceipientEmail);   
+        }
+             
+        email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
+        email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken));
+        letLockEmailService.sendHTMLMail(email);
     }
+    
 
     String getForgotPasswordHTMLEmailBody(String resetEmailToken) throws Exception {
-        String emailBody = readEmailBody();
+        String emailBody = readForgotPasswordEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, validateResetPasswordTokenURL)
         .replace(RESET_TOKEN, resetEmailToken)
         .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
         .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
     }
-
-    String readEmailBody() throws IOException {
+    
+    
+  
+    String readForgotPasswordEmailBody() throws IOException {
         URL url = Resources.getResource(forgotPasswordEmailTemplate);
         String emailBody = Resources.toString(url, Charsets.UTF_8);
         return emailBody;
+    }
+    
+    String getConfirmSignupHTMLEmailBody(String resetEmailToken) throws Exception {
+        String emailBody = readConfirmSignupdEmailBody();
+        emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
+        .replace(RESET_TOKEN, resetEmailToken)
+        .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+        .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
+        return emailBody;
+    }
+    
+    String readConfirmSignupdEmailBody() throws IOException {
+        URL url = Resources.getResource(confirmSignupEmailTemplate);
+        String emailBody = Resources.toString(url, Charsets.UTF_8);
+        return emailBody;
+    }
+    
+    void sendFConfirmSignupHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
+
+        Email email = new Email();
+        email.setFrom(letlockNotificationEmail);
+        
+        if("prd".equals(env)) {
+            email.setTo(recepientEmail);            
+        }else {
+            logger.info("replacing recipient email: " + recepientEmail);
+            email.setTo(nonProdReceipientEmail);   
+        }
+             
+        email.setSubject(CONFIRM_SIGNUP_EMAIL_SUBJECT);
+        email.setMessageText(getConfirmSignupHTMLEmailBody(resetEmailToken));
+        letLockEmailService.sendHTMLMail(email);
     }
 
 }

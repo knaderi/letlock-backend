@@ -40,7 +40,7 @@ public class EmailServiceFacadeTest extends AbstractTest {
 
         // read forgotpassword email template and make sure it contains the replacement
         // tokens
-        String emailBody = emailSErviceFacade.readEmailBody();
+        String emailBody = emailSErviceFacade.readForgotPasswordEmailBody();
         assertNotNull(emailBody);
         assertTrue(emailBody.contains(EmailServiceFacade.RESET_TOKEN));
         assertTrue(emailBody.contains(EmailServiceFacade.VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN));

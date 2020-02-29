@@ -91,7 +91,7 @@ public class DBGatewayService extends BlockChainGatewayService {
         }
         return true;
        // fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, senderWalletAddress, "step_2_send_doc_info", "94E6d91C51b44cCAF97fE69dD122968eE8672173");
-        // BooleanVO returnValue =
+        // BooleanResponse returnValue =
         // fileTransferMapper.fileTransferSetContractAddress(fileTransferUuid,
         // "BB9bc244D798123fDe783fCc1C72d3Bb8C189413");
       

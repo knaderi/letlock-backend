@@ -42,7 +42,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
         String token = response.getResult().getToken();
         BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
-        assertFalse("upload should fail as there is no transfer session", uploadResponse.getResult());
+        assertFalse("upload should fail as there is no transfer session", uploadResponse.getResult().getValue());
     }
 
     @Test

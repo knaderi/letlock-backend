@@ -2,21 +2,22 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 
 public interface UserMapper {
     @Select("SELECT" + " _result AS value," + " _return_code AS returnCode," + " _return_message AS returnMessage"
             + " FROM users.is_login_name_available( #{ loginName } )")
-    BooleanVO isLoginNameAvailable(@Param("loginName") String loginName);
+    BooleanResponse isLoginNameAvailable(@Param("loginName") String loginName);
 
     @Select("SELECT" + " _user_id AS id," + " _return_code AS returnCode," + " _return_message AS returnMessage"
-            + " FROM users.add_user( #{loginName}, #{email}, #{password} )")
-    IdVO register(@Param("loginName") String loginName, @Param("email") String email, @Param("password") String password);
+            + " FROM users.add_user( #{loginName}, #{email}, #{password}, #{resetToken})")
+    IdVO register(@Param("loginName") String loginName, @Param("email") String email, @Param("password") String password, @Param("resetToken") String resetToken);
 
     @Select("SELECT" + " _hashing_algo AS hashingAlgo," + " _encoding_algo AS encodingAlgo,"
             + " _return_code AS returnCode," + " _return_message AS returnMessage"
@@ -38,22 +39,34 @@ public interface UserMapper {
 
 //	@Select("SELECT" + " _result AS value," + " _return_code AS returnCode," + " _return_message AS returnMessage"
 //	            + " FROM users.is_email_registered( #{ email } )")
-//	 BooleanVO isEmailRegistered(@Param("email") String email);
+//	 BooleanResponse isEmailRegistered(@Param("email") String email);
 
     @Select("SELECT" + " _result AS value," + " _return_code AS returnCode," + " _return_message AS returnMessage"
             + " FROM users.reset_user_password( #{email}, #{resetToken}, #{newPassword} )")
-    BooleanVO resetUserPassword(@Param("email") String email, @Param("resetToken") String resetToken,
+    BooleanResponse resetUserPassword(@Param("email") String email, @Param("resetToken") String resetToken,
             @Param("newPassword") String newPassword);
 
-    @Select("SELECT" + " _result AS value," + " _return_code AS returnCode," + " _return_message AS returnMessage"
+    @Select("SELECT" + " _return_code AS returnCode," + " _return_message AS returnMessage"
             + " FROM users.handle_forgot_password( #{email}, #{resetToken} )")
-    BooleanVO handleForgotPassword(@Param("email") String email, @Param("resetToken") String resetToken);
+    ReturnCodeMessageResponse handleForgotPassword(@Param("email") String email, @Param("resetToken") String resetToken);
 
+    @Select("SELECT" + " _result AS value," + " _return_code AS \"returnCode\"," + " _return_message AS \"returnMessage\""
+            + " FROM users.record_signup_confirmation( #{email}, #{resetToken} )")
+    BooleanResponse confirmSignup(@Param("email") String email, @Param("resetToken") String resetToken);
+    
     @Select("SELECT" + " _result AS value," + " _return_code AS returnCode," + " _return_message AS returnMessage"
             + " FROM users.is_password_reset_token_valid( #{resetToken})")
-    BooleanVO isPasswordResetTokenValid(@Param("resetToken") String resetToken);
+    BooleanResponse isPasswordResetTokenValid(@Param("resetToken") String resetToken);
 
     @Select("SELECT _reset_token as resetToken, _user_id as userId  FROM  users.get_user(#{email})")
     UserVO getUserObject(@Param("email") String email);
+        
+    @Update("UPDATE users.users"  
+            + " SET status = 'active',"
+            + " reset_token = null "
+            + " WHERE user_id = #{userId};")
+    void setSignupConfirmationForTest(
+            @Param("userId") long userId);
     
+        
 }

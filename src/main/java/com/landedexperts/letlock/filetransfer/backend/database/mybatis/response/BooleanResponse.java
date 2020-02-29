@@ -1,12 +1,37 @@
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
+
 public class BooleanResponse extends ReturnCodeMessageResponse {
-	private final boolean result;
 
-	public BooleanResponse(final boolean result, final String returnCode, final String returnMessage) {
-		super(returnCode, returnMessage);
-		this.result = result;
-	}
+    public BooleanResponse(boolean resultValue, String returnCode, String returnMessage) {
+        super(returnCode, returnMessage);
+        setValue(resultValue);
+    }
 
-	public boolean getResult() { return result; }
+    private ResultObject result = new ResultObject();
+
+
+    public ResultObject getResult() {
+        return result;
+    }
+    
+    public void setValue(boolean value) {
+        result.setValue(value);
+    }
+	
+    public class ResultObject{
+        private boolean value = false;
+        public boolean getValue() {
+            return value;
+        }
+
+        public void setValue(boolean value) {
+            this.value = value;
+        }
+
+        public ResultObject() {
+        }
+
+    }
 }

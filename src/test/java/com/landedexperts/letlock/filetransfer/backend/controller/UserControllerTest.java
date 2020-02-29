@@ -68,7 +68,7 @@ public class UserControllerTest extends BaseControllerTest {
         assertTrue("logoutTestForGoodToken: length should be larger than zero", content.length() > 0);
         assertTrue("logoutTestForGoodToken: The error should be Login session  not found",
                 content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue("logoutTestForGoodToken: result should be false", content.contains("\"result\":false"));
+        assertTrue("logoutTestForGoodToken: result should be false", content.contains("\"value\":false"));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class UserControllerTest extends BaseControllerTest {
         assertTrue("logoutTestForBadToken:content length should be larger than zero", content.length() > 0);
         assertTrue("logoutTestForBadToken: The error should be Login session  not found",
                 content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue("logoutTestForBadToken: result should be false", content.contains("\"result\":false"));
+        assertTrue("logoutTestForBadToken: result should be false", content.contains("\"value\":false"));
     }
 
     public String getValuesForGivenKey(String jsonArrayStr, String key, String parent) throws Exception {
@@ -261,7 +261,7 @@ public class UserControllerTest extends BaseControllerTest {
 
         assertTrue("Content have error", content.contains("\"returnCode\":\"INVALID_PASSWORD\""));
         assertTrue("Content error message should be token is invalid", content.contains("\"returnMessage\":\"Password is invalid\""));
-        assertTrue("Content value should be false", content.contains("\"result\":false"));
+        assertTrue("Content value should be false", content.contains("\"value\":false"));
     }
 
 

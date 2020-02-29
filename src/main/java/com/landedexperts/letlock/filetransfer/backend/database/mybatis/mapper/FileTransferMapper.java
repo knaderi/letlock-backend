@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoRecordVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.GochainAddressVO;
@@ -132,7 +132,7 @@ public interface FileTransferMapper {
             + " DECODE( #{ walletAddress }, 'hex' ),"
             + " CAST( #{ step } AS gochain.tp_funding_step )"
             + " )")
-    BooleanVO setFileTransferStepAvailability(
+    BooleanResponse setFileTransferStepAvailability(
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("walletAddress") String walletAddress,
             @Param("step") String step);
@@ -142,7 +142,7 @@ public interface FileTransferMapper {
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
             + " FROM gochain.file_transfer_is_step_pending( #{ fileTransferUuid }, #{ walletAddress }, #{ step } )")
-    BooleanVO fileTransferIsStepPending(
+    BooleanResponse fileTransferIsStepPending(
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("walletAddress") String walletAddress,
             @Param("step") String step);

@@ -67,7 +67,5 @@ public interface PaymentMapper {
     void setPaymentProcessSuccessForTest(
             @Param("orderId") long userId,
             @Param("transactionId") String transactionId);
-    
-    
-
+        
 }
