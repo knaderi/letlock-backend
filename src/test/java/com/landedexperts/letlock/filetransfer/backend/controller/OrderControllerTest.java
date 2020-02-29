@@ -49,7 +49,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        registerUser();
+        createLoggedInActiveUser();
         login();
     }
 

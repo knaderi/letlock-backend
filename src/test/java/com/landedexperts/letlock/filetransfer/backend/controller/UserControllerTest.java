@@ -39,7 +39,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void isLoginNameAvailableTest() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
 
         String uri = "/user_is_login_name_available";
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", userLoginName)
@@ -54,7 +54,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void logoutTestForGoodToken() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
         login();
 
         String uri = "/logout";
@@ -101,7 +101,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void updateUserPasswordTest() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
         // change the password to new password and login
         handleForgotPassword();
         login();
@@ -146,7 +146,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void handleForgotPasswordWhenEmaiIsRegistered() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
         String uri = "/handle_forgot_password";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).param("resetToken", "")
@@ -177,7 +177,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void validateResetPasswordTokenTestForValidToken() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
         handleForgotPassword();
 
         String uri2 = "/validate_reset_password_token";
@@ -195,7 +195,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void resetPasswordTest() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
         handleForgotPassword();
 
         String uri2 = "/reset_password";
@@ -213,7 +213,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void resetPasswordTokenTestForInvalidToken() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
         handleForgotPassword();
         String uri2 = "/validate_reset_password_token";
         String wrongToken = "1234567213";
@@ -247,7 +247,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void resetPasswordForInvalidPasswordTest() throws Exception {
-        registerUser();
+        createLoggedInActiveUser();
         handleForgotPassword();
         String uri = "/reset_password";
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("token", resetToken)

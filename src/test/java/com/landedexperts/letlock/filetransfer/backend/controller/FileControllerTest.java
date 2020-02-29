@@ -3,7 +3,6 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -16,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
-import com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 
