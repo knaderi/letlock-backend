@@ -11,6 +11,8 @@ import java.util.Set;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.landedexperts.letlock.filetransfer.backend.controller.OrderController;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
@@ -34,7 +37,9 @@ public abstract class AbstractTest {
     protected MockMvc mvc;
     @Autowired
     WebApplicationContext webApplicationContext;
-
+    
+    private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
+    
     protected void setUp() throws Exception {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
@@ -60,6 +65,7 @@ public abstract class AbstractTest {
             int index = mvnCommandLineArgs.indexOf("-Dspring.profiles.active=");
             activeProfile = mvnCommandLineArgs.substring(index + 25);
         }
+        logger.info("*****Active Profile is*****" + activeProfile); 
         System.getProperties().setProperty("spring.profiles.active", activeProfile);
 
     }

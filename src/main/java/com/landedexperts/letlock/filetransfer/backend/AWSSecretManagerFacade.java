@@ -34,6 +34,7 @@ public final class AWSSecretManagerFacade {
     public static String getDataSourceProperties(String env) {
 
         String secretName = env + "/Appdata/letlock/postgres";
+        String returnValue = null;
 
         // Create a Secrets Manager client
         AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
@@ -45,6 +46,7 @@ public final class AWSSecretManagerFacade {
         GetSecretValueResult getSecretValueResult = null;
 
         try {
+            logger.info("trying to get teh secret value for secret request " + secretName);
             getSecretValueResult = client.getSecretValue(getSecretValueRequest);
         } catch (DecryptionFailureException e) {
             // Secrets Manager can't decrypt the protected secret text using the provided
@@ -77,10 +79,13 @@ public final class AWSSecretManagerFacade {
         // Depending on whether the secret is a string or binary, one of these fields
         // will be populated.
         if (getSecretValueResult.getSecretString() != null) {
-            return getSecretValueResult.getSecretString();
+            returnValue = getSecretValueResult.getSecretString();
         } else {
-            return new String(Base64.getDecoder().decode(getSecretValueResult.getSecretBinary()).array());
+            logger.info("secret string is null, tryingto get the array");
+            returnValue = new String(Base64.getDecoder().decode(getSecretValueResult.getSecretBinary()).array());
+            logger.info("return value is " + returnValue);            
         }
+        return returnValue;
 
     }
 
