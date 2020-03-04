@@ -11,15 +11,15 @@ import com.amazonaws.services.applicationdiscovery.model.InvalidParameterExcepti
 import com.amazonaws.services.datapipeline.model.InternalServiceErrorException;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
+import com.amazonaws.services.secretsmanager.model.AWSSecretsManagerException;
 import com.amazonaws.services.secretsmanager.model.DecryptionFailureException;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 
 public final class AWSSecretManagerFacade {
-    
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AWSSecretManagerFacade.class);
-    
+
     public static final String DS_PASSWORD_SECRET_KEY = "password";
 
     public static final String DS_USER_SECRET_KEY = "username";
@@ -27,10 +27,9 @@ public final class AWSSecretManagerFacade {
     public static final String DS_PORT_SECRET_KEY = "port";
 
     public static final String DS_HOST_SECRET_KEY = "host";
-    
+
     public static final String DEFAULT_AWS_CLOUD_REGION = "us-west-2";
-        
-    
+
     public static String getDataSourceProperties(String env) {
 
         String secretName = env + "/Appdata/letlock/postgres";
@@ -48,12 +47,16 @@ public final class AWSSecretManagerFacade {
         try {
             logger.info("trying to get teh secret value for secret request " + secretName);
             getSecretValueResult = client.getSecretValue(getSecretValueRequest);
-        } catch (DecryptionFailureException e) {
+        }catch (DecryptionFailureException e) {
             // Secrets Manager can't decrypt the protected secret text using the provided
             // KMS key.
             // Deal with the exception here, and/or rethrow at your discretion.
             throw e;
-        } catch (InternalServiceErrorException e) {
+
+        } catch (AWSSecretsManagerException e) {
+            throw e; 
+        
+        }  catch (InternalServiceErrorException e) {
             // An error occurred on the server side.
             // Deal with the exception here, and/or rethrow at your discretion.
             throw e;
@@ -83,7 +86,7 @@ public final class AWSSecretManagerFacade {
         } else {
             logger.info("secret string is null, tryingto get the array");
             returnValue = new String(Base64.getDecoder().decode(getSecretValueResult.getSecretBinary()).array());
-            logger.info("return value is " + returnValue);            
+            logger.info("return value is " + returnValue);
         }
         return returnValue;
 

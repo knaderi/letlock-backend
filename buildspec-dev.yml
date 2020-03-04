@@ -18,3 +18,4 @@ phases:
 artifacts:
   files:
     - application.jar
+secret-id:arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F
