@@ -267,8 +267,8 @@ public class OrderControllerTest extends BaseControllerTest {
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertEquals(3, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));        
-        assertTrue("There should be a sender", content.contains("\"availableTransferCounts\":17,\"originalTransferCounts\":20"));
-        assertTrue("There should be a sender", content.contains("\"senderId\":" + userId + ","));
+        assertTrue("The number of file transfers and avialble ones are not correct.", content.contains("\"availableTransferCounts\":17,\"originalTransferCounts\":20"));
+        assertTrue("There should be a sender " + content, content.contains("\"senderId\":" + userId + ","));
     }
     
 //    @Test
