@@ -2,11 +2,11 @@ version: 0.2
 
 env:
   secrets-manager:
-    username: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F
-    password: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F
-    host: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F
-    port: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F
-    databasename: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8
+    username: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F:username
+    password: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F:password
+    host: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F:host
+    port: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F:port
+    databasename: arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8:databasename
 phases:
   install:
     runtime-versions:
