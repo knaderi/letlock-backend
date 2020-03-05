@@ -2,7 +2,12 @@ version: 0.2
 
 env:
   secrets-manager:
-    "arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F"
+    username:dev/Appdata/letlock/postgres
+    password:dev/Appdata/letlock/postgres
+    engine:dev/Appdata/letlock/postgres
+    host:dev/Appdata/letlock/postgres
+    port:dev/Appdata/letlock/postgres
+    databasename:dev/Appdata/letlock/postgres
 phases:
   install:
     runtime-versions:
