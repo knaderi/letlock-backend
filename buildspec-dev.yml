@@ -2,12 +2,11 @@ version: 0.2
 
 env:
   secrets-manager:
-    dev/Appdata/letlock/postgres:username
-    dev/Appdata/letlock/postgres:password
-    edev/Appdata/letlock/postgres:engine
-    dev/Appdata/letlock/postgres:host
-    dev/Appdata/letlock/postgres:port
-    dev/Appdata/letlock/postgres:databasename
+    username: dev/Appdata/letlock/postgres
+    password: dev/Appdata/letlock/postgres
+    host: dev/Appdata/letlock/postgres
+    port: dev/Appdata/letlock/postgres
+    databasename: dev/Appdata/letlock/postgres
 phases:
   install:
     runtime-versions:
