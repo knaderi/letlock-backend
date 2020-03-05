@@ -1,7 +1,8 @@
 version: 0.2
 
 env:
-  secrets-manager:dev/Appdata/letlock/postgres
+  secrets-manager:
+    dev/Appdata/letlock/postgres:::
 phases:
   install:
     runtime-versions:
