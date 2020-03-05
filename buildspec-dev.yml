@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   secrets-manager:
-    dev/Appdata/letlock/postgres:::
+    "arn:aws:secretsmanager:us-west-2:483351323773:secret:dev/Appdata/letlock/postgres-wjeh8F"
 phases:
   install:
     runtime-versions:
