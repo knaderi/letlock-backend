@@ -6,7 +6,6 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
@@ -21,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.TestUtils;
@@ -39,10 +37,10 @@ public class OrderControllerTest extends BaseControllerTest {
 
     @Autowired
     PaymentMapper paymentMapper;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Autowired
     UserMapper userMapper;
 
@@ -103,7 +101,7 @@ public class OrderControllerTest extends BaseControllerTest {
     public void createOrderDetailTest() throws Exception {
         createOrder();
         createOrderLineItem();
-        updateOrderLineItem();//updating location to Canada/BC
+        updateOrderLineItem();// updating location to Canada/BC
 
     }
 
@@ -111,10 +109,10 @@ public class OrderControllerTest extends BaseControllerTest {
     public void deleteOrderDetailTest() throws Exception {
         createOrder();
         createOrderLineItem();
-        deleteOrderLineItem();//updating location to Canada/BC
+        deleteOrderLineItem();// updating location to Canada/BC
 
     }
-    
+
     private void createOrderLineItem() throws Exception, UnsupportedEncodingException {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
@@ -145,7 +143,8 @@ public class OrderControllerTest extends BaseControllerTest {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", "3")
-                        .param("quantity", "0").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));//set the quantity to zero
+                        .param("quantity", "0").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));// set the quantity to
+                                                                                                                   // zero
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -162,17 +161,18 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("content should be empty since user does not have completed orders", content.length()== 0);
+        assertTrue("content should be empty since user does not have completed orders", content.length() == 0);
 
     }
-    
+
     @Test
     public void getUsersOrdersForStatusTest() throws Exception {
         createOrder();
         createOrderLineItem();
         String uri = "/get_user_orders_by_status";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderStatus", "initiated").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderStatus", "initiated")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -223,15 +223,15 @@ public class OrderControllerTest extends BaseControllerTest {
         assertHasValueForKey("countryCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
         assertHasValueForKey("provinceCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
     }
-    
-    
+
     @Test
     public void getUserOrderTest() throws Exception {
         createOrder();
         createOrderLineItem();
         String uri = "/get_user_order";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -239,7 +239,6 @@ public class OrderControllerTest extends BaseControllerTest {
         assertHasValueForKey("countryCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
         assertHasValueForKey("provinceCode", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
     }
-    
 
     @Test
     public void getLocations() throws Exception {
@@ -254,29 +253,40 @@ public class OrderControllerTest extends BaseControllerTest {
         assertForNoError("getLocationsTest", content);
     }
 
-
     @Test
     public void getUserOrderUsages() throws Exception {
-        //Create test order
+        // Create test order
         createOrder();
         createOrderLineItem();
         makeDummySuccessfulPayment();
+        testFileTransferUsageHistory(20, 20);
         startFileTransfer();
+        testFileTransferUsageHistory(19,20);
         startFileTransfer();
-        startFileTransfer();
-        
-        //check the usage history
+        testFileTransferUsageHistory(18,20);
+        startFileTransfer();        
+        testFileTransferUsageHistory(17,20);
+    }
+
+    private void testFileTransferUsageHistory(int availTransferCounts, int originalTransferCounts)
+            throws Exception, UnsupportedEncodingException {
+        // check the usage history
         String uri = "/get_user_ft_order_usage_history";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertEquals(3, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));        
-        assertTrue("The number of file transfers and avialble ones are not correct.", content.contains("\"availableTransferCounts\":17,\"originalTransferCounts\":20"));
-        assertTrue("There should be a sender " + content, content.contains("\"senderId\":" + userId + ","));
+        // assertEquals(3, TestUtils.getNumberOfRepetitions(content,
+        // "\"creditUsed\":1,"));
+        assertTrue("The number of file transfers and avialble ones are not correct.", content.contains(
+                "\"availableTransferCounts\":" + availTransferCounts + ",\"originalTransferCounts\":" + originalTransferCounts + ""));
+        if (originalTransferCounts < originalTransferCounts) {
+            assertTrue("There should be a sender " + content, content.contains("\"senderId\":" + userId + ","));
+        }
     }
-    
+
 //    @Test
 //    public void getAllUserOrderUsages() throws Exception {
 //        //Create test order
@@ -300,7 +310,7 @@ public class OrderControllerTest extends BaseControllerTest {
 //    }
 
     private void startFileTransfer() {
-        //start a file transfer
+        // start a file transfer
         String walletAddressTrimmed = TestUtils.createWalletAddress();
         FileTransferInfoVO vo = fileTransferMapper.insertFileTransferSessionRecord(Long.parseLong(userId),
                 walletAddressTrimmed, "Bob1111", BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue());
@@ -310,32 +320,35 @@ public class OrderControllerTest extends BaseControllerTest {
     private void makeDummySuccessfulPayment() {
         IdVO paymentIDVO = paymentMapper.setPaymentInitiate(Long.parseLong(userId), Long.parseLong(orderId), "paypal");
         paymentId = paymentIDVO.getResult().getId();
-        //do the paypal payment.
+        // do the paypal payment.
         paymentMapper.setPaymentProcessSuccessForTest(Long.parseLong(orderId), TestUtils.createPayPalTransactionId());
     }
-    
+
     @Test
-    public void initiatePaymentTest() throws Exception  {        
+    public void initiatePaymentTest() throws Exception {
         createOrder();
         createOrderLineItem();
         String uri = "/paypal/make/payment";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertTrue(!StringUtils.isBlank(content));
-        assertTrue(getValuesForGivenKey(content, "responseMap", "result").contains("\"status\":\"success\""));       
+        assertTrue(getValuesForGivenKey(content, "responseMap", "result").contains("\"status\":\"success\""));
     }
-    
+
     @Test
-    public void CompletePaymentTest() throws Exception  {        
+    public void CompletePaymentTest() throws Exception {
         String uri = "/paypal/complete/payment";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId+"").param("paypalToken", "EC-08C0391618037304B").param("paypalPaymentId", "PAYID-LZG53DA0ST70322U14705837&").param("paypalPayerId", "TNF9ZSF9L9YL4").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId + "")
+                        .param("paypalToken", "EC-08C0391618037304B").param("paypalPaymentId", "PAYID-LZG53DA0ST70322U14705837&")
+                        .param("paypalPayerId", "TNF9ZSF9L9YL4").accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertTrue(!StringUtils.isBlank(content));
-        assertTrue(getValuesForGivenKey(content, "returnCode").equals("PAYMENT_NOT_FOUND"));       
+        assertTrue(getValuesForGivenKey(content, "returnCode").equals("PAYMENT_NOT_FOUND"));
     }
 
 }

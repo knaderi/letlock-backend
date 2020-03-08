@@ -76,8 +76,9 @@ public class UserController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
             if ("SUCCESS".equals(returnCode)) {
-                emailServiceFacade.sendForgotPasswordHTMLEmail(email, resetToken);
+                emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
             }
         }
         answer.setReturnCode(returnCode);
@@ -239,14 +240,13 @@ public class UserController {
         String returnMessage = "";
         try {
 
-//problem is here calling the mapper
             BooleanResponse response = userMapper.confirmSignup(email, resetToken);
 
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
 
             if ("SUCCESS".equals(returnCode)) {
-                emailServiceFacade.sendFConfirmSignupHTMLEmail(email, resetToken);
+                emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
                 return response;
             }
         } catch (Exception e) {

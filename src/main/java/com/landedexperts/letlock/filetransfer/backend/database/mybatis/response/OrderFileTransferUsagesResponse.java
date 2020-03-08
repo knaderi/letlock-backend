@@ -38,8 +38,8 @@ public class OrderFileTransferUsagesResponse extends ReturnCodeMessageResponse {
     public OrderFileTransferUsagesResponse(long orderId, FileTransferOrderLineItemUsageVO[] result, OrdersFileTransfersCountsResponse allOrdersFileTransferCounts) {
         super("SUCCESS", "");
         if(null == result || result.length == 0) {
-            setReturnCode("ORDER_NOT_FOUND");
-            setReturnMessage("No user orders can be found.");
+            setReturnCode("SUCCESS");
+            setReturnMessage("");
         }
         availableTransferCounts = allOrdersFileTransferCounts.getAvailableTransferCounts();
         originalTransferCounts =allOrdersFileTransferCounts.getOriginalTransferCounts();

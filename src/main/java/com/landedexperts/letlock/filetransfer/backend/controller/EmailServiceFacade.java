@@ -114,7 +114,7 @@ public class EmailServiceFacade {
         return emailBody;
     }
     
-    void sendFConfirmSignupHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
+    void sendConfirmSignupHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
 
         Email email = new Email();
         email.setFrom(letlockNotificationEmail);
