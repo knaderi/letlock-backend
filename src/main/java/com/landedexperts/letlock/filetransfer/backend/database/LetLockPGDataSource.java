@@ -64,9 +64,9 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
     private String localDBPassword = "Ai#~eq:*|G?|b%t[qJBh8f6[";
 
 
-    private static String remoteDataSourceProperties = null;
+    private static Properties remoteDataSourceProperties = null;
 
-    public String getRemoteDataSourceProperties() {
+    public Properties getRemoteDataSourceProperties() {
 
         if (remoteDataSourceProperties == null) {
             remoteDataSourceProperties = AWSSecretManagerFacade.getDataSourceProperties(env);
@@ -107,14 +107,13 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
      */
     private PGSimpleDataSource getRemoteEnvDataSource() {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
-        String remoteDataSourceProps = getRemoteDataSourceProperties();
-        Properties dataSourceProperties = getJsonASProperties(remoteDataSourceProps);
-        dataSource.setServerName(dataSourceProperties.getProperty(DS_HOST_SECRET_KEY));
+        Properties remoteDataSourceProps = getRemoteDataSourceProperties();
+        dataSource.setServerName(remoteDataSourceProps.getProperty(DS_HOST_SECRET_KEY));
         dataSource.setDatabaseName(LETLOCK_FILETRANSFER);
-        dataSource.setPortNumber(Integer.parseInt(dataSourceProperties.getProperty(DS_PORT_SECRET_KEY)));
+        dataSource.setPortNumber(Integer.parseInt(remoteDataSourceProps.getProperty(DS_PORT_SECRET_KEY)));
         // Get these from AWS secret manager
-        dataSource.setUser(dataSourceProperties.getProperty(DS_USER_SECRET_KEY));
-        dataSource.setPassword(dataSourceProperties.getProperty(DS_PASSWORD_SECRET_KEY));
+        dataSource.setUser(remoteDataSourceProps.getProperty(DS_USER_SECRET_KEY));
+        dataSource.setPassword(remoteDataSourceProps.getProperty(DS_PASSWORD_SECRET_KEY));
         return dataSource;
     }
 
@@ -130,16 +129,6 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
         dataSource.setUser(localDBUserName);
         dataSource.setPassword(localDBPassword);
         return dataSource;
-    }
-
-    /**
-     * This method creates a Java properties object using a json input
-     * @param json
-     * @return
-     */
-    private Properties getJsonASProperties(final String json) {
-        Gson gson = new Gson();
-        return gson.fromJson(json, Properties.class);
     }
 
 }

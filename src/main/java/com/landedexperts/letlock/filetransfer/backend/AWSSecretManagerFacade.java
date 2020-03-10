@@ -7,6 +7,7 @@
 package com.landedexperts.letlock.filetransfer.backend;
 
 import java.util.Base64;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,16 @@ import com.amazonaws.services.secretsmanager.model.AWSSecretsManagerException;
 import com.amazonaws.services.secretsmanager.model.DecryptionFailureException;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
+import com.google.gson.Gson;
 
 public final class AWSSecretManagerFacade {
+
+    /**
+     * 
+     */
+    private static final String APPDATA_LETLOCK_POSTGRES_SECRET = "/Appdata/letlock/postgres";
+    
+    private static final String APPDATA_LETLOCK_PAYPAL_SECRET = "/Appdata/letlock/paypal";
 
     private static final Logger logger = LoggerFactory.getLogger(AWSSecretManagerFacade.class);
 
@@ -35,11 +44,27 @@ public final class AWSSecretManagerFacade {
     public static final String DS_HOST_SECRET_KEY = "host";
 
     public static final String DEFAULT_AWS_CLOUD_REGION = "us-west-2";
+    
+    public static final String PAYPAL_CLIENT_ID_KEY = "PAYPAL_CLIENT_ID";
+    
+    public static final String PAYPAL_CLIENT_SECRET_KEY = "PAYPAL_CLIENT_SECRET";
 
-    public static String getDataSourceProperties(String env) {
+    public static Properties getDataSourceProperties(String env) {
 
-        String secretName = env + "/Appdata/letlock/postgres";
-        String returnValue = null;
+        String secretName = env + APPDATA_LETLOCK_POSTGRES_SECRET;
+        return getSecretValue(secretName);
+
+    }
+
+    public static Properties getPayPalProperties(String mode) {
+
+        String secretName = mode + APPDATA_LETLOCK_PAYPAL_SECRET;
+        return getSecretValue(secretName);
+
+    }
+    
+    private static Properties getSecretValue(String secretName) {
+        Properties returnValue = new Properties();
 
         // Create a Secrets Manager client
         AWSSecretsManager client = AWSSecretsManagerClientBuilder.standard()
@@ -88,14 +113,25 @@ public final class AWSSecretManagerFacade {
         // Depending on whether the secret is a string or binary, one of these fields
         // will be populated.
         if (getSecretValueResult.getSecretString() != null) {
-            returnValue = getSecretValueResult.getSecretString();
+            String properiesStr = getSecretValueResult.getSecretString();
+            returnValue = getJsonASProperties(properiesStr);
+            
         } else {
             logger.info("secret string is null, tryingto get the array");
-            returnValue = new String(Base64.getDecoder().decode(getSecretValueResult.getSecretBinary()).array());
+            returnValue = getJsonASProperties(new String(Base64.getDecoder().decode(getSecretValueResult.getSecretBinary()).array()));
             logger.info("return value is " + returnValue);
         }
         return returnValue;
-
+    }
+    
+    /**
+     * This method creates a Java properties object using a json input
+     * @param json
+     * @return
+     */
+    private static Properties getJsonASProperties(final String json) {
+        Gson gson = new Gson();
+        return gson.fromJson(json, Properties.class);
     }
 
 }

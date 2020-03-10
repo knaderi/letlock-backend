@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.TestUtils;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileTransferMapper;
@@ -38,8 +37,6 @@ public class OrderControllerTest extends BaseControllerTest {
     @Autowired
     PaymentMapper paymentMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     UserMapper userMapper;
