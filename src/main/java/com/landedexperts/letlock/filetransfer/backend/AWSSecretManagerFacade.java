@@ -26,29 +26,23 @@ import com.google.gson.Gson;
 
 public final class AWSSecretManagerFacade {
 
-    /**
-     * 
-     */
+    private static final Logger logger = LoggerFactory.getLogger(AWSSecretManagerFacade.class);
+    
     private static final String APPDATA_LETLOCK_POSTGRES_SECRET = "/Appdata/letlock/postgres";
     
     private static final String APPDATA_LETLOCK_PAYPAL_SECRET = "/Appdata/letlock/paypal";
-
-    private static final Logger logger = LoggerFactory.getLogger(AWSSecretManagerFacade.class);
-
-    public static final String DS_PASSWORD_SECRET_KEY = "password";
-
-    public static final String DS_USER_SECRET_KEY = "username";
-
-    public static final String DS_PORT_SECRET_KEY = "port";
-
-    public static final String DS_HOST_SECRET_KEY = "host";
-
-    public static final String DEFAULT_AWS_CLOUD_REGION = "us-west-2";
     
-    public static final String PAYPAL_CLIENT_ID_KEY = "PAYPAL_CLIENT_ID";
+    private static final String APPDATA_LETLOCK_MAIL_SECRET = "/Appdata/letlock/paypal";
     
-    public static final String PAYPAL_CLIENT_SECRET_KEY = "PAYPAL_CLIENT_SECRET";
+    private static final String DEFAULT_AWS_CLOUD_REGION = "us-west-2";
 
+    public static Properties getSpringMailProperties(String env) {
+
+        String secretName = env + APPDATA_LETLOCK_MAIL_SECRET;
+        return getSecretValue(secretName);
+
+    }
+    
     public static Properties getDataSourceProperties(String env) {
 
         String secretName = env + APPDATA_LETLOCK_POSTGRES_SECRET;

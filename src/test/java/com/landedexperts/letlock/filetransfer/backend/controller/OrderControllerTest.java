@@ -284,28 +284,6 @@ public class OrderControllerTest extends BaseControllerTest {
         }
     }
 
-//    @Test
-//    public void getAllUserOrderUsages() throws Exception {
-//        //Create test order
-//        createOrder();
-//        createOrderLineItem();        
-//        makeSuccessfulPayment();
-//        //start two file transfers
-//        startFileTransfer();
-//        startFileTransfer();
-//        
-//        //check the usage history.
-//        String uri = "/get_all_user_ft_orders_usage_history";
-//        ResultActions resultAction = mvc
-//                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
-//        resultAction.andExpect(ok);
-//        MvcResult mvcResult = resultAction.andReturn();
-//        String content = mvcResult.getResponse().getContentAsString();
-//        assertEquals(2, TestUtils.getNumberOfRepetitions(content, "\"creditUsed\":1,"));
-//        assertTrue("There should be a sender", content.contains("\"senderId\":" + userId + ","));
-//      
-//    }
-
     private void startFileTransfer() {
         // start a file transfer
         String walletAddressTrimmed = TestUtils.createWalletAddress();

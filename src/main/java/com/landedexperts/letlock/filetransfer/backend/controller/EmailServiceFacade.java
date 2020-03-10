@@ -19,6 +19,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.landedexperts.letlock.filetransfer.backend.service.Email;
 import com.landedexperts.letlock.filetransfer.backend.service.LetLockEmailService;
+import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
 
 @Service
 public class EmailServiceFacade {
@@ -26,6 +27,7 @@ public class EmailServiceFacade {
     @Autowired
     LetLockEmailService letLockEmailService;
     
+   
     private final Logger logger = LoggerFactory.getLogger(EmailServiceFacade.class);
 
     private static String FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset Your Password";
@@ -42,9 +44,7 @@ public class EmailServiceFacade {
     @Value("${validate.confirm.signup.url}")
     String confirmSignupURL;
     
-    @Value("${spring.profiles.active}")
-    private String env;
-    
+
     @Value("${nonprod.receipient.email}")
     private String nonProdReceipientEmail;
 
@@ -65,11 +65,11 @@ public class EmailServiceFacade {
     String letlockFooterLogoURL;
     
     void sendForgotPasswordHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
-
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         Email email = new Email();
         email.setFrom(letlockNotificationEmail);
         
-        if("prd".equals(env)) {
+        if("prd".equals(constants.getEnv())) {
             email.setTo(recepientEmail);            
         }else {
             logger.info("replacing recipient email: " + recepientEmail);
@@ -115,11 +115,11 @@ public class EmailServiceFacade {
     }
     
     void sendConfirmSignupHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
-
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         Email email = new Email();
         email.setFrom(letlockNotificationEmail);
         
-        if("prd".equals(env)) {
+        if("prd".equals(constants.getEnv())) {
             email.setTo(recepientEmail);            
         }else {
             logger.info("replacing recipient email: " + recepientEmail);

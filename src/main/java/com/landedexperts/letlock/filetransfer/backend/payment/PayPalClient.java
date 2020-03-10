@@ -16,12 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
 import com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderPaymentVO;
+import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Details;
 import com.paypal.api.payments.Links;
@@ -40,9 +41,6 @@ public class PayPalClient {
 
     private static final String SANDBOX_PAYPAL_MODE = "sandbox";
 
-    private static final String LOCAL_ENV_NAME = "local";
-
-    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
 
     @Value("${payment.paypal.mode}")
     private  String mode;
@@ -52,9 +50,7 @@ public class PayPalClient {
 
     @Value("${payment.paypal.cancel.link}")
     private String cancelLink;
-
-    @Value("${spring.profiles.active}")
-    private String env;
+    
 
     /**
      * Initialized to default sandbox client id. will be replaced in
@@ -72,9 +68,10 @@ public class PayPalClient {
 
     public void loadPayPalProperties() {
         if (!isSandBoxEnv() && remotePaypalProperties == null) {
+            LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
             remotePaypalProperties = AWSSecretManagerFacade.getPayPalProperties(mode);
-            paypalClientId = remotePaypalProperties.getProperty(AWSSecretManagerFacade.PAYPAL_CLIENT_ID_KEY);
-            paypalClientSecret = remotePaypalProperties.getProperty(AWSSecretManagerFacade.PAYPAL_CLIENT_SECRET_KEY);
+            paypalClientId = remotePaypalProperties.getProperty(constants.SECRET_PAYPAL_CLIENT_ID_KEY);
+            paypalClientSecret = remotePaypalProperties.getProperty(constants.SECRET_PAYPAL_CLIENT_SECRET_KEY);
         }
     }
 
@@ -171,10 +168,11 @@ public class PayPalClient {
      * @return
      */
     private boolean isSandBoxEnv() {
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         // The last checks forces to use sandbox when running app locally
         return SANDBOX_PAYPAL_MODE.equals(mode)
-                || LOCAL_ENV_NAME.contentEquals(System.getProperty(SPRING_PROFILES_ACTIVE))
-                || LOCAL_ENV_NAME.equals(env);
+                || constants.LOCAL_ENV_NAME.contentEquals(System.getProperty(constants.SPRING_PROFILES_ACTIVE))
+                || constants.LOCAL_ENV_NAME.equals(constants.getEnv());
     }
 
 }

@@ -17,15 +17,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
+
 @Service
 public class LetLockEmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-
-    
     public void sendMail(final Email email) {
-        
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setSubject(email.getSubject());
         simpleMailMessage.setFrom(email.getFrom());
@@ -33,17 +33,18 @@ public class LetLockEmailService {
         simpleMailMessage.setText(email.getMessageText());
         javaMailSender.send(simpleMailMessage);
     }
-    
-    
+
     public void sendHTMLMail(final Email email) throws Exception {
-        
-//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-//        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-//        helper.setSubject(email.getSubject());
-//        helper.setFrom(email.getFrom());
-//        helper.setTo(email.getTo());
-//        helper.setText(email.getMessageText(), true);
-//        javaMailSender.send(mimeMessage);
+        LetLockBackendEnv letLockEnv = LetLockBackendEnv.getInstance();
+        if (!letLockEnv.isLocalEnv()) {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setSubject(email.getSubject());
+            helper.setFrom(email.getFrom());
+            helper.setTo(email.getTo());
+            helper.setText(email.getMessageText(), true);
+            javaMailSender.send(mimeMessage);
+        }
     }
 
     public void sendMailWithAttachment(final Email email, String filePath) throws Exception {
@@ -57,6 +58,5 @@ public class LetLockEmailService {
         mimeMessageHelper.addAttachment("Sample File", file);
         javaMailSender.send(mimeMessage);
     }
-
 
 }

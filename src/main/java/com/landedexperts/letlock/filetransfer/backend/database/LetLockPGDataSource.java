@@ -6,21 +6,17 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database;
 
-import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_HOST_SECRET_KEY;
-import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_PASSWORD_SECRET_KEY;
-import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_PORT_SECRET_KEY;
-import static com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade.DS_USER_SECRET_KEY;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import org.postgresql.ds.PGSimpleDataSource;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade;
+import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
 
 /**
  * This class overwrite PGSimpleDataSource that is used by mybatis in beans.xml.
@@ -36,10 +32,7 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
 
     private static final String COULDN_T_OPEN_DATABASE_CONNECTION_ERROR = "couldn't open database connection: ";
 
-    private static final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
-
-    private static final String LOCAL_ENV_NAME = "local";
-
+    
     public LetLockPGDataSource() {
         super();
     }
@@ -47,9 +40,6 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
     private static final String LETLOCK_FILETRANSFER = "letlock_filetransfer";
 
     private static final long serialVersionUID = 4425173994723283055L;
-
-    @Value("${spring.profiles.active}")
-    private String env;
 
 
     private String localDBHost = "localhost";
@@ -67,9 +57,9 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
     private static Properties remoteDataSourceProperties = null;
 
     public Properties getRemoteDataSourceProperties() {
-
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         if (remoteDataSourceProperties == null) {
-            remoteDataSourceProperties = AWSSecretManagerFacade.getDataSourceProperties(env);
+            remoteDataSourceProperties = AWSSecretManagerFacade.getDataSourceProperties(constants.getEnv());
         }
         return remoteDataSourceProperties;
     }
@@ -81,8 +71,9 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
     @Override
     public Connection getConnection() throws SQLException {
         PGSimpleDataSource dataSource = null;
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         try {
-            if (isLocalEnv()) {
+            if (constants.isLocalEnv()) {
                 dataSource = getLocalEnvDataSource();
 
             } else {
@@ -97,23 +88,21 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
         }
     }
 
-    private boolean isLocalEnv() {
-        return LOCAL_ENV_NAME.equals(env) || LOCAL_ENV_NAME.contentEquals(System.getProperty(SPRING_PROFILES_ACTIVE));
-    }
 
     /**
      * Initializes remote server datasource object using the datasource properties read from AWS secret manager
      * @return PGSimpleDataSource
      */
     private PGSimpleDataSource getRemoteEnvDataSource() {
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         Properties remoteDataSourceProps = getRemoteDataSourceProperties();
-        dataSource.setServerName(remoteDataSourceProps.getProperty(DS_HOST_SECRET_KEY));
+        dataSource.setServerName(remoteDataSourceProps.getProperty(constants.SECRET_DS_HOST_SECRET_KEY));
         dataSource.setDatabaseName(LETLOCK_FILETRANSFER);
-        dataSource.setPortNumber(Integer.parseInt(remoteDataSourceProps.getProperty(DS_PORT_SECRET_KEY)));
+        dataSource.setPortNumber(Integer.parseInt(remoteDataSourceProps.getProperty(constants.SECRET_DS_PORT_SECRET_KEY)));
         // Get these from AWS secret manager
-        dataSource.setUser(remoteDataSourceProps.getProperty(DS_USER_SECRET_KEY));
-        dataSource.setPassword(remoteDataSourceProps.getProperty(DS_PASSWORD_SECRET_KEY));
+        dataSource.setUser(remoteDataSourceProps.getProperty(constants.SECRET_DS_USER_SECRET_KEY));
+        dataSource.setPassword(remoteDataSourceProps.getProperty(constants.SECRET_DS_PASSWORD_SECRET_KEY));
         return dataSource;
     }
 
