@@ -169,7 +169,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     private void testtResetToken() throws Exception, UnsupportedEncodingException, JSONException {
         ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post("/get_user_object").param("email", userEmail)
+                .perform(MockMvcRequestBuilders.post("/get_user_object").param("email", userEmail).param("password", userPassword)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
@@ -271,8 +271,37 @@ public class UserControllerTest extends BaseControllerTest {
     }
 
 
+    @Test
+    public void resendSignUpConfirmationEmailNeeded() throws Exception {
+        createNorConfirmedUser();
+        String uri = "/resend_signup_email";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .param("loginId", userEmail).param("password", userPassword)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
 
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
 
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content have error", content.contains("\"returnCode\":\"SUCCESS\""));
+    }
+
+    @Test
+    public void resendSignUpConfirmationEmailWhenNotNeeded() throws Exception {
+        createLoggedInActiveUser();
+        String uri = "/resend_signup_email";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .param("loginId", userEmail).param("password", userPassword)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content have error", content.contains("\"returnCode\":\"NO_CONFIRMATION_NEEDED\""));
+    }
 
     private void registerUserAgain(String uri, String senderLoginName, String senderEmail, String senderPassword)
             throws Exception, UnsupportedEncodingException {

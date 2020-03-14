@@ -76,6 +76,15 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         confirmSignUp(content, reset_token);
     }
     
+    protected void createNorConfirmedUser()
+            throws Exception, UnsupportedEncodingException {
+        String content = registerUser();
+
+        // test login fails at this point since reset-Token has not been confirmed.
+        loginForInactiveUser();
+ 
+    }
+    
 
     private String registerUser() throws Exception, UnsupportedEncodingException {
         String uri = "/register";
@@ -108,7 +117,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
     private String getPendingUserResetToken() throws Exception, UnsupportedEncodingException {
         String uri3 = "/get_user_object";
         ResultActions resultAction3 = mvc
-                .perform(MockMvcRequestBuilders.post(uri3).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri3).param("email", userEmail).param("password", userPassword).accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction3.andExpect(ok);
         MvcResult mvcResult3 = resultAction3.andReturn();
         String content3 = mvcResult3.getResponse().getContentAsString();

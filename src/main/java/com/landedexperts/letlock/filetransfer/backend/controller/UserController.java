@@ -8,6 +8,7 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class UserController {
     private static final String LOGIN_NAME_IS_INVALID = "Login name is invalid";
     private static final String INVALID_LOGINNAME = "INVALID_LOGINNAME";
     private static final String EMAIL_IS_INVALID = "Email is invalid";
-    private static final String INVALID_EMAIL = "INVALID_EMAIL";
+    private static final String INVALID_LOGIN = "INVALID_LOGIN";
     @Autowired
     private UserMapper userMapper;
 
@@ -61,7 +62,7 @@ public class UserController {
         String returnMessage = "";
         IdVO answer = new IdVO();
         if (!isLoginCriteriaAnEmail(email)) {
-            returnCode = INVALID_EMAIL;
+            returnCode = INVALID_LOGIN;
             returnMessage = EMAIL_IS_INVALID;
         } else if (!new LoginNameValidator().isValid(loginName)) {
             returnCode = INVALID_LOGINNAME;
@@ -76,9 +77,47 @@ public class UserController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
             if ("SUCCESS".equals(returnCode)) {
                 emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
+            }
+        }
+        answer.setReturnCode(returnCode);
+        answer.setReturnMessage(returnMessage);
+
+        return answer;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/resend_signup_email", produces = { "application/JSON" })
+    public IdVO resendSignUpConfirmationEmail(
+            @RequestParam(value = "loginId") final String loginId, @RequestParam(value = "password") final String password) throws Exception {
+        logger.info("UserController.register called for email " + loginId);
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        IdVO answer = new IdVO();
+        String resetToken = "";
+        if (!isLoginCriteriaAnEmail(loginId) && !new LoginNameValidator().isValid(loginId)) {
+            returnCode = INVALID_LOGIN;
+            returnMessage = EMAIL_IS_INVALID;
+        } else {
+            UserVO userVO = getUserObject(loginId, password);
+            try {
+                if (userVO != null) {
+                    resetToken = userVO.getResetToken();
+                    if (StringUtils.isBlank(resetToken)) {
+                        returnCode = "NO_CONFIRMATION_NEEDED";
+                        returnMessage = "user is found but no confirmation is needed.";
+                    }
+                } else {
+                    returnCode = "USER_NOT_FOUND";
+                    returnMessage = "No user was found for the given liginId and password";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if ("SUCCESS".equals(returnCode)) {
+                emailServiceFacade.sendConfirmSignupHTMLEmail(loginId, resetToken);
             }
         }
         answer.setReturnCode(returnCode);
@@ -216,12 +255,12 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_object", produces = { "application/JSON" })
-    public UserVO getUserObject(String email) {
+    public UserVO getUserObject(String email, String password) {
         String returnCode = "SUCCESS";
         String returnMessage = "";
         UserVO response = new UserVO();
         try {
-            response = userMapper.getUserObject(email);
+            response = userMapper.getUserObject(email, password);
 
         } catch (Exception e) {
             logger.error("UserMapper.getUserObject threw an Exception " + e.getMessage());
@@ -232,9 +271,10 @@ public class UserController {
         response.setReturnMessage(returnMessage);
         return response;
     }
-    
+
     @RequestMapping(method = RequestMethod.POST, value = "/confirm_signup", produces = { "application/JSON" })
-    public BooleanResponse confirmSignup(@RequestParam(value = "email") final String email, @RequestParam(value = "resetToken") final String resetToken) throws Exception {
+    public BooleanResponse confirmSignup(@RequestParam(value = "email") final String email,
+            @RequestParam(value = "resetToken") final String resetToken) throws Exception {
         logger.info("UserController.forgotPassword called for email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
