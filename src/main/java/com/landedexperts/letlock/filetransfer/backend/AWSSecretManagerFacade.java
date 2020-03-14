@@ -32,7 +32,7 @@ public final class AWSSecretManagerFacade {
     
     private static final String APPDATA_LETLOCK_PAYPAL_SECRET = "/Appdata/letlock/paypal";
     
-    private static final String APPDATA_LETLOCK_MAIL_SECRET = "/Appdata/letlock/paypal";
+    private static final String APPDATA_LETLOCK_MAIL_SECRET = "/Appdata/letlock/mail";
     
     private static final String DEFAULT_AWS_CLOUD_REGION = "us-west-2";
 
