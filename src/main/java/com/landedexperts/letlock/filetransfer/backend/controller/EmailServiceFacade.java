@@ -26,8 +26,7 @@ public class EmailServiceFacade {
 
     @Autowired
     LetLockEmailService letLockEmailService;
-    
-   
+
     private final Logger logger = LoggerFactory.getLogger(EmailServiceFacade.class);
 
     private static String FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset Your Password";
@@ -39,96 +38,102 @@ public class EmailServiceFacade {
 
     @Value("${validate.reset.password.token.url}")
     String validateResetPasswordTokenURL;
-    
-    
+
     @Value("${validate.confirm.signup.url}")
     String confirmSignupURL;
-    
 
     @Value("${nonprod.receipient.email}")
     private String nonProdReceipientEmail;
 
+    @Value("${nonprod.email.enabled}")
+    private String nonProdEmailActive;
+
     @Value("${letlock.notifications.email}")
     private String letlockNotificationEmail;
-    
+
     @Value("${forgot.password.email.template}")
     private String forgotPasswordEmailTemplate;
 
     @Value("${confirm.signup.email.template}")
     private String confirmSignupEmailTemplate;
-    
 
     @Value("${letlock.logo.url}")
     String letlockLogoURL;
-    
+
     @Value("${letlock.footer.logo.url}")
     String letlockFooterLogoURL;
-    
+
     void sendForgotPasswordHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
+
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
-        Email email = new Email();
-        email.setFrom(letlockNotificationEmail);
-        
-        if("prd".equals(constants.getEnv())) {
-            email.setTo(recepientEmail);            
-        }else {
-            logger.info("replacing recipient email: " + recepientEmail);
-            email.setTo(nonProdReceipientEmail);   
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
+
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(recepientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                logger.info("replacing recipient email: " + recepientEmail);
+                email.setTo(nonProdReceipientEmail);
+            }
+
+            email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
+            email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken));
+            letLockEmailService.sendHTMLMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
         }
-             
-        email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
-        email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken));
-        letLockEmailService.sendHTMLMail(email);
     }
-    
 
     String getForgotPasswordHTMLEmailBody(String resetEmailToken) throws Exception {
         String emailBody = readForgotPasswordEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, validateResetPasswordTokenURL)
-        .replace(RESET_TOKEN, resetEmailToken)
-        .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
-        .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
+                .replace(RESET_TOKEN, resetEmailToken)
+                .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+                .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
     }
-    
-    
-  
+
     String readForgotPasswordEmailBody() throws IOException {
         URL url = Resources.getResource(forgotPasswordEmailTemplate);
         String emailBody = Resources.toString(url, Charsets.UTF_8);
         return emailBody;
     }
-    
+
     String getConfirmSignupHTMLEmailBody(String resetEmailToken) throws Exception {
         String emailBody = readConfirmSignupdEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
-        .replace(RESET_TOKEN, resetEmailToken)
-        .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
-        .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
+                .replace(RESET_TOKEN, resetEmailToken)
+                .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+                .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
     }
-    
+
     String readConfirmSignupdEmailBody() throws IOException {
         URL url = Resources.getResource(confirmSignupEmailTemplate);
         String emailBody = Resources.toString(url, Charsets.UTF_8);
         return emailBody;
     }
-    
+
     void sendConfirmSignupHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
-        Email email = new Email();
-        email.setFrom(letlockNotificationEmail);
-        
-        if("prd".equals(constants.getEnv())) {
-            email.setTo(recepientEmail);            
-        }else {
-            logger.info("replacing recipient email: " + recepientEmail);
-            email.setTo(nonProdReceipientEmail);   
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
+
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(recepientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                logger.info("replacing recipient email: " + recepientEmail);
+                email.setTo(nonProdReceipientEmail);
+            }
+
+            email.setSubject(CONFIRM_SIGNUP_EMAIL_SUBJECT);
+            email.setMessageText(getConfirmSignupHTMLEmailBody(resetEmailToken));
+            letLockEmailService.sendHTMLMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
         }
-             
-        email.setSubject(CONFIRM_SIGNUP_EMAIL_SUBJECT);
-        email.setMessageText(getConfirmSignupHTMLEmailBody(resetEmailToken));
-        letLockEmailService.sendHTMLMail(email);
     }
 
 }
