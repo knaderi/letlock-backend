@@ -27,6 +27,7 @@ import com.github.javafaker.Faker;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 import com.landedexperts.letlock.filetransfer.backend.LetlockFiletransferBackendApplication;
+import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
@@ -50,7 +51,13 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
     public void setUp() throws Exception {
         super.setUp();
         Faker faker = new Faker();
-        userLoginName = faker.name().firstName() + faker.name().lastName();
+        boolean validLoginName = false;
+        while (!validLoginName) {
+            userLoginName = faker.name().firstName() + faker.name().lastName();
+            if(LoginNameValidator.isValid(userLoginName)) {
+                validLoginName = true;
+            }
+        }               
         userEmail = faker.internet().emailAddress();
         userPassword = userLoginName + '!';
     }

@@ -64,9 +64,9 @@ public class UserController {
         if (!isLoginCriteriaAnEmail(email)) {
             returnCode = INVALID_LOGIN;
             returnMessage = EMAIL_IS_INVALID;
-        } else if (!new LoginNameValidator().isValid(loginName)) {
+        } else if (!LoginNameValidator.isValid(loginName)) {
             returnCode = INVALID_LOGINNAME;
-            returnMessage = LOGIN_NAME_IS_INVALID;
+            returnMessage = String.format(LOGIN_NAME_IS_INVALID + " for loginName: %s", loginName);
         } else {
             String resetToken = UUID.randomUUID().toString();
             logger.info("****************Calling register on db side");
@@ -96,7 +96,7 @@ public class UserController {
         String returnMessage = "";
         IdVO answer = new IdVO();
         String resetToken = "";
-        if (!isLoginCriteriaAnEmail(loginId) && !new LoginNameValidator().isValid(loginId)) {
+        if (!isLoginCriteriaAnEmail(loginId) && !LoginNameValidator.isValid(loginId)) {
             returnCode = INVALID_LOGIN;
             returnMessage = EMAIL_IS_INVALID;
         } else {

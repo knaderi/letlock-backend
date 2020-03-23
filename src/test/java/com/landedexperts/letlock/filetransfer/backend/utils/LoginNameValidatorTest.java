@@ -15,16 +15,11 @@ import org.junit.Test;
 
 public class LoginNameValidatorTest {
 	
-	LoginNameValidator validator;
-	
+
     public LoginNameValidatorTest() {
         super();
     }
 
-    @Before
-    public void beforeTest() {
-        validator = new LoginNameValidator();
-    }
 
     public void testEmptyLoginName() {
         assertNotValid("");
@@ -33,11 +28,11 @@ public class LoginNameValidatorTest {
     }
 
     private void assertValid(String loginName) {
-        assertTrue(validator.isValid(loginName));
+        assertTrue(LoginNameValidator.isValid(loginName));
     }
 
     private void assertNotValid(String loginName) {
-        assertFalse(validator.isValid(loginName));
+        assertFalse(LoginNameValidator.isValid(loginName));
     }
 
     @Test

@@ -21,7 +21,7 @@ public class LoginNameValidator {
 	public LoginNameValidator() {
 	}
 
-	private void doValidate(String loginName) {
+	private static void doValidate(String loginName) {
 
 		Pattern pattern = Pattern.compile(REGEX);
 		Matcher matcher = pattern.matcher(loginName);
@@ -30,7 +30,7 @@ public class LoginNameValidator {
 		}
 	}
 
-	public boolean isValid(String loginName) {
+	public static boolean isValid(String loginName) {
 		try {
 			loginName = loginName.trim();
 			ensureMaxLengthValid(loginName);
@@ -42,7 +42,7 @@ public class LoginNameValidator {
 
 	}
 
-	private void ensureMaxLengthValid(String loginName) {
+	private static void ensureMaxLengthValid(String loginName) {
 		boolean valid = !StringUtils.isEmpty(loginName) && loginName.trim().length() >= MIN_LENGTH
 				&& loginName.trim().length() <= MAX_LENGTH;
 		if (!valid) {
