@@ -9,6 +9,8 @@
  */
 package com.landedexperts.letlock.filetransfer.backend.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * This is a singleton class instantiated by LetLockApplication class upon start
  * up. It simply encapsulates and centralizes some common keys and constants
@@ -19,6 +21,7 @@ package com.landedexperts.letlock.filetransfer.backend.utils;
  */
 public class LetLockBackendEnv {
 
+ 
     private static LetLockBackendEnv instance = null;
 
     // Email props secret keys
@@ -54,8 +57,8 @@ public class LetLockBackendEnv {
     }
 
     public static LetLockBackendEnv getInstance() {
-        if (instance == null) {
-            throw new RuntimeException("The instance LetLockBackendEnv should have been initialized upon application startup");
+        if (instance == null || StringUtils.isBlank(instance.env)) {
+            throw new RuntimeException("The instance LetLockBackendEnv should have been initialized upon application startup " + instance);
         }
         return instance;
     }
@@ -67,6 +70,11 @@ public class LetLockBackendEnv {
     public String getEnv() {
         String returnValue = null != env ? env : System.getProperty(SPRING_PROFILES_ACTIVE);
         return returnValue;
+    }
+    
+    @Override
+    public String toString() {
+        return "LetLockBackendEnv [env=" + env + "]";
     }
 
 }
