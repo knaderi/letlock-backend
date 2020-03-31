@@ -171,6 +171,9 @@ public class OrderController {
             value.setReturnCode("USER_NOT_FOUND");
             value.setReturnMessage("User does not exist.");
         }
+        if(null == value) {
+            value = new JsonResponse<Map<String, String>>();
+        }
 
         return value;
     }

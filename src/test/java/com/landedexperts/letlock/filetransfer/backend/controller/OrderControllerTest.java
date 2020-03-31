@@ -7,6 +7,7 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -158,8 +159,9 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("content should be empty since user does not have completed orders", content.length() == 0);
-
+        assertTrue("content should exist but value should be empty", content.length() > 0);
+        assertEquals("{\"type\":\"json\", \"value\":\"{}\"}", JsonResponse.getResult(content).getResult().toString());
+        
     }
 
     @Test
