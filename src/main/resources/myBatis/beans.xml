@@ -15,7 +15,7 @@
 		http://www.springframework.org/schema/context/spring-context.xsd">
  
     <context:property-placeholder
-        location="classpath:properties/application-${spring.profiles.active}.properties"
+        location="classpath:application-${spring.profiles.active}.properties"
         ignore-unresolvable="true" />
         
 	<bean id="dataSource" class="com.landedexperts.letlock.filetransfer.backend.database.LetLockPGDataSource">

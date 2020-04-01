@@ -15,21 +15,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class LetlockFiletransferBackendApplication {
-     
-    
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*", "http://localhost:3000","http://letlockweb-dev.s3-website-us-west-2.amazonaws.com","letlockbackenddev.us-west-2.elasticbeanstalk.com");                
+                registry.addMapping("/**").allowedOrigins("*", "http://localhost:3000",
+                        "http://letlockweb-dev.s3-website-us-west-2.amazonaws.com", "letlockbackenddev.us-west-2.elasticbeanstalk.com",
+                        "http://letlockweb-qa.s3-website-us-west-2.amazonaws.com", "letlockbackend-qa-1.us-west-2.elasticbeanstalk.com");
+
             }
         };
     }
 
-	public static void main(String[] args) {
-		SpringApplication.run(LetlockFiletransferBackendApplication.class, args);
-	}
-	
-       
+    public static void main(String[] args) {
+        SpringApplication.run(LetlockFiletransferBackendApplication.class, args);
+    }
+
 }
