@@ -8,7 +8,7 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.util.Map;
 
-import org.json.JSONException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +103,7 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_locations", produces = { "application/JSON" })
-    public JsonResponse<String> getLocations() throws JSONException {
+    public JsonResponse<String> getLocations(){
         logger.info("OrderController.getLocations called");
         return new JsonResponse<String>(orderMapper.getLocations());
     }

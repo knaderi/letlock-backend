@@ -9,8 +9,6 @@ package com.landedexperts.letlock.filetransfer.backend.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.context.annotation.Bean;
-
 /**
  * Internet email address validation, largely based on PTY email validation
  * and RFC 3696 http://www.rfc-editor.org/errata_search.php?rfc=3696&eid=1690

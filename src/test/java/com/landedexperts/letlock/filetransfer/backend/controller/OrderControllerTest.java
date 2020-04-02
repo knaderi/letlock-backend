@@ -6,16 +6,14 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -48,7 +46,7 @@ public class OrderControllerTest extends BaseControllerTest {
     List<String> jsonKeyValues = new ArrayList<String>();
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         createLoggedInActiveUser();
@@ -146,7 +144,7 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(StringUtils.isEmpty(content));
+        Assertions.assertTrue(StringUtils.isEmpty(content));
     }
 
     @Test
@@ -159,8 +157,8 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("content should exist but value should be empty", content.length() > 0);
-        assertEquals("{\"type\":\"json\", \"value\":\"{}\"}", JsonResponse.getResult(content).getResult().toString());
+        Assertions.assertTrue(content.length() > 0, "content should exist but value should be empty");
+        Assertions.assertEquals("{\"type\":\"json\", \"value\":\"{}\"}", JsonResponse.getResult(content).getResult().toString());
         
     }
 
@@ -189,7 +187,7 @@ public class OrderControllerTest extends BaseControllerTest {
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("getProductsTest", content);
         // need to do better assertion than this.
-        assertTrue("There should be a product returned", content.contains("productTypeName"));
+        Assertions.assertTrue(content.contains("productTypeName"), "There should be a product returned");
     }
 
     @Test
@@ -277,12 +275,12 @@ public class OrderControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        // assertEquals(3, TestUtils.getNumberOfRepetitions(content,
+        // Assertions.assertEquals(3, TestUtils.getNumberOfRepetitions(content,
         // "\"creditUsed\":1,"));
-        assertTrue("The number of file transfers and avialble ones are not correct.", content.contains(
-                "\"availableTransferCounts\":" + availTransferCounts + ",\"originalTransferCounts\":" + originalTransferCounts + ""));
+        Assertions.assertTrue(content.contains(
+                "\"availableTransferCounts\":" + availTransferCounts + ",\"originalTransferCounts\":" + originalTransferCounts + ""),"The number of file transfers and avialble ones are not correct.");
         if (originalTransferCounts < originalTransferCounts) {
-            assertTrue("There should be a sender " + content, content.contains("\"senderId\":" + userId + ","));
+            Assertions.assertTrue(content.contains("\"senderId\":" + userId + ","), "There should be a sender " + content);
         }
     }
 
@@ -311,8 +309,8 @@ public class OrderControllerTest extends BaseControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(!StringUtils.isBlank(content));
-        assertTrue(getValuesForGivenKey(content, "responseMap", "result").contains("\"status\":\"success\""));
+        Assertions.assertTrue(!StringUtils.isBlank(content));
+        Assertions.assertTrue(getValuesForGivenKey(content, "responseMap", "result").contains("\"status\":\"success\""));
     }
 
     @Test
@@ -324,8 +322,8 @@ public class OrderControllerTest extends BaseControllerTest {
                         .param("paypalPayerId", "TNF9ZSF9L9YL4").accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(!StringUtils.isBlank(content));
-        assertTrue(getValuesForGivenKey(content, "returnCode").equals("PAYMENT_NOT_FOUND"));
+        Assertions.assertTrue(!StringUtils.isBlank(content));
+        Assertions.assertTrue(getValuesForGivenKey(content, "returnCode").equals("PAYMENT_NOT_FOUND"));
     }
 
 }

@@ -6,10 +6,9 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.response;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
@@ -18,7 +17,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 public class TransactionHashResponseTest extends AbstractTest {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -28,9 +27,9 @@ public class TransactionHashResponseTest extends AbstractTest {
         String responseStr = "{\"returnCode\":\"TXN_NOT_FOUND\",\"returnMessage\":\"Transaction hash not found\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         TransactionHashResponse value = objectMapper.readValue(responseStr, TransactionHashResponse.class);
-        assertEquals("testTransactionResponseCreation: Should get TXT_NOT_FOUND", "TXN_NOT_FOUND", value.getReturnCode());
-        assertEquals("testTransactionResponseCreation: Should get transcation hash not found", "Transaction hash not found",
-                value.getReturnMessage());
+        Assertions.assertEquals("TXN_NOT_FOUND", value.getReturnCode(), "testTransactionResponseCreation: Should get TXT_NOT_FOUND");
+        Assertions.assertEquals("Transaction hash not found",
+                value.getReturnMessage(), "testTransactionResponseCreation: Should get transcation hash not found");
 
     }
 
@@ -39,12 +38,12 @@ public class TransactionHashResponseTest extends AbstractTest {
         String responseStr = "{\"returnCode\":\"TXN_NOT_FOUND\",\"returnMessage\":\"Transaction hash not found\", \"status\":\"completed\",\"transactionHash\":\"0xsdfdsfdssd\"}";
         ObjectMapper objectMapper = new ObjectMapper();
         TransactionHashResponse value = objectMapper.readValue(responseStr, TransactionHashResponse.class);
-        assertEquals("testTransactionResponseCreation2:  Should get TXT_NOT_FOUND", "TXN_NOT_FOUND", value.getReturnCode());
-        assertEquals("testTransactionResponseCreation2:  Should get transcation hash not found", "Transaction hash not found",
-                value.getReturnMessage());
-        assertEquals("testTransactionResponseCreation2: Should get completed", "completed", value.getStatus());
-        assertEquals("testTransactionResponseCreation2: Should get the correct transaction value", "0xsdfdsfdssd",
-                value.getTransactionHash());
+        Assertions.assertEquals("TXN_NOT_FOUND", value.getReturnCode(), "testTransactionResponseCreation2:  Should get TXT_NOT_FOUND");
+        Assertions.assertEquals("Transaction hash not found",
+                value.getReturnMessage(), "testTransactionResponseCreation2:  Should get transcation hash not found");
+        Assertions.assertEquals("completed", value.getStatus(),"testTransactionResponseCreation2: Should get completed");
+        Assertions.assertEquals("0xsdfdsfdssd",
+                value.getTransactionHash(), "testTransactionResponseCreation2: Should get the correct transaction value");
     }
 
     @Test
@@ -57,11 +56,11 @@ public class TransactionHashResponseTest extends AbstractTest {
                 "}";
         ObjectMapper objectMapper = new ObjectMapper();
         TransactionHashResponse value = objectMapper.readValue(responseStr, TransactionHashResponse.class);
-        assertEquals("testTransactionResponseCreation3:", "SUCCESS", value.getReturnCode());
-        assertEquals("testTransactionResponseCreation3:", "", value.getReturnMessage());
-        assertEquals("testTransactionResponseCreation3:", "completed", value.getStatus());
-        assertEquals("testTransactionResponseCreation3:", "0xfbe41c0a01eca13ed0b894e10d073e80cd44e06f0d15343f877bada45472c5ff",
-                value.getTransactionHash());
+        Assertions.assertEquals("SUCCESS", value.getReturnCode(), "testTransactionResponseCreation3:The return code should be SUCCESS");
+        Assertions.assertEquals("", value.getReturnMessage(), "testTransactionResponseCreation3:The return messge should be empty");
+        Assertions.assertEquals("completed", value.getStatus(),"testTransactionResponseCreation3:Transaction status should be completed");
+        Assertions.assertEquals("0xfbe41c0a01eca13ed0b894e10d073e80cd44e06f0d15343f877bada45472c5ff",
+                value.getTransactionHash(), "testTransactionResponseCreation3: Retrived transaction hash is not equal to the expected value");
     }
 
 }

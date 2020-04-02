@@ -6,8 +6,6 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.blockchain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class TransactionHashJson {
 
     private String transactionHash;

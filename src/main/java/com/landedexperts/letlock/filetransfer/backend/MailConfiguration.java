@@ -11,7 +11,6 @@ package com.landedexperts.letlock.filetransfer.backend;
 
 import java.util.Properties;
 
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

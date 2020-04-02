@@ -6,11 +6,10 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public  final class TestUtils {
     
@@ -64,7 +63,7 @@ public  final class TestUtils {
     @Test
     public void testCount() {
         String content = "{\"returnCode\":\"SUCCESS\",\"returnMessage\":\"\",\"result\":[{\"uuid\":null,\"packageName\":\"Twenty-Transfer\",\"orderLineItemId\":20,\"receiverLoginName\":\"Bob1111\",\"contractAddress\":null,\"senderLoginName\":\"WestonDonnelly\",\"senderId\":23,\"receiverId\":2,\"ftDate\":\"2020-02-05 16:18:23.590946\",\"packageId\":3,\"isActive\":\"t\",\"creditUsed\":1,\"fTStatus\":\"Waiting for Recipient\"},{\"uuid\":null,\"packageName\":\"Twenty-Transfer\",\"orderLineItemId\":20,\"receiverLoginName\":\"Bob1111\",\"contractAddress\":null,\"senderLoginName\":\"WestonDonnelly\",\"senderId\":23,\"receiverId\":2,\"ftDate\":\"2020-02-05 16:18:23.420503\",\"packageId\":3,\"isActive\":\"t\",\"creditUsed\":1,\"fTStatus\":\"Waiting for Recipient\"}]}";
-        assertEquals(2,getNumberOfRepetitions(content, "\"creditUsed\":1"));
+        Assertions.assertEquals(2,getNumberOfRepetitions(content, "\"creditUsed\":1"));
     }
 
 }

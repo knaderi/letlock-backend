@@ -6,15 +6,14 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.UnsupportedEncodingException;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -29,8 +28,8 @@ import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 import com.landedexperts.letlock.filetransfer.backend.LetlockFiletransferBackendApplication;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes=LetlockFiletransferBackendApplication.class)
 @WebAppConfiguration
 public abstract class BaseControllerTest extends AbstractTest implements BackendTestConstants {
 
@@ -46,7 +45,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
     protected String token = "";
 
     @Override
-    @Before
+    @BeforeEach
     @Transactional
     public void setUp() throws Exception {
         super.setUp();
@@ -100,7 +99,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("Json content is empty ", content.length() > 0);
+        Assertions.assertTrue(content.length() > 0, "Json content is empty ");
         assertForNoError("registerUser", content);
         userId = getValuesForGivenKey(content, "id", "result");
         return content;
@@ -117,8 +116,8 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
 
         String content = mvcResult.getResponse().getContentAsString();
         token = getValuesForGivenKey(content, "token", "result");
-        assertTrue("loginTest: content length should be larger than zero", content.length() > 0);
-        assertTrue("loginTest: returnCode should be SUCCESS", content.contains("\"returnCode\":\"USER_NOT_CONFIRMED\""));
+        Assertions.assertTrue(content.length() > 0, "loginTest: content length should be larger than zero");
+        Assertions.assertTrue(content.contains("\"returnCode\":\"USER_NOT_CONFIRMED\""), "loginTest: returnCode should be SUCCESS");
     }
     
     private String getPendingUserResetToken() throws Exception, UnsupportedEncodingException {
@@ -140,10 +139,10 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         resultAction2.andExpect(ok);
         MvcResult mvcResult2 = resultAction2.andReturn();
         String content2 = mvcResult2.getResponse().getContentAsString();
-        assertTrue("Json content is empty ", content2.length() > 0);
+        Assertions.assertTrue(content2.length() > 0, "Json content is empty ");
         assertForNoError("registerUser", content2);
         String userActive = getValuesForGivenKey(content2, "value", "result");
-        assertTrue(userActive.contentEquals("true"));
+        Assertions.assertTrue(userActive.contentEquals("true"));
     }
 
     protected void login() throws Exception {
@@ -158,8 +157,8 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         String content = mvcResult.getResponse().getContentAsString();
         token = getValuesForGivenKey(content, "token", "result");
         assertForNoError("login", content);
-        assertTrue("loginTest: content length should be larger than zero", content.length() > 0);
-        assertTrue("loginTest: returnCode should be SUCCESS", content.contains("\"returnCode\":\"SUCCESS\""));
+        Assertions.assertTrue(content.length() > 0, "loginTest: content length should be larger than zero");
+        Assertions.assertTrue(content.contains("\"returnCode\":\"SUCCESS\""), "loginTest: returnCode should be SUCCESS");
     }
 
 }

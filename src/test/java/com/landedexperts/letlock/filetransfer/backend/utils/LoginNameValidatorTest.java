@@ -7,10 +7,8 @@
 package com.landedexperts.letlock.filetransfer.backend.utils;
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 
 public class LoginNameValidatorTest {
@@ -28,11 +26,11 @@ public class LoginNameValidatorTest {
     }
 
     private void assertValid(String loginName) {
-        assertTrue(LoginNameValidator.isValid(loginName));
+        Assertions.assertTrue(LoginNameValidator.isValid(loginName));
     }
 
     private void assertNotValid(String loginName) {
-        assertFalse(LoginNameValidator.isValid(loginName));
+        Assertions.assertFalse(LoginNameValidator.isValid(loginName));
     }
 
     @Test

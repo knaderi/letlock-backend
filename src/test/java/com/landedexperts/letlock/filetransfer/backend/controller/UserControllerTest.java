@@ -6,15 +6,14 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UserControllerTest extends BaseControllerTest {
 
     @Override
-    @Before
+    @BeforeEach
     @Transactional
     public void setUp() throws Exception {
         super.setUp();
@@ -73,10 +72,10 @@ public class UserControllerTest extends BaseControllerTest {
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("logoutTestForGoodToken: length should be larger than zero", content.length() > 0);
-        assertTrue("logoutTestForGoodToken: The error should be Login session  not found",
-                content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue("logoutTestForGoodToken: result should be false", content.contains("\"value\":false"));
+        Assertions.assertTrue(content.length() > 0, "logoutTestForGoodToken: length should be larger than zero");
+        Assertions.assertTrue(
+                content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""), "logoutTestForGoodToken: The error should be Login session  not found");
+        Assertions.assertTrue(content.contains("\"value\":false"), "logoutTestForGoodToken: result should be false");
     }
 
     @Test
@@ -89,10 +88,10 @@ public class UserControllerTest extends BaseControllerTest {
         MvcResult mvcResult = resultAction.andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue("logoutTestForBadToken:content length should be larger than zero", content.length() > 0);
-        assertTrue("logoutTestForBadToken: The error should be Login session  not found",
-                content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""));
-        assertTrue("logoutTestForBadToken: result should be false", content.contains("\"value\":false"));
+        Assertions.assertTrue(content.length() > 0, "logoutTestForBadToken:content length should be larger than zero");
+        Assertions.assertTrue(
+                content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""), "logoutTestForBadToken: The error should be Login session  not found");
+        Assertions.assertTrue(content.contains("\"value\":false"), "logoutTestForBadToken: result should be false");
     }
 
     public String getValuesForGivenKey(String jsonArrayStr, String key, String parent) throws Exception {
@@ -149,7 +148,7 @@ public class UserControllerTest extends BaseControllerTest {
 //        String content = mvcResult.getResponse().getContentAsString();
 //
 //        assertForNoError("getFileTransferSessionsForUserWithNoTransferSessionsTest", content);
-//        assertTrue("Content value should be empty", content.contains("\"value\":[]"));
+//        Assertions.assertTrue("Content value should be empty", content.contains("\"value\":[]"));
     }
 
     @Test
@@ -180,7 +179,7 @@ public class UserControllerTest extends BaseControllerTest {
         String content2 = mvcResult2.getResponse().getContentAsString();
         JSONObject jsonObject = new JSONObject(content2);
         resetToken = jsonObject.getString("resetToken");
-        assertTrue(resetToken.length() > 0);
+        Assertions.assertTrue(resetToken.length() > 0);
     }
 
     @Test
@@ -234,9 +233,9 @@ public class UserControllerTest extends BaseControllerTest {
 
         String content2 = mvcResult2.getResponse().getContentAsString();
 
-        assertTrue("Content length should be larger than 0", content2.length() > 0);
-        assertTrue("Should have error", content2.contains("\"returnCode\":\"USER_NOT_FOUND\""));
-        assertTrue("Content error message should be token is invalid", content2.contains("\"returnMessage\":\"Invalid token or email\""));
+        Assertions.assertTrue(content2.length() > 0, "Content length should be larger than 0");
+        Assertions.assertTrue(content2.contains("\"returnCode\":\"USER_NOT_FOUND\""),"Should have error");
+        Assertions.assertTrue(content2.contains("\"returnMessage\":\"Invalid token or email\""),"Content error message should be token is invalid");
     }
 
     private void handleForgotPassword() throws Exception, UnsupportedEncodingException, JSONException {
@@ -267,9 +266,9 @@ public class UserControllerTest extends BaseControllerTest {
 
         String content = mvcResult.getResponse().getContentAsString();
 
-        assertTrue("Content have error", content.contains("\"returnCode\":\"INVALID_PASSWORD\""));
-        assertTrue("Content error message should be token is invalid", content.contains("\"returnMessage\":\"Password is invalid\""));
-        assertTrue("Content value should be false", content.contains("\"value\":false"));
+        Assertions.assertTrue(content.contains("\"returnCode\":\"INVALID_PASSWORD\""), "Content have error");
+        Assertions.assertTrue(content.contains("\"returnMessage\":\"Password is invalid\""),"Content error message should be token is invalid");
+        Assertions.assertTrue(content.contains("\"value\":false"),"Content value should be false");
     }
 
 
@@ -286,7 +285,7 @@ public class UserControllerTest extends BaseControllerTest {
 
         String content = mvcResult.getResponse().getContentAsString();
 
-        assertTrue("Content have error", content.contains("\"returnCode\":\"SUCCESS\""));
+        Assertions.assertTrue(content.contains("\"returnCode\":\"SUCCESS\""), "Content have error");
     }
 
     @Test
@@ -302,7 +301,7 @@ public class UserControllerTest extends BaseControllerTest {
 
         String content = mvcResult.getResponse().getContentAsString();
 
-        assertTrue("Content have error", content.contains("\"returnCode\":\"NO_CONFIRMATION_NEEDED\""));
+        Assertions.assertTrue(content.contains("\"returnCode\":\"NO_CONFIRMATION_NEEDED\""), "Content have error");
     }
 
     private void registerUserAgain(String uri, String senderLoginName, String senderEmail, String senderPassword)
@@ -312,9 +311,9 @@ public class UserControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertTrue(content.length() > 0);
-        assertTrue("registerTest: content length should be larger than zero", content.length() > 0);
-        assertTrue("content should be USER_NAME_TAKEN", content.contains("\"returnCode\":\"USER_NAME_TAKEN"));
+        Assertions.assertTrue(content.length() > 0);
+        Assertions.assertTrue(content.length() > 0, "registerTest: content length should be larger than zero");
+        Assertions.assertTrue(content.contains("\"returnCode\":\"USER_NAME_TAKEN"), "content should be USER_NAME_TAKEN");
     }
 
     @Test
@@ -338,7 +337,7 @@ public class UserControllerTest extends BaseControllerTest {
 
         String content = mvcResult.getResponse().getContentAsString();
 
-        assertTrue("Content have error", content.contains("\"returnCode\":\"SUCCESS\""));
+        Assertions.assertTrue(content.contains("\"returnCode\":\"SUCCESS\""), "Content have error");
     }
 
     @Test

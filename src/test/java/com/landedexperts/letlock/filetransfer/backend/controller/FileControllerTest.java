@@ -6,13 +6,11 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +31,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
     private UserController userController;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception{
         super.setUp();
     }
@@ -46,7 +44,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
         String token = response.getResult().getToken();
         BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
-        assertFalse("upload should fail as there is no transfer session", uploadResponse.getResult().getValue());
+        Assertions.assertFalse(uploadResponse.getResult().getValue(),"upload should fail as there is no transfer session");
     }
 
     @Test
@@ -55,7 +53,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
         String token = response.getResult().getToken();
         ResponseEntity<Resource> fileDownloadResponse = fileController.downloadFile(token, testUUId);
         // download should fail.
-        assertEquals("download should fail", FileController.DOWNLOAD_FAILED, fileDownloadResponse.getBody().toString());
+        Assertions.assertEquals(FileController.DOWNLOAD_FAILED, fileDownloadResponse.getBody().toString(),"download should fail");
     }
 
     private UUID getUuid() {

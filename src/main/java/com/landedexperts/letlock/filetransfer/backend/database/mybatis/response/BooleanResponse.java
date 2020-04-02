@@ -6,8 +6,6 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-
 public class BooleanResponse extends ReturnCodeMessageResponse {
 
     public BooleanResponse(boolean resultValue, String returnCode, String returnMessage) {

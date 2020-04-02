@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.postgresql.ds.PGSimpleDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.landedexperts.letlock.filetransfer.backend.AWSSecretManagerFacade;

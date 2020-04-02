@@ -6,8 +6,7 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -15,13 +14,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONObject;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
 @WebAppConfiguration
 public abstract class AbstractTest {
@@ -61,7 +61,7 @@ public abstract class AbstractTest {
         return objectMapper.readValue(json, clazz);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setSystemProperty() {
         // Do not change this as this may cause braking the build in remote dev
         String activeProfile = "local";
@@ -76,7 +76,7 @@ public abstract class AbstractTest {
     }
 
     protected void assertForNoError(String functionName, String content) throws Exception {
-        assertTrue("functionName - content length should be larger than zero", content.length() > 0);
+        Assertions.assertTrue(content.length() > 0, "functionName - content length should be larger than zero");
         assertJsonForKeyValue(functionName, content, "returnMessage", "", "equalsTo");
         assertJsonForKeyValue(functionName, content, "returnCode", "SUCCESS", "equalsTo");
         if (content.contains("\"result\":")) {
@@ -88,7 +88,7 @@ public abstract class AbstractTest {
         JsonParser p = new JsonParser();
         JsonElement jsonElement = p.parse(jsonString);
         check(key, jsonElement, list);
-        assertTrue(list.size() > 0);
+        Assertions.assertTrue(list.size() > 0);
     }
 
     protected void assertContentForKeyValueLargerThanZero(String testName, String content, String keyName) throws Exception {
@@ -119,13 +119,13 @@ public abstract class AbstractTest {
                 + " expectedValue:  "
                 + expectedKeyValue, testName, keyName, actualValueForKey, expectedKeyValue);
         if (operator.equals("equalsTo")) {
-            assertTrue(failureMessage, actualValueForKey.equals(expectedKeyValue));
+            Assertions.assertTrue(actualValueForKey.equals(expectedKeyValue),failureMessage);
         } else if (operator.equals("lessThan")) {
-            assertTrue(failureMessage, Integer.valueOf(actualValueForKey) < Integer.valueOf(expectedKeyValue));
+            Assertions.assertTrue(Integer.valueOf(actualValueForKey) < Integer.valueOf(expectedKeyValue),failureMessage);
         } else if (operator.equals("greaterThan")) {
-            assertTrue(failureMessage, Integer.valueOf(actualValueForKey) > Integer.valueOf(expectedKeyValue));
+            Assertions.assertTrue(Integer.valueOf(actualValueForKey) > Integer.valueOf(expectedKeyValue),failureMessage);
         } else if (operator.equals("notEmpty")) {
-            assertFalse(failureMessage, StringUtils.isEmpty(actualValueForKey));
+            Assertions.assertFalse(StringUtils.isEmpty(actualValueForKey),failureMessage);
         }
     }
 

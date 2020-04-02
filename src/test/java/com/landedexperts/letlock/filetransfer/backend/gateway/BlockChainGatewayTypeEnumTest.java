@@ -6,10 +6,9 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.gateway;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
@@ -17,22 +16,22 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockCh
 public class BlockChainGatewayTypeEnumTest extends AbstractTest {
     
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception{
         super.setUp();
     }
     
     @Test
     public void testGetValue() {
-        assertEquals("testGetValue: It should be gochain-gateway", "gochain_gateway", BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue());
-        assertEquals("testGetValue: It should be db-gateway", "db_gateway", BlockChainGatewayServiceTypeEnum.DB_GATEWAY.getValue());      
+        Assertions.assertEquals(BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue(),"gochain_gateway", "testGetValue: It should be gochain-gateway");
+        Assertions.assertEquals("db_gateway", BlockChainGatewayServiceTypeEnum.DB_GATEWAY.getValue(), "testGetValue: It should be db-gateway");      
     }
     
     @Test
     public void testEnum() {
-        assertEquals("testEnum: It should be GoChian Gateway",BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("gochain_gateway"));
-        assertEquals("testEnum: It should be DB Gateway",BlockChainGatewayServiceTypeEnum.DB_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("db_gateway") );
-        assertNull("testEnum: It should be invalid value",BlockChainGatewayServiceTypeEnum.fromValue("invalid-value") ); 
+        Assertions.assertEquals(BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("gochain_gateway"),"testEnum: It should be GoChian Gateway");
+        Assertions.assertEquals(BlockChainGatewayServiceTypeEnum.DB_GATEWAY, BlockChainGatewayServiceTypeEnum.fromValue("db_gateway"),"testEnum: It should be DB Gateway" );
+        Assertions.assertNull(BlockChainGatewayServiceTypeEnum.fromValue("invalid-value"),"testEnum: It should be invalid value"); 
     }
     
 }

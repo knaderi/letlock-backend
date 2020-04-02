@@ -6,10 +6,9 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.gateway;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
@@ -25,14 +24,14 @@ public class BlockChainGatewayServiceTest extends AbstractTest implements Backen
     BlockChainGatewayServiceFactory blockChainGatewayServiceFactory;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
     @Test
     public void testGetGoChainInstance() {
-        assertTrue("testGetGoChainInstance: Should have created a GoChain gateway instance", blockChainGatewayServiceFactory.createGatewayService(BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY) instanceof GoChainGatewayService);
+        Assertions.assertTrue(blockChainGatewayServiceFactory.createGatewayService(BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY) instanceof GoChainGatewayService, "testGetGoChainInstance: Should have created a GoChain gateway instance");
     }
 
 }

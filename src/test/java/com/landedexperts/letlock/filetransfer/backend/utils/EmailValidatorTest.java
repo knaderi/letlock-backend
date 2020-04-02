@@ -6,13 +6,9 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EmailValidatorTest {
     private EmailValidator validator;
@@ -21,7 +17,7 @@ public class EmailValidatorTest {
         super();
     }
 
-    @Before
+    @BeforeEach
     public void beforeTest() {
         validator = new EmailValidator();
     }
@@ -33,11 +29,11 @@ public class EmailValidatorTest {
     }
 
     private void assertValid(String email) {
-        assertTrue(validator.isValid(email));
+        Assertions.assertTrue(validator.isValid(email));
     }
 
     private void assertNotValid(String email) {
-        assertFalse(validator.isValid(email));
+        Assertions.assertFalse(validator.isValid(email));
     }
 
     @Test
@@ -74,7 +70,8 @@ public class EmailValidatorTest {
 
     @Test
     public void testIPv6Email() {
-        // This is a valid email but our current validator (also in PTY) does not support it
+        // This is a valid email but our current validator (also in PTY) does not
+        // support it
         assertNotValid("user@[IPv6:2001:db8:1ff::a0b:dbd0]");
     }
 
@@ -129,14 +126,14 @@ public class EmailValidatorTest {
     @Test
     public void testMaxLength() {
         String email = "user@" + stringOf(EmailValidator.DEFAULT_MAX_LENGTH - 9) + ".com";
-        assertEquals(EmailValidator.DEFAULT_MAX_LENGTH, email.length());
+        Assertions.assertEquals(EmailValidator.DEFAULT_MAX_LENGTH, email.length());
         assertValid(email);
     }
 
     @Test
     public void testLengthTooLong() {
         String email = "user@" + stringOf(EmailValidator.DEFAULT_MAX_LENGTH - 8) + ".com";
-        assertEquals(EmailValidator.DEFAULT_MAX_LENGTH + 1, email.length());
+        Assertions.assertEquals(EmailValidator.DEFAULT_MAX_LENGTH + 1, email.length());
         assertNotValid(email);
     }
 
@@ -144,26 +141,32 @@ public class EmailValidatorTest {
     public void testCustomMaxLength() {
         validator = new EmailValidator(128);
         String email = "user@" + stringOf(119) + ".com"; // 128 max
-        assertEquals(128, email.length());
+        Assertions.assertEquals(128, email.length());
         assertValid(email);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testCustomMaxLengthTooShort() {
-        validator = new EmailValidator(EmailValidator.MAX_LOCAL_LENGTH); // too short
-        assertValid("user@abc.com");
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            validator = new EmailValidator(EmailValidator.MAX_LOCAL_LENGTH); // too short
+            assertValid("user@abc.com");
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testCustomMaxLengthShortByOne() {
-        validator = new EmailValidator(EmailValidator.MAX_LOCAL_LENGTH + 4); // still too short
-        assertValid("user@abc.com");
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            validator = new EmailValidator(EmailValidator.MAX_LOCAL_LENGTH + 4); // still too short
+            assertValid("user@abc.com");
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testCustomMaxLengthTooLong() {
-        validator = new EmailValidator(EmailValidator.DEFAULT_MAX_LENGTH + 1); // too short
-        assertValid("user@abc.com");
+        Assertions.assertThrows(IllegalStateException.class, () -> {
+            validator = new EmailValidator(EmailValidator.DEFAULT_MAX_LENGTH + 1); // too short
+            assertValid("user@abc.com");
+        });
     }
 
     @Test
@@ -173,7 +176,7 @@ public class EmailValidatorTest {
     }
 
     @Test
-    public void testDots() { 
+    public void testDots() {
         assertValid("homer.j@abc.com");
         assertNotValid("homerj.@abc.com");
         assertNotValid(".homerj@abc.com");
