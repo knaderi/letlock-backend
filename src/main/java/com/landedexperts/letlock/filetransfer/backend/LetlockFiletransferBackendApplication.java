@@ -22,8 +22,8 @@ public class LetlockFiletransferBackendApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowedOrigins("*", "http://localhost:3000",
-                        "http://letlockweb-dev.s3-website-us-west-2.amazonaws.com", "letlockbackenddev.us-west-2.elasticbeanstalk.com",
-                        "http://letlockweb-qa.s3-website-us-west-2.amazonaws.com", "letlockbackend-qa-1.us-west-2.elasticbeanstalk.com");
+                        "http://letlockweb-dev.s3-website-us-west-2.amazonaws.com", "http://letlockbackenddev.us-west-2.elasticbeanstalk.com",
+                        "http://letlockweb-qa.s3-website-us-west-2.amazonaws.com", "http://letlockbackend-qa-1.us-west-2.elasticbeanstalk.com");
 
             }
         };
