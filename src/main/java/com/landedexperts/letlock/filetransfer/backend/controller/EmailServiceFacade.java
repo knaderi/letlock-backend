@@ -62,6 +62,9 @@ public class EmailServiceFacade {
 
     @Value("${letlock.footer.logo.url}")
     String letlockFooterLogoURL;
+    
+    @Value("${letlock.contactus.recipient.email}")
+    private String letlockContactUsRecipientEmail;
 
     void sendForgotPasswordHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
 
@@ -134,6 +137,17 @@ public class EmailServiceFacade {
         } else {
             logger.info("Email service is disabled in properties file.");
         }
+    }
+
+    /**
+     * @param contactUsModel
+     */
+    public void sendContactUsEmail(ContactUsModel contactUsModel) throws Exception  {
+        Email email = new Email();
+        email.setSubject(contactUsModel.getSubject());
+        email.setMessageText(contactUsModel.getMessage());
+        email.setTo(letlockContactUsRecipientEmail);
+        letLockEmailService.sendMail(email);
     }
 
 }

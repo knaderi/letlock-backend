@@ -4,7 +4,7 @@ source/src/test/java/local_files/*
 !source/src/test/java/local_files/empty
 /target/
 /logs/
-
+/test-output/
 
 # Created by https://www.gitignore.io/api/linux,macos,windows,eclipse,jetbrains+all,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=linux,macos,windows,eclipse,jetbrains+all,visualstudiocode

@@ -25,13 +25,15 @@ public class LetLockEmailService {
     private JavaMailSender javaMailSender;
 
     public void sendMail(final Email email) {
-
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setSubject(email.getSubject());
-        simpleMailMessage.setFrom(email.getFrom());
-        simpleMailMessage.setTo(email.getTo());
-        simpleMailMessage.setText(email.getMessageText());
-        javaMailSender.send(simpleMailMessage);
+        LetLockBackendEnv letLockEnv = LetLockBackendEnv.getInstance();
+        if (!letLockEnv.isLocalEnv()) {
+            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+            simpleMailMessage.setSubject(email.getSubject());
+            simpleMailMessage.setFrom(email.getFrom());
+            simpleMailMessage.setTo(email.getTo());
+            simpleMailMessage.setText(email.getMessageText());
+            javaMailSender.send(simpleMailMessage);
+        }
     }
 
     public void sendHTMLMail(final Email email) throws Exception {

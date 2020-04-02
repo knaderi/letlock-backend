@@ -8,10 +8,14 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -296,6 +300,30 @@ public class UserController {
         }
         return new BooleanResponse(false, returnCode, returnMessage);
 
+    }
+    
+    
+    @PostMapping(value = "/users/message", produces = { "application/JSON" })
+    public BooleanResponse submitContactUsForm(@Valid @RequestBody ContactUsModel contactUsModel ) throws Exception {
+        logger.info("UserController.submitContactUsForm called for ContactUsModel " + contactUsModel);
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        try {
+            String validaionMessage = contactUsModel.validate();
+            if (StringUtils.isBlank(validaionMessage)){
+                emailServiceFacade.sendContactUsEmail(contactUsModel);
+            }else {
+                logger.error("Thecontact us form being sumitted is not valid");
+                returnCode = "INVALID_CONTENT";
+                returnMessage = validaionMessage;
+            }
+
+        } catch (Exception e) {
+            logger.error("Exception thrown sending Contact Us email." + e.getMessage());
+            returnCode = "CONTACT_US_SUMISSION_ERROR";
+            returnMessage = e.getMessage();
+        }
+        return new BooleanResponse(false, returnCode, returnMessage);
     }
 
 }

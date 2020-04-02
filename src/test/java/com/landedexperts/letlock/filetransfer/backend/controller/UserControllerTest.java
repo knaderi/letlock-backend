@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class UserControllerTest extends BaseControllerTest {
 
     @Override
@@ -315,6 +317,29 @@ public class UserControllerTest extends BaseControllerTest {
         assertTrue("content should be USER_NAME_TAKEN", content.contains("\"returnCode\":\"USER_NAME_TAKEN"));
     }
 
+    @Test
+    public void testValidContactUsForm() throws Exception, UnsupportedEncodingException {
+        String uri = "/users/message";
+        ContactUsModel contactUsModel= new ContactUsModel();
+        contactUsModel.setFirstName("firstName");
+        contactUsModel.setLastName("lastName");
+        contactUsModel.setEmail("test@test.com");
+        contactUsModel.setPhone("604-345-1786");
+        contactUsModel.setSubject("subject");
+        contactUsModel.setUserMessage("This is user's message.");
+        
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType("application/json")
+                .content(new ObjectMapper().writeValueAsString(contactUsModel))
+                .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+
+        assertTrue("Content have error", content.contains("\"returnCode\":\"SUCCESS\""));
+    }
 
     @Test
     public void getFileTransferSessionsForUserWith1TransferSessionTest() throws Exception {
