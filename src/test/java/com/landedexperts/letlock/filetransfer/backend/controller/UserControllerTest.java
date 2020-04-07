@@ -43,7 +43,6 @@ public class UserControllerTest extends BaseControllerTest {
         registerUserAgain(uri, userLoginName, userEmail, userPassword);
     }
 
-
     @Test
     public void isLoginNameAvailableTest() throws Exception {
         createLoggedInActiveUser();
@@ -64,9 +63,9 @@ public class UserControllerTest extends BaseControllerTest {
         createLoggedInActiveUser();
         login();
 
-        String uri = "/logout";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", userLoginName)
-                .param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
+        String uri = "/user/logout";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -74,15 +73,16 @@ public class UserControllerTest extends BaseControllerTest {
         String content = mvcResult.getResponse().getContentAsString();
         Assertions.assertTrue(content.length() > 0, "logoutTestForGoodToken: length should be larger than zero");
         Assertions.assertTrue(
-                content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""), "logoutTestForGoodToken: The error should be Login session  not found");
-        Assertions.assertTrue(content.contains("\"value\":false"), "logoutTestForGoodToken: result should be false");
+                content.contains("\"returnCode\":\"SUCCESS\""),
+                "logoutTestForGoodToken: User should be logged out successfully.");
+        Assertions.assertTrue(content.contains("\"value\":true"), "logoutTestForGoodToken: result should be true");
     }
 
     @Test
     public void logoutTestForBadToken() throws Exception {
-        String uri = "/logout";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", TEST_USER_ID)
-                .param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
+        String uri = "/user/logout";
+        ResultActions resultAction = mvc.perform(
+                MockMvcRequestBuilders.post(uri).param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -90,38 +90,40 @@ public class UserControllerTest extends BaseControllerTest {
         String content = mvcResult.getResponse().getContentAsString();
         Assertions.assertTrue(content.length() > 0, "logoutTestForBadToken:content length should be larger than zero");
         Assertions.assertTrue(
-                content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""), "logoutTestForBadToken: The error should be Login session  not found");
+                content.contains("\"returnCode\":\"LOGIN_SESSION_NOT_FOUND\""),
+                "logoutTestForBadToken: The error should be Login session  not found");
         Assertions.assertTrue(content.contains("\"value\":false"), "logoutTestForBadToken: result should be false");
     }
 
     public String getValuesForGivenKey(String jsonArrayStr, String key, String parent) throws Exception {
         JSONObject jsonObject = new JSONObject(jsonArrayStr);
-        if(!StringUtils.isBlank(parent)) {
+        if (!StringUtils.isBlank(parent)) {
             return jsonObject.getJSONObject(parent).getString(key);
         }
         return jsonObject.getString(key);
     }
-    
+
     public String getValuesForGivenKey(String jsonArrayStr, String key) throws Exception {
         return getValuesForGivenKey(jsonArrayStr, key, "");
     }
 
     @Test
-    public void updateUserPasswordTest() throws Exception {
+    public void changeUserPasswordTest() throws Exception {
         createLoggedInActiveUser();
         // change the password to new password and login
-        handleForgotPassword();
+        // handleForgotPassword();
         login();
         // Change the password back and re-login.
-        changePassword(userLoginName, userPassword, NEW_PASSWORD);
+        changePassword(token, userLoginName, userEmail, userPassword, NEW_PASSWORD);
         userPassword = NEW_PASSWORD;
         login();
     }
 
-    private void changePassword(String loginName, String oldPassword, String newPassword) throws Exception {
-        String uri = "/update_user_password";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", loginName)
-                .param("oldPassword", oldPassword).param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+    private void changePassword(String token, String loginName, String email, String oldPassword, String newPassword) throws Exception {
+        String uri = "/user/change_password";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("loginName", loginName).param("email", email)
+                        .param("oldPassword", oldPassword).param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -131,7 +133,7 @@ public class UserControllerTest extends BaseControllerTest {
     }
 
     @Test
-    //TODO: fix this
+    // TODO: fix this
     public void getFileTransferSessionsForUserWithNoTransferSessionsTest() throws Exception {
 //        registerUser();
 //
@@ -164,7 +166,7 @@ public class UserControllerTest extends BaseControllerTest {
 
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("handleForgotPasswordWhenEmaiIsRegistered", content);
-        //make sure reset token is created
+        // make sure reset token is created
         testtResetToken();
     }
 
@@ -234,8 +236,9 @@ public class UserControllerTest extends BaseControllerTest {
         String content2 = mvcResult2.getResponse().getContentAsString();
 
         Assertions.assertTrue(content2.length() > 0, "Content length should be larger than 0");
-        Assertions.assertTrue(content2.contains("\"returnCode\":\"USER_NOT_FOUND\""),"Should have error");
-        Assertions.assertTrue(content2.contains("\"returnMessage\":\"Invalid token or email\""),"Content error message should be token is invalid");
+        Assertions.assertTrue(content2.contains("\"returnCode\":\"USER_NOT_FOUND\""), "Should have error");
+        Assertions.assertTrue(content2.contains("\"returnMessage\":\"Invalid token or email\""),
+                "Content error message should be token is invalid");
     }
 
     private void handleForgotPassword() throws Exception, UnsupportedEncodingException, JSONException {
@@ -248,7 +251,7 @@ public class UserControllerTest extends BaseControllerTest {
 
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("resetPasswordTest", content);
-        //make sure reset token gets created.
+        // make sure reset token gets created.
         testtResetToken();
     }
 
@@ -267,10 +270,10 @@ public class UserControllerTest extends BaseControllerTest {
         String content = mvcResult.getResponse().getContentAsString();
 
         Assertions.assertTrue(content.contains("\"returnCode\":\"INVALID_PASSWORD\""), "Content have error");
-        Assertions.assertTrue(content.contains("\"returnMessage\":\"Password is invalid\""),"Content error message should be token is invalid");
-        Assertions.assertTrue(content.contains("\"value\":false"),"Content value should be false");
+        Assertions.assertTrue(content.contains("\"returnMessage\":\"Password is invalid\""),
+                "Content error message should be token is invalid");
+        Assertions.assertTrue(content.contains("\"value\":false"), "Content value should be false");
     }
-
 
     @Test
     public void resendSignUpConfirmationEmailNeeded() throws Exception {
@@ -318,15 +321,15 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void testValidContactUsForm() throws Exception, UnsupportedEncodingException {
-        String uri = "/users/message";
-        ContactUsModel contactUsModel= new ContactUsModel();
+        String uri = "/user/message";
+        ContactUsModel contactUsModel = new ContactUsModel();
         contactUsModel.setFirstName("firstName");
         contactUsModel.setLastName("lastName");
         contactUsModel.setEmail("test@test.com");
         contactUsModel.setPhone("604-345-1786");
         contactUsModel.setSubject("subject");
         contactUsModel.setUserMessage("This is user's message.");
-        
+
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri)
                 .contentType("application/json")
                 .content(new ObjectMapper().writeValueAsString(contactUsModel))

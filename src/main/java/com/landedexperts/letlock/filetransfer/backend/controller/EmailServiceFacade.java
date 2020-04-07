@@ -31,6 +31,7 @@ public class EmailServiceFacade {
 
     private static String FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset Your Password";
     private static String CONFIRM_SIGNUP_EMAIL_SUBJECT = "Confirm Your Email";
+    private static String CHANGE_PASSWORD_EMAIL_SUBJECT = "Your password has changed";
     static String RESET_TOKEN = "%RESET_TOKEN%";
     static String VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN = "%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%";
     static String LETLOCK_LOGO_URL_TOKEN = "%LETLOCK_LOGO_URL_TOKEN%";
@@ -53,6 +54,9 @@ public class EmailServiceFacade {
 
     @Value("${forgot.password.email.template}")
     private String forgotPasswordEmailTemplate;
+    
+    @Value("${change.password.email.template}")
+    private String changePasswordEmailTemplate;
 
     @Value("${confirm.signup.email.template}")
     private String confirmSignupEmailTemplate;
@@ -102,6 +106,15 @@ public class EmailServiceFacade {
         String emailBody = Resources.toString(url, Charsets.UTF_8);
         return emailBody;
     }
+    
+    String getChangePasswordHTMLEmailBody() throws IOException {
+        URL url = Resources.getResource(changePasswordEmailTemplate);
+        String emailBody = Resources.toString(url, Charsets.UTF_8);
+        emailBody = emailBody
+                .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+                .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
+        return emailBody;
+    }
 
     String getConfirmSignupHTMLEmailBody(String resetEmailToken) throws Exception {
         String emailBody = readConfirmSignupdEmailBody();
@@ -144,10 +157,32 @@ public class EmailServiceFacade {
      */
     public void sendContactUsEmail(ContactUsModel contactUsModel) throws Exception  {
         Email email = new Email();
+        email.setFrom(letlockNotificationEmail);
         email.setSubject(contactUsModel.getSubject());
         email.setMessageText(contactUsModel.getMessage());
         email.setTo(letlockContactUsRecipientEmail);
         letLockEmailService.sendMail(email);
+    }
+
+    public void sendChangePasswordEmail(String recepientEmail)  throws Exception  {
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
+
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(recepientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                logger.info("replacing recipient email: " + recepientEmail);
+                email.setTo(nonProdReceipientEmail);
+            }
+            email.setSubject(CHANGE_PASSWORD_EMAIL_SUBJECT);
+            email.setMessageText(getChangePasswordHTMLEmailBody());
+            letLockEmailService.sendHTMLMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
+        }
+        
     }
 
 }

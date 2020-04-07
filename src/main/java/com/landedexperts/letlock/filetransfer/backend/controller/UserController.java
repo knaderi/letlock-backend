@@ -152,22 +152,27 @@ public class UserController {
         return new EmailValidator().isValid(loginNameOrEmail);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/update_user_password", produces = { "application/JSON" })
-    public BooleanResponse updateUserPassword(@RequestParam(value = "loginName") final String loginNameOrEmail,
+    @PostMapping(value="/user/change_password", produces = { "application/JSON" })
+    public BooleanResponse changePassword(@RequestParam(value = "token") final String token, @RequestParam(value = "loginName") final String loginName, @RequestParam(value = "email") final String email,
             @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword)
             throws Exception {
-
-        logger.info("UserController.updateUserPassword called for loginName " + loginNameOrEmail);
-        ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginNameOrEmail, oldPassword, newPassword);
-
-        String returnCode = answer.getReturnCode();
-        String returnMessage = answer.getReturnMessage();
-        boolean result = returnCode.equals("SUCCESS");
-
+        logger.info("UserController.changePassword called for a user");
+        long userId = SessionManager.getInstance().getUserId(token);
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
+        if (userId > 0) {         
+            ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword);
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+        }
+        boolean result = returnCode.equals(returnCode);
+        if ("SUCCESS".equals(returnCode)) {
+            emailServiceFacade.sendChangePasswordEmail(email);
+        }
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/logout", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/user/logout", produces = { "application/JSON" })
     public BooleanResponse logout(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("UserController.logout called for token " + token);
 
@@ -303,7 +308,7 @@ public class UserController {
     }
     
     
-    @PostMapping(value = "/users/message", produces = { "application/JSON" })
+    @PostMapping(value = "/user/message", produces = { "application/JSON" })
     public BooleanResponse submitContactUsForm(@Valid @RequestBody ContactUsModel contactUsModel ) throws Exception {
         logger.info("UserController.submitContactUsForm called for ContactUsModel " + contactUsModel);
         String returnCode = "SUCCESS";
