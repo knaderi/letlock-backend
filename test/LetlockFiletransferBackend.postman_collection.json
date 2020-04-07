@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "95fad3b5-0230-4d66-97d5-4f2379eaf094",
+		"_postman_id": "338cb6dd-6423-42b4-ac0a-43631fb88811",
 		"name": "LetlockFiletransferBackend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -22,28 +22,27 @@
 					"urlencoded": [
 						{
 							"key": "loginName",
-							"value": "{{AliceLoginName}}",
+							"value": "{{aliceloginname}}",
 							"type": "text"
 						},
 						{
 							"key": "email",
-							"value": "{{AliceEmail}}",
+							"value": "{{aliceemail}}",
 							"type": "text"
 						},
 						{
 							"key": "password",
-							"value": "{{AlicePassword}}",
+							"value": "{{alicepassword}}",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/register",
+					"raw": "http://{{localhost}}/register",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{localhost}}"
 					],
-					"port": "3000",
 					"path": [
 						"register"
 					]
@@ -52,7 +51,7 @@
 			"response": []
 		},
 		{
-			"name": "Register Bob",
+			"name": "getAliceUserInfo",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -67,26 +66,65 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "loginName",
-							"value": "{{BobLoginName}}",
+							"key": "email",
+							"value": "{{aliceloginname}}",
 							"type": "text"
 						},
 						{
 							"key": "password",
-							"value": "{{BobPassword}}",
+							"value": "{{alicepassword}}",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/register",
+					"raw": "http://{{localhost}}/get_user_object",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{localhost}}"
 					],
-					"port": "3000",
 					"path": [
-						"register"
+						"get_user_object"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "confirmAliceSignup",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "{{aliceemail}}",
+							"type": "text"
+						},
+						{
+							"key": "resetToken",
+							"value": "3e960e9d-68ba-444d-b887-a7b2610d2d0c",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/confirm_signup",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"confirm_signup"
 					]
 				}
 			},
@@ -109,25 +147,149 @@
 					"urlencoded": [
 						{
 							"key": "loginName",
-							"value": "{{AliceLoginName}}",
+							"value": "{{aliceloginname}}",
 							"type": "text"
 						},
 						{
 							"key": "password",
-							"value": "{{AlicePassword}}",
+							"value": "{{alicepassword}}",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/login",
+					"raw": "http://{{localhost}}/login",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{localhost}}"
 					],
-					"port": "3000",
 					"path": [
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Bob",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "{{bobloginname}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{bobpassword}}",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "{{bobemail}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/register",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBobUserInfo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "{{bobemail}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{bobpassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/get_user_object",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"get_user_object"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "confirmBobSignup",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "{{bobemail}}",
+							"type": "text"
+						},
+						{
+							"key": "resetToken",
+							"value": "a5354084-dc14-4659-8b26-9f0c2baed7eb",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/confirm_signup",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"confirm_signup"
 					]
 				}
 			},
@@ -150,23 +312,22 @@
 					"urlencoded": [
 						{
 							"key": "loginName",
-							"value": "{{BobLoginName}}",
+							"value": "{{bobloginname}}",
 							"type": "text"
 						},
 						{
 							"key": "password",
-							"value": "{{BobPassword}}",
+							"value": "{{bobpassword}}",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/login",
+					"raw": "http://{{localhost}}/login",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{localhost}}"
 					],
-					"port": "3000",
 					"path": [
 						"login"
 					]
@@ -175,7 +336,7 @@
 			"response": []
 		},
 		{
-			"name": "Order create",
+			"name": "createOrder",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -191,27 +352,26 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{AliceSessionToken}}",
+							"value": "{{alicelogintoken}}",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/create_order",
+					"raw": "http://{{localhost}}/order_create",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{localhost}}"
 					],
-					"port": "3000",
 					"path": [
-						"create_order"
+						"order_create"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Order detail add",
+			"name": "addOrderDeatil",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -227,35 +387,79 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{AliceSessionToken}}",
+							"value": "{{alicelogintoken}}",
 							"type": "text"
 						},
 						{
-							"key": "order_id",
-							"value": "1",
+							"key": "orderId",
+							"value": "257",
 							"type": "text"
 						},
 						{
-							"key": "product_id",
+							"key": "packageId",
 							"value": "1",
 							"type": "text"
 						},
 						{
 							"key": "quantity",
-							"value": "42",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "locationId",
+							"value": "1",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/add_order_detail",
+					"raw": "http://{{localhost}}/upsert_order_line_item",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{localhost}}"
 					],
-					"port": "3000",
 					"path": [
-						"add_order_detail"
+						"upsert_order_line_item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user orders",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "5RuFMvlXfTKEukBkvsYvRhsce3N6D/6LF8Gm0GpA8bMfgV82UM504gLEX8Jaz7RNbSPqM6tp/UoV4Wmy8zt8dDTpPLX6fdbRj99jWguADXNchVXanlsdOsKwKny75MXMyqItLuCKD9H31jvueakgfuL/m3glG0zfjtacnWWIGEE=",
+							"type": "text"
+						},
+						{
+							"key": "orderStatus",
+							"value": "initiated",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/get_user_orders_by_status",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"get_user_orders_by_status"
 					]
 				}
 			},
@@ -447,17 +651,17 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{AliceSessionToken}}",
+							"value": "{{alicesessiontoken}}",
 							"type": "text"
 						},
 						{
 							"key": "wallet_address",
-							"value": "{{AliceWalletAddress}}",
+							"value": "{{alicewalletaddress}}",
 							"type": "text"
 						},
 						{
 							"key": "receiver_login_name",
-							"value": "{{BobLoginName}}",
+							"value": "{{bobloginname}}",
 							"type": "text"
 						}
 					]
@@ -471,6 +675,46 @@
 					"port": "3000",
 					"path": [
 						"insert_start_file_transfer_session_record"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_user_ft_history",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{alicesessiontoken}}",
+							"type": "text"
+						},
+						{
+							"key": "orderId",
+							"value": "257",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/get_user_ft_order_usage_history",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"get_user_ft_order_usage_history"
 					]
 				}
 			},
@@ -523,7 +767,42 @@
 			"response": []
 		},
 		{
-			"name": "Logout",
+			"name": "LogoutAlice",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{alicelogintoken}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/logout",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LogoutBob",
 			"request": {
 				"method": "POST",
 				"header": [

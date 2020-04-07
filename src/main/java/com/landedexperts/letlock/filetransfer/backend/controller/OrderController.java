@@ -168,8 +168,8 @@ public class OrderController {
         if (userId > 0) {
             value = orderMapper.getUserOrders(userId, status);
         }else {
-            value.setReturnCode("USER_NOT_FOUND");
-            value.setReturnMessage("User does not exist.");
+            value.setReturnCode("TOKEN_INVALID");
+            value.setReturnMessage("Invalid token");
         }
         if(null == value) {
             value = new JsonResponse<Map<String, String>>();
@@ -198,13 +198,12 @@ public class OrderController {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
 
         JsonResponse<String> value = new JsonResponse<String>();
-
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             value = orderMapper.getUserOrder(userId, orderId);
         }else {
-            value.setReturnCode("USER_NOT_FOUND");
-            value.setReturnMessage("User does not exist.");
+            value.setReturnCode("TOKEN_INVALID");
+            value.setReturnMessage("Invalid token");
         }
 
         return value;
@@ -218,6 +217,7 @@ public class OrderController {
         FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
         //TODO, should filter
         OrdersFileTransfersCountsResponse ordersFTCounts = new OrdersFileTransfersCountsResponse();
+        OrderFileTransferUsagesResponse response = null;
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             lineItemsUsageForOrderArray = orderMapper.getUsersFileTransferOrderUsageHistroy(userId, orderId);
@@ -225,9 +225,13 @@ public class OrderController {
             if(null == ordersFTCounts) {
                 ordersFTCounts =  new OrdersFileTransfersCountsResponse();
             }
+            response = new OrderFileTransferUsagesResponse(orderId, lineItemsUsageForOrderArray, ordersFTCounts);
+        }else {
+            response = new OrderFileTransferUsagesResponse(orderId,lineItemsUsageForOrderArray,ordersFTCounts);            
+            response.setReturnCode("TOKEN_INVALID");
+            response.setReturnMessage("Invalid token");
         }
-
-        return new OrderFileTransferUsagesResponse(orderId, lineItemsUsageForOrderArray, ordersFTCounts);
+        return response;
     }
 
     //TODO: Do thsi later to return all order usages.

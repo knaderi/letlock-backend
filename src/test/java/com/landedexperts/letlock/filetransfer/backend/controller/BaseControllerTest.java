@@ -79,7 +79,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         String reset_token = getPendingUserResetToken();
         // Mimik user clicking on signup confirmation to enable his account and change
         // account status from pending to active
-        confirmSignUp(content, reset_token);
+        confirmSignUp(reset_token);
     }
     
     protected void createNorConfirmedUser()
@@ -132,7 +132,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
     }
     
     
-    private void confirmSignUp(String content, String reset_token) throws Exception, UnsupportedEncodingException {
+    private void confirmSignUp(String reset_token) throws Exception, UnsupportedEncodingException {
         String uri2 = "/confirm_signup";
         ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2)
                 .param("email", userEmail).param("resetToken", reset_token).accept(MediaType.APPLICATION_JSON_VALUE));
