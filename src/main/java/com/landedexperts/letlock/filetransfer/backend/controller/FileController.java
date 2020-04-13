@@ -34,6 +34,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanPathnameVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.service.FileUploadException;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
@@ -63,29 +64,35 @@ public class FileController {
         boolean result = false;
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
-        
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             // Get the path of the uploaded file
             String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
-            String remotePathName = UUID.randomUUID().toString(); //we use the uuid as the pathname to the file. This is used a the key name on s3.
-
+            String remotePathName = UUID.randomUUID().toString(); // we use the uuid as the pathname to the file. This is used a the key
+                                                                  // name on s3.
             // Set the expiry date
             Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
 
-            IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remotePathName, expires);
-
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
-
-            result = returnCode.equals("SUCCESS");
-
-            if (result) {
+            try {
                 saveFileOnDisk(file, localFilePath);
                 remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(localFilePath, remotePathName);
+            } catch (FileUploadException e) {
+                returnCode = "FILE_UPLOAD_ERROR";
+                returnMessage = "Could not upload the file due to: " + e.getMessage();
             }
+            
+            if(!returnCode.contentEquals("FILE_UPLOAD_ERROR")) {
+                IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remotePathName, expires);
+                result = returnCode.equals("SUCCESS");
+                if (result) {
+                    returnCode = answer.getReturnCode();
+                    returnMessage = answer.getReturnMessage();
+                }
+            }
+
         }
+        
         logger.info("FileController.uploadFile returning response with result " + result);
 
         return new BooleanResponse(result, returnCode, returnMessage);
@@ -153,7 +160,7 @@ public class FileController {
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-        	ReturnCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
+            ReturnCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
 
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();

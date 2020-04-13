@@ -68,13 +68,18 @@ public class S3StorageService implements RemoteStorageService {
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.
             logger.error(e.getErrorMessage());
+            throw new FileUploadException(e);
         } catch (SdkClientException e) {
             // Amazon S3 couldn't be contacted for a response, or the client
             // couldn't parse the response from Amazon S3.
             logger.error(e.getMessage());
-        } finally {
+            throw new FileUploadException(e);
+        } catch (Exception e) {         
+            logger.error("File upload failed " + e.getMessage());
+            throw new FileUploadException(e);
+        }finally {
             // TODO: file needs to be removed after moving to use the remote.
-            // localFile.delete();
+            localFile.delete();
         }
     }    
 
