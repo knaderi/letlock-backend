@@ -32,7 +32,7 @@ public class EmailServiceFacade {
     private static String FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset Your Password";
     private static String CONFIRM_SIGNUP_EMAIL_SUBJECT = "Confirm Your Email";
     private static String CHANGE_PASSWORD_EMAIL_SUBJECT = "Your password has changed";
-    static String RESET_TOKEN = "%RESET_TOKEN%";
+    static String USER_CONFIRM_TOKEN = "%USER_CONFIRM_TOKEN%";
     static String VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN = "%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%";
     static String LETLOCK_LOGO_URL_TOKEN = "%LETLOCK_LOGO_URL_TOKEN%";
     static String LETLOCK_FOOTER_LOGO_TOKEN = "%LETLOCK_FOOTER_LOGO_TOKEN%";
@@ -95,7 +95,7 @@ public class EmailServiceFacade {
     String getForgotPasswordHTMLEmailBody(String resetEmailToken) throws Exception {
         String emailBody = readForgotPasswordEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, validateResetPasswordTokenURL)
-                .replace(RESET_TOKEN, resetEmailToken)
+                .replace(USER_CONFIRM_TOKEN, resetEmailToken)
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
@@ -119,7 +119,7 @@ public class EmailServiceFacade {
     String getConfirmSignupHTMLEmailBody(String resetEmailToken) throws Exception {
         String emailBody = readConfirmSignupdEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
-                .replace(RESET_TOKEN, resetEmailToken)
+                .replace(USER_CONFIRM_TOKEN, resetEmailToken)
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;

@@ -45,7 +45,7 @@ public class EmailServiceFacadeTest extends AbstractTest {
         // tokens
         String emailBody = emailSErviceFacade.readForgotPasswordEmailBody();
         Assertions.assertNotNull(emailBody);
-        Assertions.assertTrue(emailBody.contains(EmailServiceFacade.RESET_TOKEN));
+        Assertions.assertTrue(emailBody.contains(EmailServiceFacade.USER_CONFIRM_TOKEN));
         Assertions.assertTrue(emailBody.contains(EmailServiceFacade.VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN));
         Assertions.assertTrue(emailBody.contains(EmailServiceFacade.LETLOCK_LOGO_URL_TOKEN));
         Assertions.assertTrue(emailBody.contains(EmailServiceFacade.LETLOCK_FOOTER_LOGO_TOKEN));
@@ -55,7 +55,7 @@ public class EmailServiceFacadeTest extends AbstractTest {
         String dummyResetToken = "123456789";
         emailBody = emailSErviceFacade.getForgotPasswordHTMLEmailBody(dummyResetToken);
         Assertions.assertNotNull(emailBody);
-        Assertions.assertFalse(emailBody.contains(EmailServiceFacade.RESET_TOKEN));
+        Assertions.assertFalse(emailBody.contains(EmailServiceFacade.USER_CONFIRM_TOKEN));
         Assertions.assertFalse(emailBody.contains(EmailServiceFacade.VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN));
         Assertions.assertFalse(emailBody.contains(EmailServiceFacade.LETLOCK_LOGO_URL_TOKEN));
         Assertions.assertFalse(emailBody.contains(EmailServiceFacade.LETLOCK_FOOTER_LOGO_TOKEN));
