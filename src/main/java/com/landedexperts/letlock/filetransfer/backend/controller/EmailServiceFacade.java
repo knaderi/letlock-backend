@@ -33,6 +33,7 @@ public class EmailServiceFacade {
     private static String CONFIRM_SIGNUP_EMAIL_SUBJECT = "Confirm Your Email";
     private static String CHANGE_PASSWORD_EMAIL_SUBJECT = "Your password has changed";
     static String USER_CONFIRM_TOKEN = "%USER_CONFIRM_TOKEN%";
+    static String EMAIL_TOKEN = "%EMAIL_TOKEN%";
     static String VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN = "%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%";
     static String LETLOCK_LOGO_URL_TOKEN = "%LETLOCK_LOGO_URL_TOKEN%";
     static String LETLOCK_FOOTER_LOGO_TOKEN = "%LETLOCK_FOOTER_LOGO_TOKEN%";
@@ -85,17 +86,18 @@ public class EmailServiceFacade {
             }
 
             email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
-            email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken));
+            email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken, recepientEmail));
             letLockEmailService.sendHTMLMail(email);
         } else {
             logger.info("Email service is disabled in properties file.");
         }
     }
 
-    String getForgotPasswordHTMLEmailBody(String resetEmailToken) throws Exception {
+    String getForgotPasswordHTMLEmailBody(String resetEmailToken, String confirmEmailToken) throws Exception {
         String emailBody = readForgotPasswordEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, validateResetPasswordTokenURL)
                 .replace(USER_CONFIRM_TOKEN, resetEmailToken)
+                .replace(EMAIL_TOKEN, confirmEmailToken)
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;

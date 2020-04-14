@@ -50,12 +50,14 @@ public class EmailServiceFacadeTest extends AbstractTest {
         Assertions.assertTrue(emailBody.contains(EmailServiceFacade.LETLOCK_LOGO_URL_TOKEN));
         Assertions.assertTrue(emailBody.contains(EmailServiceFacade.LETLOCK_FOOTER_LOGO_TOKEN));
 
-        // read replace forgotpassword email template and make sure it contains values
+        // read replace forgot password email template and make sure it contains values
         // instead of tokens
         String dummyResetToken = "123456789";
-        emailBody = emailSErviceFacade.getForgotPasswordHTMLEmailBody(dummyResetToken);
+        String dummyEmailToken = "dummy-token@example.com";
+        emailBody = emailSErviceFacade.getForgotPasswordHTMLEmailBody(dummyResetToken, dummyEmailToken);
         Assertions.assertNotNull(emailBody);
         Assertions.assertFalse(emailBody.contains(EmailServiceFacade.USER_CONFIRM_TOKEN));
+        Assertions.assertFalse(emailBody.contains(EmailServiceFacade.EMAIL_TOKEN));
         Assertions.assertFalse(emailBody.contains(EmailServiceFacade.VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN));
         Assertions.assertFalse(emailBody.contains(EmailServiceFacade.LETLOCK_LOGO_URL_TOKEN));
         Assertions.assertFalse(emailBody.contains(EmailServiceFacade.LETLOCK_FOOTER_LOGO_TOKEN));
