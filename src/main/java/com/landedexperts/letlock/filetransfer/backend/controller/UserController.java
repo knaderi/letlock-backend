@@ -284,7 +284,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/confirm_signup", produces = { "application/JSON" })
     public BooleanResponse confirmSignup(@RequestParam(value = "email") final String email,
             @RequestParam(value = "resetToken") final String resetToken) throws Exception {
-        logger.info("UserController.forgotPassword called for email " + email);
+        logger.info("UserController.confirm_signup called for email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
         try {

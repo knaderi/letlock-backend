@@ -158,7 +158,7 @@ public class UserControllerTest extends BaseControllerTest {
         createLoggedInActiveUser();
         String uri = "/handle_forgot_password";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).param("resetToken", "")
+                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
