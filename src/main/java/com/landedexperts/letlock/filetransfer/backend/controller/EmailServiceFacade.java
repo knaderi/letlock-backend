@@ -118,10 +118,12 @@ public class EmailServiceFacade {
         return emailBody;
     }
 
-    String getConfirmSignupHTMLEmailBody(String resetEmailToken) throws Exception {
+    String getConfirmSignupHTMLEmailBody(String resetEmailToken, String recipientEmail) throws Exception {
+        logger.info("recipientEmail: " + recipientEmail);
         String emailBody = readConfirmSignupdEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
                 .replace(USER_CONFIRM_TOKEN, resetEmailToken)
+                .replace(EMAIL_TOKEN, recipientEmail)
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
@@ -133,21 +135,23 @@ public class EmailServiceFacade {
         return emailBody;
     }
 
-    void sendConfirmSignupHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
+    void sendConfirmSignupHTMLEmail(String recipientEmail, String resetEmailToken) throws Exception {
+        logger.info("sendConfirmSignupHTMLEmail, recipientEmail: " + recipientEmail);
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
             Email email = new Email();
             email.setFrom(letlockNotificationEmail);
 
             if ("prd".equals(constants.getEnv())) {
-                email.setTo(recepientEmail);
+                email.setTo(recipientEmail);
             } else if ("true".contentEquals(nonProdEmailActive)) {
-                logger.info("replacing recipient email: " + recepientEmail);
+                logger.info("replacing recipient email: " + recipientEmail);
                 email.setTo(nonProdReceipientEmail);
             }
 
             email.setSubject(CONFIRM_SIGNUP_EMAIL_SUBJECT);
-            email.setMessageText(getConfirmSignupHTMLEmailBody(resetEmailToken));
+            email.setMessageText(getConfirmSignupHTMLEmailBody(resetEmailToken, recipientEmail));
+            logger.info(resetEmailToken + ", " + recipientEmail);
             letLockEmailService.sendHTMLMail(email);
         } else {
             logger.info("Email service is disabled in properties file.");

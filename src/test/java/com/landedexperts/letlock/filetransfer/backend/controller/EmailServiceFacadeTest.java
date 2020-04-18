@@ -41,7 +41,7 @@ public class EmailServiceFacadeTest extends AbstractTest {
     @Test
     public void testGetForgotPasswordHTMLEmailBody() throws Exception {
 
-        // read forgotpassword email template and make sure it contains the replacement
+        // read forgot password email template and make sure it contains the replacement
         // tokens
         String emailBody = emailSErviceFacade.readForgotPasswordEmailBody();
         Assertions.assertNotNull(emailBody);

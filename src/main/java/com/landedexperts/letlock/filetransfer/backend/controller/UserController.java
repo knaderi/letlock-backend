@@ -61,7 +61,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/register", produces = { "application/JSON" })
     public IdVO register(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "email") final String email, @RequestParam(value = "password") final String password) throws Exception {
-        logger.info("UserController.register called for loginName " + loginName);
+        logger.info("UserController.register called for loginName " + loginName + " email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
         IdVO answer = new IdVO();
@@ -83,6 +83,7 @@ public class UserController {
             }
 
             if ("SUCCESS".equals(returnCode)) {
+                logger.info("regsitered user with email " + email + " and with loginName " + loginName);
                 emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
             }
         }
@@ -95,7 +96,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/resend_signup_email", produces = { "application/JSON" })
     public IdVO resendSignUpConfirmationEmail(
             @RequestParam(value = "loginId") final String loginId, @RequestParam(value = "password") final String password) throws Exception {
-        logger.info("UserController.register called for email " + loginId);
+        logger.info("UserController.resend_signup_email called for loginId " + loginId);
         String returnCode = "SUCCESS";
         String returnMessage = "";
         IdVO answer = new IdVO();
