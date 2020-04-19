@@ -202,6 +202,7 @@ public class UserController {
             returnMessage = response.getReturnMessage();
 
             if ("SUCCESS".equals(returnCode)) {
+                logger.info("handle_forgot_password email: " + email + ", resetToken: " + resetToken);
                 emailServiceFacade.sendForgotPasswordHTMLEmail(email, resetToken);
             }
         } catch (Exception e) {
