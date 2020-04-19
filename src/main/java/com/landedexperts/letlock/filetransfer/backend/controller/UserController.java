@@ -294,11 +294,6 @@ public class UserController {
 
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
-
-            if ("SUCCESS".equals(returnCode)) {
-                emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
-                return response;
-            }
         } catch (Exception e) {
             logger.error("Exception thrown sening email." + e.getMessage());
             returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
