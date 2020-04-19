@@ -288,18 +288,19 @@ public class UserController {
         logger.info("UserController.confirm_signup called for email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
+        boolean result = false;
         try {
-
             BooleanResponse response = userMapper.confirmSignup(email, resetToken);
 
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
+            result = true;
         } catch (Exception e) {
             logger.error("Exception thrown sening email." + e.getMessage());
             returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
             returnMessage = e.getMessage();
         }
-        return new BooleanResponse(false, returnCode, returnMessage);
+        return new BooleanResponse(result, returnCode, returnMessage);
 
     }
     
