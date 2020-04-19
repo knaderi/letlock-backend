@@ -290,6 +290,7 @@ public class UserController {
         String returnMessage = "";
         boolean result = false;
         try {
+
             BooleanResponse response = userMapper.confirmSignup(email, resetToken);
 
             returnCode = response.getReturnCode();
