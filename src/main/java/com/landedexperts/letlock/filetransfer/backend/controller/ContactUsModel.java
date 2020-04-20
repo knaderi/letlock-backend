@@ -32,14 +32,14 @@ public class ContactUsModel {
     private String subject;
 
     private String userMessage;
-    private static String VALID_MSG = "";
-    private static String INVALID_FIRST_NAME_MSG = "first name submitted is not valid.";
-    private static String INVALID_LAST_NAME_MSG = "last name submitted is not valid.";
-    private static String INVALID_SUBJECT_MSG = "subject is not valid.";
-    private static String INVALID_MESSAGE_CONTENT = "message content cnnot be empty or contain html.";
-    private static String INVALID_USER_EMAIL_MSG = "user's email is not valid.";
-    private static String INVALID_USER_PHONE = "user's phone is not valid.";
-    private static String INVALID_MESSAGE_CONTENT_LENGTH = "Message contant cannot be longer than 4000 characters.";
+    static String VALID_MSG = "VALID";
+    static String INVALID_FIRST_NAME_MSG = "first name submitted cannot be empty or contain html.";
+    static String INVALID_LAST_NAME_MSG = "last name submitted cannot be empty or contain html.";
+    static String INVALID_SUBJECT_MSG = "subject submitted cannot be empty or contain html.";
+    static String INVALID_MESSAGE_CONTENT = "message content cannot be empty or contain html.";
+    static String INVALID_USER_EMAIL_MSG = "user's email is not valid.";
+    static String INVALID_USER_PHONE = "user's phone is not valid.";
+    static String INVALID_MESSAGE_CONTENT_LENGTH = "message contant cannot be longer than 4000 characters.";
 
     public String getUserMessage() {
         return userMessage;
@@ -51,8 +51,8 @@ public class ContactUsModel {
 
     @Override
     public String toString() {
-        return String.join("\n", "First Name: " + firstName, "Last Name: " + lastName, "Email: " + email, "Phone" + phone,
-                "Inquiry: " + userMessage);
+        return String.join("First Name: " + firstName, " Last Name: " + lastName, " Email: " + email, " Phone: " + phone,
+                " Inquiry: " + userMessage);
     }
 
     public String getEmailMessage() {
@@ -111,26 +111,33 @@ public class ContactUsModel {
         String message = VALID_MSG;
         String lineSeparator = System.lineSeparator();
         if (!new EmailValidator().isValid(email)) {
-            message = String.join(lineSeparator, INVALID_USER_EMAIL_MSG);
+            message = message.equals(VALID_MSG) ? String.join(lineSeparator, INVALID_USER_EMAIL_MSG)
+                    : String.join(lineSeparator, message, INVALID_USER_EMAIL_MSG);
         }
         HTMLTagValidator htmlTagValidator = new HTMLTagValidator();
         if (StringUtils.isBlank(firstName) || htmlTagValidator.hasHTMLTags(firstName)) {
-            message = String.join(lineSeparator, INVALID_FIRST_NAME_MSG);
+            message = message.equals(VALID_MSG) ? String.join(lineSeparator, INVALID_FIRST_NAME_MSG)
+                    : String.join(lineSeparator, message, INVALID_FIRST_NAME_MSG);
         }
-        if (StringUtils.isBlank(lastName) || htmlTagValidator.hasHTMLTags(firstName)) {
-            message = String.join(lineSeparator, INVALID_LAST_NAME_MSG);
+        if (StringUtils.isBlank(lastName) || htmlTagValidator.hasHTMLTags(lastName)) {
+            message = message.equals(VALID_MSG) ? String.join(lineSeparator, INVALID_LAST_NAME_MSG)
+                    : String.join(lineSeparator, message, INVALID_LAST_NAME_MSG);
         }
         if (!StringUtils.isBlank(phone) && !PhoneNumberValidator.isValid(phone)) {
-            message = String.join(lineSeparator, INVALID_USER_PHONE);
+            message = message.equals(VALID_MSG) ? String.join(lineSeparator, INVALID_USER_PHONE)
+                    : String.join(lineSeparator, message, INVALID_USER_PHONE);
         }
         if (StringUtils.isBlank(userMessage) || htmlTagValidator.hasHTMLTags(userMessage)) {
-            message = String.join(lineSeparator, INVALID_MESSAGE_CONTENT);
+            message = message.equals(VALID_MSG) ? String.join(lineSeparator, INVALID_MESSAGE_CONTENT)
+                    : String.join(lineSeparator, message, INVALID_MESSAGE_CONTENT);
         }
-        if (userMessage.length() > 4000) {
-            message = String.join(lineSeparator, INVALID_MESSAGE_CONTENT_LENGTH);
+        if (!StringUtils.isBlank(userMessage) && userMessage.length() > 4000) {
+            message = message.equals(VALID_MSG) ? String.join(lineSeparator, INVALID_MESSAGE_CONTENT_LENGTH)
+                    : String.join(lineSeparator, message, INVALID_MESSAGE_CONTENT_LENGTH);
         }
         if (StringUtils.isBlank(subject) || htmlTagValidator.hasHTMLTags(subject)) {
-            message = String.join(lineSeparator, INVALID_SUBJECT_MSG);
+            message = message.equals(VALID_MSG) ? String.join(lineSeparator, INVALID_SUBJECT_MSG)
+                    : String.join(lineSeparator, message, INVALID_SUBJECT_MSG);
         }
 
         return message;

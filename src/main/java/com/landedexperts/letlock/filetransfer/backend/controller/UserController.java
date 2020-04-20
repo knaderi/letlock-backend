@@ -314,10 +314,10 @@ public class UserController {
         String returnMessage = "";
         try {
             String validaionMessage = contactUsModel.validate();
-            if (StringUtils.isBlank(validaionMessage)){
+            if (validaionMessage.equals(contactUsModel.VALID_MSG)){
                 emailServiceFacade.sendContactUsEmail(contactUsModel);
             }else {
-                logger.error("Thecontact us form being sumitted is not valid");
+                logger.error("The contact us form being sumitted is not valid");
                 returnCode = "INVALID_CONTENT";
                 returnMessage = validaionMessage;
             }
