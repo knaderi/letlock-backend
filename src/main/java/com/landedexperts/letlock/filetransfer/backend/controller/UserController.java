@@ -79,7 +79,8 @@ public class UserController {
                 returnCode = answer.getReturnCode();
                 returnMessage = answer.getReturnMessage();
             } catch (Exception e) {
-                e.printStackTrace();
+                returnCode = "REGISTER_ERROR";
+                returnMessage = e.getMessage();
             }
 
             if ("SUCCESS".equals(returnCode)) {
@@ -95,7 +96,8 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/resend_signup_email", produces = { "application/JSON" })
     public IdVO resendSignUpConfirmationEmail(
-            @RequestParam(value = "loginId") final String loginId, @RequestParam(value = "password") final String password) throws Exception {
+            @RequestParam(value = "loginId") final String loginId, @RequestParam(value = "password") final String password)
+            throws Exception {
         logger.info("UserController.resend_signup_email called for loginId " + loginId);
         String returnCode = "SUCCESS";
         String returnMessage = "";
@@ -118,11 +120,19 @@ public class UserController {
                     returnMessage = "No user was found for the given liginId and password";
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                returnCode = "RESEND_SIGNUP_ERROR";
+                returnMessage = e.getMessage();
             }
 
             if ("SUCCESS".equals(returnCode)) {
                 emailServiceFacade.sendConfirmSignupHTMLEmail(loginId, resetToken);
+            }else {
+                logger.error("UserController.resendSignUpConfirmationEmail failed for loginId "
+                        + loginId
+                        + " failed. returnCode: "
+                        + returnCode
+                        + " returnMessage: "
+                        + returnMessage);
             }
         }
         answer.setReturnCode(returnCode);
@@ -153,15 +163,16 @@ public class UserController {
         return new EmailValidator().isValid(loginNameOrEmail);
     }
 
-    @PostMapping(value="/user/change_password", produces = { "application/JSON" })
-    public BooleanResponse changePassword(@RequestParam(value = "token") final String token, @RequestParam(value = "loginName") final String loginName, @RequestParam(value = "email") final String email,
+    @PostMapping(value = "/user/change_password", produces = { "application/JSON" })
+    public BooleanResponse changePassword(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "loginName") final String loginName, @RequestParam(value = "email") final String email,
             @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword)
             throws Exception {
         logger.info("UserController.changePassword called for a user");
         long userId = SessionManager.getInstance().getUserId(token);
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
-        if (userId > 0) {         
+        if (userId > 0) {
             ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword);
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
@@ -169,6 +180,13 @@ public class UserController {
         boolean result = returnCode.equals(returnCode);
         if ("SUCCESS".equals(returnCode)) {
             emailServiceFacade.sendChangePasswordEmail(email);
+        } else {
+            logger.error("UserController.changePassword failed for email "
+                    + email
+                    + " failed. returnCode: "
+                    + returnCode
+                    + " returnMessage: "
+                    + returnMessage);
         }
         return new BooleanResponse(result, returnCode, returnMessage);
     }
@@ -204,11 +222,16 @@ public class UserController {
             if ("SUCCESS".equals(returnCode)) {
                 logger.info("handle_forgot_password email: " + email + ", resetToken: " + resetToken);
                 emailServiceFacade.sendForgotPasswordHTMLEmail(email, resetToken);
+            } else {
+                logger.error("handle_forgot_password failed for: " + email + " error code: " + returnCode,
+                        " return Message: " + returnMessage);
             }
         } catch (Exception e) {
             logger.error("Exception thrown sening email." + e.getMessage());
             returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
             returnMessage = e.getMessage();
+            logger.error("handle_forgot_password failed for: " + email + " error code: " + returnCode,
+                    " return Message: " + returnMessage);
         }
         return new ReturnCodeMessageResponse(returnCode, returnMessage);
 
@@ -230,6 +253,13 @@ public class UserController {
                 encodingAlgo = response.getEncodingAlgo();
                 hashingAlgo = response.getHashingAlgo();
 
+            } else {
+                logger.error("getUserPasswordAlgo call for loginName: "
+                        + loginName
+                        + " failed. returnCode: "
+                        + returnCode
+                        + " returnMessage: "
+                        + returnMessage);
             }
         } catch (Exception e) {
             hashingAlgo = "";
@@ -305,18 +335,17 @@ public class UserController {
         return new BooleanResponse(result, returnCode, returnMessage);
 
     }
-    
-    
+
     @PostMapping(value = "/user/message", produces = { "application/JSON" })
-    public BooleanResponse submitContactUsForm(@Valid @RequestBody ContactUsModel contactUsModel ) throws Exception {
+    public BooleanResponse submitContactUsForm(@Valid @RequestBody ContactUsModel contactUsModel) throws Exception {
         logger.info("UserController.submitContactUsForm called for ContactUsModel " + contactUsModel);
         String returnCode = "SUCCESS";
         String returnMessage = "";
         try {
             String validaionMessage = contactUsModel.validate();
-            if (validaionMessage.equals(contactUsModel.VALID_MSG)){
+            if (validaionMessage.equals(contactUsModel.VALID_MSG)) {
                 emailServiceFacade.sendContactUsEmail(contactUsModel);
-            }else {
+            } else {
                 logger.error("The contact us form being sumitted is not valid");
                 returnCode = "INVALID_CONTENT";
                 returnMessage = validaionMessage;
@@ -326,6 +355,8 @@ public class UserController {
             logger.error("Exception thrown sending Contact Us email." + e.getMessage());
             returnCode = "CONTACT_US_SUMISSION_ERROR";
             returnMessage = e.getMessage();
+            logger.error("submitContactUsForm failed for ContactUsModel " + contactUsModel.toString() + " error code: " + returnCode,
+                    " return Message: " + returnMessage);
         }
         return new BooleanResponse(false, returnCode, returnMessage);
     }
