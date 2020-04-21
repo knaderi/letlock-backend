@@ -126,7 +126,7 @@ public class UserController {
 
             if ("SUCCESS".equals(returnCode)) {
                 emailServiceFacade.sendConfirmSignupHTMLEmail(loginId, resetToken);
-            }else {
+            } else {
                 logger.error("UserController.resendSignUpConfirmationEmail failed for loginId "
                         + loginId
                         + " failed. returnCode: "
@@ -281,6 +281,10 @@ public class UserController {
         boolean result = response.getResult().getValue();
         String returnCode = response.getReturnCode();
         String returnMessage = response.getReturnMessage();
+        if (!"SUCCESS".equals(returnCode)) {
+            logger.error("resetPassword failed for token " + token + " error code: " + returnCode,
+                    " return Message: " + returnMessage);
+        }
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
@@ -292,6 +296,10 @@ public class UserController {
         boolean result = response.getResult().getValue();
         String returnCode = response.getReturnCode();
         String returnMessage = response.getReturnMessage();
+        if (!"SUCCESS".equals(returnCode)) {
+            logger.error("validateResetPasswordToken failed for token " + token + " error code: " + returnCode,
+                    " return Message: " + returnMessage);
+        }
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
@@ -307,6 +315,10 @@ public class UserController {
             logger.error("UserMapper.getUserObject threw an Exception " + e.getMessage());
             returnCode = "USER_NOT_FOUND";
             returnMessage = "Cannot find user using email " + email;
+        }
+        if (!"SUCCESS".equals(returnCode)) {
+            logger.error("getUserObject failed for email " + email + " error code: " + returnCode,
+                    " return Message: " + returnMessage);
         }
         response.setReturnCode(returnCode);
         response.setReturnMessage(returnMessage);
@@ -327,11 +339,18 @@ public class UserController {
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
             result = true;
+            if (!"SUCCESS".equals(returnCode)) {
+                logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
+                        " return Message: " + returnMessage);
+            }
         } catch (Exception e) {
             logger.error("Exception thrown sening email." + e.getMessage());
             returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
             returnMessage = e.getMessage();
+            logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
+                    " return Message: " + returnMessage);
         }
+
         return new BooleanResponse(result, returnCode, returnMessage);
 
     }
@@ -349,6 +368,8 @@ public class UserController {
                 logger.error("The contact us form being sumitted is not valid");
                 returnCode = "INVALID_CONTENT";
                 returnMessage = validaionMessage;
+                logger.error("submitContactUsForm failed for ContactUsModel " + contactUsModel.toString() + " error code: " + returnCode,
+                        " return Message: " + returnMessage);
             }
 
         } catch (Exception e) {
