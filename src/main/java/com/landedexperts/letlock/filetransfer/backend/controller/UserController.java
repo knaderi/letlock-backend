@@ -25,6 +25,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Us
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UserProfileResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
@@ -116,10 +117,10 @@ public class UserController {
             returnMessage = EMAIL_IS_INVALID;
         } else {
             try {
-                UserVO userVO = getUserObject(loginId, password);
+                UserProfileResponse userProfileResponse = getUserProfileObject(loginId, password);
 
-                if (userVO != null) {
-                    resetToken = userVO.getResetToken();
+                if (userProfileResponse != null && userProfileResponse.getResult() != null) {
+                    resetToken = userProfileResponse.getResult().getResetToken();
                     if (StringUtils.isBlank(resetToken)) {
                         returnCode = "NO_CONFIRMATION_NEEDED";
                         returnMessage = "user is found but no confirmation is needed.";
@@ -354,12 +355,13 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_object", produces = { "application/JSON" })
-    public UserVO getUserObject(String email, String password) {
+    public UserProfileResponse getUserProfileObject(String email, String password) {
         String returnCode = "SUCCESS";
         String returnMessage = "";
-        UserVO response = new UserVO();
+        UserVO userVO = new UserVO();
+        UserProfileResponse userProfileResponse = null;
         try {
-            response = userMapper.getUserObject(email, password);
+            userVO = userMapper.getUserObject(email, password);
 
         } catch (Exception e) {
             returnCode = "USER_NOT_FOUND";
@@ -370,9 +372,8 @@ public class UserController {
             logger.error("getUserObject failed for email " + email + " error code: " + returnCode,
                     " return Message: " + returnMessage);
         }
-        response.setReturnCode(returnCode);
-        response.setReturnMessage(returnMessage);
-        return response;
+        userProfileResponse = new UserProfileResponse(userVO, returnCode, returnMessage);
+        return userProfileResponse;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/confirm_signup", produces = { "application/JSON" })

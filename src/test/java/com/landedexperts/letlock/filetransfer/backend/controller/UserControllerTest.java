@@ -179,8 +179,7 @@ public class UserControllerTest extends BaseControllerTest {
         MvcResult mvcResult2 = resultAction2.andReturn();
 
         String content2 = mvcResult2.getResponse().getContentAsString();
-        JSONObject jsonObject = new JSONObject(content2);
-        resetToken = jsonObject.getString("resetToken");
+        resetToken = getValuesForGivenKey(content2, "resetToken", "result");
         Assertions.assertTrue(resetToken.length() > 0);
     }
 

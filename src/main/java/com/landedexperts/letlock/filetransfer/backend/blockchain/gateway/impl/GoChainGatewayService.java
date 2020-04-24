@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,9 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 @Service
 public class GoChainGatewayService extends BlockChainGatewayService {
     private final static Logger logger = LoggerFactory.getLogger(GoChainGatewayService.class);
-
+    
+    @Value("${gochain.engine.proxy.url}")
+    private String goChainURL;
     /*
      * (non-Javadoc)
      * 
@@ -39,7 +42,7 @@ public class GoChainGatewayService extends BlockChainGatewayService {
      */
     @Override
     public String getWalletAddressFromTransaction(UUID fileTransferUuid, String transaction, String step) throws Exception {
-        HttpURLConnection urlConnection = getURLConnection("http://localhost:3001/fetch_wallet_address");
+        HttpURLConnection urlConnection = getURLConnection(goChainURL +"/fetch_wallet_address");
         WalletAddress walletAddressJson = null;
         try {
             OutputStream output = urlConnection.getOutputStream();
@@ -61,7 +64,7 @@ public class GoChainGatewayService extends BlockChainGatewayService {
      */
     @Override
     public TransactionHashResponse getTransactionStatus(String transactionHash) throws Exception {
-        HttpURLConnection urlConnection = getURLConnection("http://localhost:3001/get_txn_status");
+        HttpURLConnection urlConnection = getURLConnection(goChainURL + "/get_txn_status");
         TransactionHashResponse transactionHashResponse;
         String responseStr;
         try {
@@ -87,7 +90,8 @@ public class GoChainGatewayService extends BlockChainGatewayService {
      */
     @Override
     public boolean deploySmartContract(UUID fileTransferUuid, String senderWalletAddress, String receiverWalletAddress) throws Exception {
-        HttpURLConnection urlConnection = getURLConnection("http://localhost:3001/deploy_smart_contract");
+        logger.info("GoChainGatewayService.deploySmartContract  called to deploy smart contract for fileTransferUuid " + fileTransferUuid);
+        HttpURLConnection urlConnection = getURLConnection(goChainURL + "/deploy_smart_contract");
         ResultJson emptyJson = null;
         try {
             OutputStream output = urlConnection.getOutputStream();
@@ -112,7 +116,7 @@ public class GoChainGatewayService extends BlockChainGatewayService {
      */
     @Override
     public String fund(UUID fileTransferUuid, String signedTransactionHex, String step) throws Exception {
-        HttpURLConnection urlConnection = getURLConnection("http://localhost:3001/fund");
+        HttpURLConnection urlConnection = getURLConnection(goChainURL + "/fund");
         TransactionHashJson transactionHashJson = null;
         try {
             OutputStream output = urlConnection.getOutputStream();

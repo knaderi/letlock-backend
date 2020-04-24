@@ -127,7 +127,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         resultAction3.andExpect(ok);
         MvcResult mvcResult3 = resultAction3.andReturn();
         String content3 = mvcResult3.getResponse().getContentAsString();
-        String reset_token = getValuesForGivenKey(content3, "resetToken", "");
+        String reset_token = getValuesForGivenKey(content3, "resetToken", "result");
         return reset_token;
     }
     

@@ -249,7 +249,7 @@ public class FileTransferController {
                         fileTransferUuid);
                 String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
                 String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
-
+                logger.info("FileTransferController.setFileTransferReceiverAddress is deploying smart contarct for Filetransferuid: " + fileTransferUuid);
                 @SuppressWarnings("unused")
                 boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
                         "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
