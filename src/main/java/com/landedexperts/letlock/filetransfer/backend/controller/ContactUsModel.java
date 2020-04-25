@@ -39,7 +39,7 @@ public class ContactUsModel {
     static String INVALID_MESSAGE_CONTENT = "message content cannot be empty or contain html.";
     static String INVALID_USER_EMAIL_MSG = "user's email is not valid.";
     static String INVALID_USER_PHONE = "user's phone is not valid.";
-    static String INVALID_MESSAGE_CONTENT_LENGTH = "message contant cannot be longer than 4000 characters.";
+    static String INVALID_MESSAGE_CONTENT_LENGTH = "message content cannot be longer than 4000 characters.";
 
     public String getUserMessage() {
         return userMessage;
