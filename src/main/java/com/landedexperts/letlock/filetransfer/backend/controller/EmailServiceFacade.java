@@ -41,7 +41,7 @@ public class EmailServiceFacade {
     @Value("${validate.reset.password.token.url}")
     String validateResetPasswordTokenURL;
 
-    @Value("${validate.confirm.signup.url}")
+    @Value("${validate.confirm.signup.token.url}")
     String confirmSignupURL;
 
     @Value("${nonprod.receipient.email}")
