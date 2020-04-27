@@ -43,6 +43,7 @@ public class GoChainGatewayService extends BlockChainGatewayService {
     @Override
     public String getWalletAddressFromTransaction(UUID fileTransferUuid, String transaction, String step) throws Exception {
         HttpURLConnection urlConnection = getURLConnection(goChainURL +"/fetch_wallet_address");
+
         WalletAddress walletAddressJson = null;
         try {
             OutputStream output = urlConnection.getOutputStream();
@@ -91,6 +92,7 @@ public class GoChainGatewayService extends BlockChainGatewayService {
     @Override
     public boolean deploySmartContract(UUID fileTransferUuid, String senderWalletAddress, String receiverWalletAddress) throws Exception {
         logger.info("GoChainGatewayService.deploySmartContract  called to deploy smart contract for fileTransferUuid " + fileTransferUuid);
+        logger.info("Trying URLConnection to: " + goChainURL +"/deploy_smart_contract");
         HttpURLConnection urlConnection = getURLConnection(goChainURL + "/deploy_smart_contract");
         ResultJson emptyJson = null;
         try {

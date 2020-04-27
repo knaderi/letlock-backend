@@ -33,13 +33,13 @@ public class ContactUsModel {
 
     private String userMessage;
     static String VALID_MSG = "VALID";
-    static String INVALID_FIRST_NAME_MSG = "first name submitted cannot be empty or contain html.";
-    static String INVALID_LAST_NAME_MSG = "last name submitted cannot be empty or contain html.";
-    static String INVALID_SUBJECT_MSG = "subject submitted cannot be empty or contain html.";
-    static String INVALID_MESSAGE_CONTENT = "message content cannot be empty or contain html.";
-    static String INVALID_USER_EMAIL_MSG = "user's email is not valid.";
-    static String INVALID_USER_PHONE = "user's phone is not valid.";
-    static String INVALID_MESSAGE_CONTENT_LENGTH = "message content cannot be longer than 4000 characters.";
+    static String INVALID_FIRST_NAME_MSG = "First name submitted cannot be empty or contain html.";
+    static String INVALID_LAST_NAME_MSG = "Last name submitted cannot be empty or contain html.";
+    static String INVALID_SUBJECT_MSG = "Subject submitted cannot be empty or contain html.";
+    static String INVALID_MESSAGE_CONTENT = "Message content cannot be empty or contain html.";
+    static String INVALID_USER_EMAIL_MSG = "User's email is not valid.";
+    static String INVALID_USER_PHONE = "User's phone is not valid.";
+    static String INVALID_MESSAGE_CONTENT_LENGTH = "Message content cannot be longer than 4000 characters.";
 
     public String getUserMessage() {
         return userMessage;
