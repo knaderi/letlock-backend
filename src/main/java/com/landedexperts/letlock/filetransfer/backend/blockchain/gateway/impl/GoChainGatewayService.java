@@ -155,10 +155,7 @@ public class GoChainGatewayService extends BlockChainGatewayService {
         try {
             if (null != urlConnection && urlConnection.getInputStream() != null) {
                 urlConnection.getInputStream().close();
-                if (urlConnection.getOutputStream() != null) {
-                    urlConnection.getOutputStream().flush();
-                    urlConnection.getOutputStream().close();
-                }
+                urlConnection.disconnect();
             }
         } catch (Exception e) {
             logger.error("Error closing Stream " + e.getMessage());
