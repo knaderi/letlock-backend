@@ -9,7 +9,52 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 import java.util.Date;
 
 public class FileTransferInfoRecordVO {
-	private String fileTransferUuid;
+	@Override
+    public String toString() {
+        return "FileTransferInfoRecordVO [fileTransferUuid="
+                + fileTransferUuid
+                + ", senderLoginName="
+                + senderLoginName
+                + ", senderWalletAddressUuid="
+                + senderWalletAddressUuid
+                + ", senderWalletAddress="
+                + senderWalletAddress
+                + ", receiverLoginName="
+                + receiverLoginName
+                + ", receiverWalletAddressUuid="
+                + receiverWalletAddressUuid
+                + ", receiverWalletAddress="
+                + receiverWalletAddress
+                + ", smartContractAddress="
+                + smartContractAddress
+                + ", funding1RecPubkeyStatus="
+                + funding1RecPubkeyStatus
+                + ", funding1RecPubkeyTransactionHash="
+                + funding1RecPubkeyTransactionHash
+                + ", funding2SendDocinfoStatus="
+                + funding2SendDocinfoStatus
+                + ", funding2SendDocinfoTransactionHash="
+                + funding2SendDocinfoTransactionHash
+                + ", funding3RecFinalStatus="
+                + funding3RecFinalStatus
+                + ", funding3RecFinalTransactionHash="
+                + funding3RecFinalTransactionHash
+                + ", fileTransferIsActive="
+                + fileTransferIsActive
+                + ", gateway="
+                + gateway
+                + ", clearFileHash="
+                + clearFileHash
+                + ", encryptedFileHash="
+                + encryptedFileHash
+                + ", fileTransferCreate="
+                + fileTransferCreate
+                + ", fileTransferUpdate="
+                + fileTransferUpdate
+                + "]";
+    }
+
+    private String fileTransferUuid;
 	private String senderLoginName;
 	private String senderWalletAddressUuid;
 	private String senderWalletAddress;
