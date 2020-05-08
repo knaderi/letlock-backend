@@ -10,19 +10,19 @@ class ContactUsModelTest {
     void testValidate() {
         ContactUsModel model = new ContactUsModel();
         model.setEmail("john.doe@landedexperts.com");
-        Assertions.assertEquals("first name submitted cannot be empty or contain html.\r\n" + 
-                "last name submitted cannot be empty or contain html.\r\n" + 
-                "message content cannot be empty or contain html.\r\n" + 
-                "subject submitted cannot be empty or contain html.", model.validate());
+        Assertions.assertEquals("First name submitted cannot be empty or contain html.\r\n" + 
+                "Last name submitted cannot be empty or contain html.\r\n" + 
+                "Message content cannot be empty or contain html.\r\n" + 
+                "Subject submitted cannot be empty or contain html.", model.validate());
         model.setFirstName("John");
-        Assertions.assertEquals("last name submitted cannot be empty or contain html.\r\n" + 
-                "message content cannot be empty or contain html.\r\n" + 
-                "subject submitted cannot be empty or contain html.", model.validate());
+        Assertions.assertEquals("Last name submitted cannot be empty or contain html.\r\n" + 
+                "Message content cannot be empty or contain html.\r\n" + 
+                "Subject submitted cannot be empty or contain html.", model.validate());
         model.setLastName("Doe");
-        Assertions.assertEquals("message content cannot be empty or contain html.\r\n" + 
-                "subject submitted cannot be empty or contain html.", model.validate());
+        Assertions.assertEquals("Message content cannot be empty or contain html.\r\n" + 
+                "Subject submitted cannot be empty or contain html.", model.validate());
         model.setSubject("test subject");
-        Assertions.assertEquals("message content cannot be empty or contain html.", model.validate());
+        Assertions.assertEquals("Message content cannot be empty or contain html.", model.validate());
         model.setUserMessage("test user message");
         Assertions.assertEquals(ContactUsModel.VALID_MSG, model.validate());
         
@@ -36,7 +36,7 @@ class ContactUsModelTest {
         model.setLastName("Doe");
         model.setSubject("test subject");
         model.setUserMessage("test user message </html>");
-        Assertions.assertEquals("message content cannot be empty or contain html.", model.validate());
+        Assertions.assertEquals("Message content cannot be empty or contain html.", model.validate());
         
     }
     
@@ -48,7 +48,7 @@ class ContactUsModelTest {
         model.setLastName("Doe");
         model.setSubject("<b>test subject </b>");
         model.setUserMessage("test user message");
-        Assertions.assertEquals("subject submitted cannot be empty or contain html.", model.validate());
+        Assertions.assertEquals("Subject submitted cannot be empty or contain html.", model.validate());
         
     }
     
@@ -62,7 +62,7 @@ class ContactUsModelTest {
         model.setUserMessage(RandomStringUtils.randomAlphanumeric(4000));
         Assertions.assertEquals(ContactUsModel.VALID_MSG, model.validate());
         model.setUserMessage(RandomStringUtils.randomAlphanumeric(4001));
-        Assertions.assertEquals("message contant cannot be longer than 4000 characters.", model.validate());
+        Assertions.assertEquals("Message content cannot be longer than 4000 characters.", model.validate());
         
     }
 

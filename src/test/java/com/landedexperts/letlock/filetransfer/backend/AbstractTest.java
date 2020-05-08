@@ -83,6 +83,11 @@ public abstract class AbstractTest {
             assertJsonForKeyValue(functionName, content, "result", "", "notEmpty");
         }
     }
+    
+    protected void assertForError(String functionName, String content, String returnCode) throws Exception {
+        Assertions.assertTrue(content.length() > 0, "functionName - content length should be larger than zero");
+        assertJsonForKeyValue(functionName, content, "returnCode", returnCode, "equalsTo");
+    }
 
     protected void assertHasValueForKey(String key, String jsonString, List<String> list) throws Exception {
         JsonParser p = new JsonParser();

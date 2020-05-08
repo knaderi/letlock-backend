@@ -14,6 +14,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ResetTokenVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 
 public interface UserMapper {
@@ -61,8 +62,11 @@ public interface UserMapper {
             + " FROM users.is_password_reset_token_valid( #{resetToken})")
     BooleanResponse isPasswordResetTokenValid(@Param("resetToken") String resetToken);
 
-    @Select("SELECT _reset_token as resetToken, _user_id as userId  FROM  users.get_user(#{email}, #{password})")
-    UserVO getUserObject(@Param("email") String email, @Param("password") String password);
+    @Select("SELECT _reset_token as resetToken, _user_id as userId  FROM  users.get_user_reset_token(#{email}, #{password})")
+    ResetTokenVO getUserResetToken(@Param("email") String email, @Param("password") String password);
+    
+    @Select("SELECT _login_name as loginName, _email as email, _reset_token as resetToken, _status as status, _status_dt as statusDate, _create_dt as createdDate, _last_login as lastLoginDate, _update_dt as updatedDate  FROM  users.get_user_profile(#{userId})")
+    UserVO getUserProfile(@Param("userId") long userId);
         
     @Update("UPDATE users.users"  
             + " SET status = 'active',"

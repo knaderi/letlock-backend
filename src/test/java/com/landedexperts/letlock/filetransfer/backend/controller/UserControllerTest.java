@@ -44,6 +44,34 @@ public class UserControllerTest extends BaseControllerTest {
     }
 
     @Test
+    public void getUserProfileTest() throws Exception {
+        createLoggedInActiveUser();
+        login();
+        String uri = "/user/get_user_profile";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.get(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+        
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertForNoError("getUserProfileTest", content);
+    }
+    
+    @Test
+    public void getUserProfileTestForBadToken() throws Exception {
+        createLoggedInActiveUser();
+        login();
+        String uri = "/user/get_user_profile";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.get(uri).param("token", "123").accept(MediaType.APPLICATION_JSON_VALUE));
+        
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertForError("getUserProfileTest", content, "INVALID_TOKEN");
+    }
+
+    @Test
     public void isLoginNameAvailableTest() throws Exception {
         createLoggedInActiveUser();
 
@@ -172,7 +200,7 @@ public class UserControllerTest extends BaseControllerTest {
 
     private void testtResetToken() throws Exception, UnsupportedEncodingException, JSONException {
         ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post("/get_user_object").param("email", userEmail).param("password", userPassword)
+                .perform(MockMvcRequestBuilders.post("/get_reset_token").param("email", userEmail).param("password", userPassword)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);

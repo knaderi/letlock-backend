@@ -214,6 +214,7 @@ public class FileTransferController {
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
         }
+        logger.info("Returrning returnCode: " + returnCode + "  record " + answer.getFileTransferInfoRecord());
 
         return new FileTransferSessionResponse(answer.getFileTransferInfoRecord(), returnCode, returnMessage);
     }

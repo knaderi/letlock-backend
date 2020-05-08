@@ -121,7 +121,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
     }
     
     private String getPendingUserResetToken() throws Exception, UnsupportedEncodingException {
-        String uri3 = "/get_user_object";
+        String uri3 = "/get_reset_token";
         ResultActions resultAction3 = mvc
                 .perform(MockMvcRequestBuilders.post(uri3).param("email", userEmail).param("password", userPassword).accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction3.andExpect(ok);

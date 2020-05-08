@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ResetTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UserProfileResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ResetTokenVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
@@ -117,10 +120,10 @@ public class UserController {
             returnMessage = EMAIL_IS_INVALID;
         } else {
             try {
-                UserProfileResponse userProfileResponse = getUserProfileObject(loginId, password);
+                ResetTokenResponse resetTokenResponse = getResetToken(loginId, password);
 
-                if (userProfileResponse != null && userProfileResponse.getResult() != null) {
-                    resetToken = userProfileResponse.getResult().getResetToken();
+                if (resetTokenResponse != null && resetTokenResponse.getResult() != null) {
+                    resetToken = resetTokenResponse.getResult().getResetToken();
                     if (StringUtils.isBlank(resetToken)) {
                         returnCode = "NO_CONFIRMATION_NEEDED";
                         returnMessage = "user is found but no confirmation is needed.";
@@ -354,15 +357,14 @@ public class UserController {
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_user_object", produces = { "application/JSON" })
-    public UserProfileResponse getUserProfileObject(String email, String password) {
+    @RequestMapping(method = RequestMethod.POST, value = "/get_reset_token", produces = { "application/JSON" })
+    public ResetTokenResponse getResetToken(String email, String password) {
         String returnCode = "SUCCESS";
         String returnMessage = "";
-        UserVO userVO = new UserVO();
-        UserProfileResponse userProfileResponse = null;
+        ResetTokenVO userVO = new ResetTokenVO();
+        ResetTokenResponse resetTokenResponse = null;
         try {
-            userVO = userMapper.getUserObject(email, password);
-
+            userVO = userMapper.getUserResetToken(email, password);
         } catch (Exception e) {
             returnCode = "USER_NOT_FOUND";
             returnMessage = "Cannot find user using email " + email;
@@ -372,8 +374,28 @@ public class UserController {
             logger.error("getUserObject failed for email " + email + " error code: " + returnCode,
                     " return Message: " + returnMessage);
         }
-        userProfileResponse = new UserProfileResponse(userVO, returnCode, returnMessage);
-        return userProfileResponse;
+        resetTokenResponse = new ResetTokenResponse(userVO, returnCode, returnMessage);
+        return resetTokenResponse;
+    }
+    
+    @GetMapping(value = "/user/get_user_profile", produces = { "application/JSON" })
+    public UserProfileResponse getUserProfile(@RequestParam(value = "token") final String token) throws Exception  {
+        String returnCode = "INVALID_TOKEN";
+        String returnMessage = "Invalid token";
+        long userId = SessionManager.getInstance().getUserId(token);
+        UserVO userVO = new UserVO();
+        try {
+            if (userId > 0) {
+                userVO = userMapper.getUserProfile(userId);
+                returnCode = "SUCCESS";
+                returnMessage = "";
+            }
+        } catch (Exception e) {
+            returnCode = "ERROR";
+            returnMessage = "getUserProfilefailed : " + e.getMessage();
+            logger.error("UserMapper.getUserObject threw an Exception " + returnMessage);
+        } 
+        return new UserProfileResponse(userVO, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/confirm_signup", produces = { "application/JSON" })
