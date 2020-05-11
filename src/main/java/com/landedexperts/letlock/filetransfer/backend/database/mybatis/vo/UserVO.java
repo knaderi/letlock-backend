@@ -12,8 +12,17 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 
 public class UserVO extends ReturnCodeMessageResponse{
 
-    private long userId;
+    
+    private String loginName;
 
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
 
     private String email;
 
@@ -44,13 +53,6 @@ public class UserVO extends ReturnCodeMessageResponse{
 
     private String resetToken;
 
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long id) {
-        this.userId = id;
-    }
 
     public String getEmail() {
         return email;
