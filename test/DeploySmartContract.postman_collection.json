@@ -1,0 +1,185 @@
+{
+	"info": {
+		"_postman_id": "dcc95372-4268-4e47-a5aa-542c63e75f1a",
+		"name": "DeploySmartContract",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "LoginGochainSender",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "llftSender",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "llftSender!",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/login",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "startFileTransfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "eaJLzw+pt8PseqzONMWztrtmVuuoRxgWdxriBs41t4fyf1zgsxm4o/RcTF/GBFoYnNuy2NHjXb5hEaNKn7AGIhi9msboJ5qrbSEgdYjuIsugcLW8Ao/B0ZZ/cTzgAGjnd7kL63SNCdFyYpOl/HGLQF5vYUtCpYjBTGHC6ig3cjw=",
+							"type": "text"
+						},
+						{
+							"key": "receiver_login_name",
+							"value": "llftReceiver",
+							"type": "text"
+						},
+						{
+							"key": "wallet_address",
+							"value": "0x0629e59f703874d116a67f66b95c5627e882f3bb",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{dev}}/start_file_transfer_session",
+					"protocol": "http",
+					"host": [
+						"{{dev}}"
+					],
+					"path": [
+						"start_file_transfer_session"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginGochainReceiver",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "llftSender",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "llftSender!",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{dev}}/login",
+					"protocol": "http",
+					"host": [
+						"{{dev}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deploySmartContract",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "fileTransferUuid",
+							"value": "aafc1053-14d8-452d-9cff-2733377dd499",
+							"type": "text"
+						},
+						{
+							"key": "senderAddress",
+							"value": "0x183e190835bde5eb2fa9e0e66ae9376699082d43",
+							"type": "text"
+						},
+						{
+							"key": "wallet_address",
+							"value": "0xf5637884763191959dfe7c18f724700f03336175",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{dev}}/set_file_transfer_receiver_address",
+					"protocol": "http",
+					"host": [
+						"{{dev}}"
+					],
+					"path": [
+						"set_file_transfer_receiver_address"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

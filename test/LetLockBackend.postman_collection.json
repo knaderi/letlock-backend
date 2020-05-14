@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "338cb6dd-6423-42b4-ac0a-43631fb88811",
-		"name": "LetlockFiletransferBackend",
+		"_postman_id": "8c9b50c7-922f-48f2-ba95-5f0c756f90c8",
+		"name": "LetLockBackend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -15,6 +15,51 @@
 						"name": "Content-Type",
 						"value": "application/x-www-form-urlencoded",
 						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "{{aliceloginname}}",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "{{aliceemail}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{alicepassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/register",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ForgotPassword",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
 					}
 				],
 				"body": {
@@ -837,5 +882,28 @@
 			},
 			"response": []
 		}
-	]
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "4946a351-de3d-47df-893c-b60098a347c0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "8698b7b0-2716-4101-9c14-83a573d6d1b8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
 }
