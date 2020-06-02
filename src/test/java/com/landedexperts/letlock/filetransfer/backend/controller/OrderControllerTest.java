@@ -250,6 +250,31 @@ public class OrderControllerTest extends BaseControllerTest {
         assertForNoError("getLocationsTest", content);
     }
 
+    
+    @Test
+    public void getFileTransferSessions() throws Exception {
+        // Create test order
+        createOrder();
+        createOrderLineItem();
+        makeDummySuccessfulPayment();
+        startFileTransfer();
+        testGetFileTransferSessions();
+
+    }
+    
+    private void testGetFileTransferSessions()
+            throws Exception, UnsupportedEncodingException {
+        // check the usage history
+        String uri = "/get_file_transfer_sessions_for_user";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertForNoError("getFileTransferSessions", content);
+    }
+    
     @Test
     public void getUserOrderUsages() throws Exception {
         // Create test order
