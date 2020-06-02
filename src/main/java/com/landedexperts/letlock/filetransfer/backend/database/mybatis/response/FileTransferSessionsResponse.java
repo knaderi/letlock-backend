@@ -16,7 +16,7 @@ public class FileTransferSessionsResponse extends ReturnCodeMessageResponse {
 
 	private final FileTransferInfoRecordVO[] result;
 
-	public FileTransferInfoRecordVO[] getValue() {
+	public FileTransferInfoRecordVO[] getResult() {
 		return result;
 	}
 }
