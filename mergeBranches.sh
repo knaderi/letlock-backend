@@ -1,5 +1,26 @@
 #!/bin/sh
 
+WORKSPACE_DIR=${PWD}/workspace
+
+#------------------------------------------------------------------------------
+# FUNCTIONS
+#------------------------------------------------------------------------------
+workspace() {
+    echo "${WORKSPACE_DIR}"
+    if [ ! -d "${WORKSPACE_DIR}" ]; then
+        mkdir -p "${WORKSPACE_DIR}"
+    fi
+
+    cd "${WORKSPACE_DIR}"
+    if [ ! -d "${1}" ]; then
+        git clone "https://git-codecommit.us-west-2.amazonaws.com/v1/repos/${1}"
+        if [ $? != 0 ]; then
+            exit
+        fi
+    fi
+
+    cd ${1}
+}
 
 #------------------------------------------------------------------------------
 pushALL() {
