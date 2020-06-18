@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class FileController {
     public BooleanResponse uploadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "file") final MultipartFile file)
             throws Exception {
-        logger.info("FileController.fileInsert called for token " + token);
+        logger.info("FileController.upload_file called for token " + token);
         boolean result = false;
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
@@ -69,15 +70,20 @@ public class FileController {
         if (userId > 0) {
             // Get the path of the uploaded file
             String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
+            if(StringUtils.isBlank(localFilePath)) {
+                throw new Exception("local file path");
+            }
             String remotePathName = UUID.randomUUID().toString(); // we use the uuid as the pathname to the file. This is used a the key
                                                                   // name on s3.
             // Set the expiry date
             Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
 
             try {
-                saveFileOnDisk(file, localFilePath);
-                remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(localFilePath, remotePathName);
+               // saveFileOnDisk(file, localFilePath);
+                remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(file, remotePathName);
             } catch (FileUploadException e) {
+                e.printStackTrace();
+                logger.error("FileController.upload_file Could not upload the file due to: " + e.getMessage());
                 returnCode = "FILE_UPLOAD_ERROR";
                 returnMessage = "Could not upload the file due to: " + e.getMessage();
             }
@@ -99,6 +105,7 @@ public class FileController {
     }
 
     public void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
+        logger.info("Saving file on disk before upload. localFilePath", localFilePath);
         InputStream fileStream = localFile.getInputStream();
         OutputStream localFileCopy = new FileOutputStream(localFilePath);
         try {

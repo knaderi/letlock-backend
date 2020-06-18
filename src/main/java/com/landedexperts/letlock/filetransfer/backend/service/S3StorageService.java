@@ -7,6 +7,8 @@
 package com.landedexperts.letlock.filetransfer.backend.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -32,13 +35,13 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 public class S3StorageService implements RemoteStorageService {
 
     private final Logger logger = LoggerFactory.getLogger(S3StorageService.class);
-    
+
     @Value("${s3.storage.bucket}")
     private String s3Bucket;
-    
+
     @Override
     public ResponseEntity<Resource> downloadRemoteFile(String remotePathName) {
-        Regions clientRegion = Regions.DEFAULT_REGION;  
+        Regions clientRegion = Regions.DEFAULT_REGION;
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
         S3Object fullObject = null, objectPortion = null;
         fullObject = s3Client.getObject(new GetObjectRequest(s3Bucket, remotePathName));
@@ -47,24 +50,26 @@ public class S3StorageService implements RemoteStorageService {
         objectPortion = s3Client.getObject(rangeObjectRequest);
         S3ObjectInputStream objectContent = objectPortion.getObjectContent();
         InputStreamResource isr = new InputStreamResource(objectContent);
-        return ResponseEntity.ok().contentLength(fullObject.getObjectMetadata().getContentLength()).contentType(MediaType.APPLICATION_OCTET_STREAM).body(isr);
+        return ResponseEntity.ok().contentLength(fullObject.getObjectMetadata().getContentLength())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(isr);
     }
 
     @Override
-    public void uploadFileToRemote(String localFilePath, String remoteFilePath) {
-        Regions clientRegion = Regions.DEFAULT_REGION;        
-        File localFile = new File(localFilePath);
-        
+    public void uploadFileToRemote(MultipartFile multipartFile, String remoteFilePath) {
+        Regions clientRegion = Regions.DEFAULT_REGION;
+
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
-
+            final File file = convertMultiPartFileToFile(multipartFile);
+            
             // Upload a file as a new object with ContentType and title specified.
-            PutObjectRequest request = new PutObjectRequest(s3Bucket, remoteFilePath, localFile);
+            PutObjectRequest request = new PutObjectRequest(s3Bucket, remoteFilePath, file);
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("plain/text");
             request.setMetadata(metadata);
             s3Client.putObject(request);
         } catch (AmazonServiceException e) {
+            e.printStackTrace();
             // The call was transmitted successfully, but Amazon S3 couldn't process
             // it, so it returned an error response.
             logger.error(e.getErrorMessage());
@@ -72,15 +77,27 @@ public class S3StorageService implements RemoteStorageService {
         } catch (SdkClientException e) {
             // Amazon S3 couldn't be contacted for a response, or the client
             // couldn't parse the response from Amazon S3.
+            e.printStackTrace();
             logger.error(e.getMessage());
             throw new FileUploadException(e);
-        } catch (Exception e) {         
+        } catch (Exception e) {
+            e.printStackTrace();
             logger.error("File upload failed " + e.getMessage());
             throw new FileUploadException(e);
-        }finally {
-            // TODO: file needs to be removed after moving to use the remote.
-            localFile.delete();
         }
-    }    
+
+    }
+    
+    private File convertMultiPartFileToFile(final MultipartFile multipartFile) {
+        final File file = new File(multipartFile.getOriginalFilename());
+        try (final FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(multipartFile.getBytes());
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+            logger.error("Error converting the multi-part file to file= ", ex.getMessage());
+        }
+        return file;
+    }
+
 
 }

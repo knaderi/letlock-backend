@@ -8,10 +8,12 @@ package com.landedexperts.letlock.filetransfer.backend.service;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface RemoteStorageService {
 
     ResponseEntity<Resource> downloadRemoteFile(final String remotePathName);
-
-    void uploadFileToRemote(final String localFilePath, final String remoteFilePath);
+    
+    void uploadFileToRemote(final MultipartFile file, final String remoteStoragePath );
+    
 }

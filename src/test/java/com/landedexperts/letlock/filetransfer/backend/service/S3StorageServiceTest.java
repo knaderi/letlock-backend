@@ -45,10 +45,13 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
     
     @Test
     public void testUploadFile() throws Exception {
-        MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
-        String localFilePath = System.getProperty("user.home") + File.separator + TEST_FILE_NAME; 
-        fileControllerService.saveFileOnDisk(localFile, localFilePath);
-        S3StorageService.uploadFileToRemote(localFilePath, localFile.getName());   
+        MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME,TEST_FILE_NAME,"text/plain", TEST_FILE_CONTENT.getBytes());
+
+        //creating bigger multipart file
+       // byte[] bytes = new byte[1024 * 1024 * 1]; //uploading large file
+     //   MockMultipartFile localFile = new MockMultipartFile("TEST_FILE_NAME", "file1.txt", "text/plain", bytes);
+        
+        S3StorageService.uploadFileToRemote(localFile, localFile.getName());   
     }
     
     @Test
@@ -62,7 +65,7 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
         while ((length = inputStream.read(buffer)) != -1) {
             result.write(buffer, 0, length);
         }
-        Assertions.assertEquals(TEST_FILE_CONTENT, result.toString(StandardCharsets.UTF_8.name()), "testDownloadFile: Should get test fiel content");        
+        Assertions.assertEquals(TEST_FILE_CONTENT, result.toString(StandardCharsets.UTF_8.name()), "testDownloadFile: Should get test file content");        
     }
     
 
