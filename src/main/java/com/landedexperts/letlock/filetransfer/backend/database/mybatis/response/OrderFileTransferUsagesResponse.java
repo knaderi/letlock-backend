@@ -35,7 +35,7 @@ public class OrderFileTransferUsagesResponse extends ReturnCodeMessageResponse {
     private FileTransferOrderLineItemUsageVO[] result = new FileTransferOrderLineItemUsageVO[] {};
         
     
-    public OrderFileTransferUsagesResponse(long orderId, FileTransferOrderLineItemUsageVO[] result, OrdersFileTransfersCountsResponse allOrdersFileTransferCounts) {
+    public OrderFileTransferUsagesResponse(long orderId, FileTransferOrderLineItemUsageVO[] result, OrdersFileTransfersCountsVO allOrdersFileTransferCounts) {
         super("SUCCESS", "");
         if(null == result || result.length == 0) {
             setReturnCode("SUCCESS");

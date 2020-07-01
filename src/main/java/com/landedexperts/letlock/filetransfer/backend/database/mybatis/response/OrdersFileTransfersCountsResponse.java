@@ -1,37 +1,20 @@
-/*******************************************************************************
- * Copyright (C) Landed Experts Technologies Inc - All Rights Reserved
- *  Unauthorized copying of this file, via any medium is strictly prohibited
- *  Proprietary and confidential
- *  Written by Kazem Naderi - 2019
- ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-public class OrdersFileTransfersCountsResponse extends ReturnCodeMessageResponse {
+public class OrdersFileTransfersCountsResponse  extends ReturnCodeMessageResponse  {
 
-    private int availableTransferCounts = 0;
-    private int originalTransferCounts = 0;
-    
-    public OrdersFileTransfersCountsResponse(String returnCode, String returnMessage, int availableTransferCounts, int originalTransferCounts) {
+    private OrdersFileTransfersCountsVO result = new OrdersFileTransfersCountsVO();
+
+    public OrdersFileTransfersCountsResponse(OrdersFileTransfersCountsVO fileTransferCounts, String returnCode, String returnMessage) {
         super(returnCode, returnMessage);
-        this.availableTransferCounts = availableTransferCounts;
-        this.originalTransferCounts = originalTransferCounts;
+        result = fileTransferCounts;
     }
 
-    public int getAvailableTransferCounts() {
-        return availableTransferCounts;
-    }
-    public void setAvailableTransferCounts(int availableTransferCounts) {
-        this.availableTransferCounts = availableTransferCounts;
-    }
-    public int getOriginalTransferCounts() {
-        return originalTransferCounts;
-    }
-    public void setOriginalTransferCounts(int originalTransferCounts) {
-        this.originalTransferCounts = originalTransferCounts;
+    public OrdersFileTransfersCountsVO getResult() {
+        return result;
     }
 
-    public OrdersFileTransfersCountsResponse() {
-        // TODO Auto-generated constructor stub
+    public void setResult(OrdersFileTransfersCountsVO result) {
+        this.result = result;
     }
 
 }

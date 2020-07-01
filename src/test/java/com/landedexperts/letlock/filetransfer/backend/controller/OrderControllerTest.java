@@ -41,7 +41,9 @@ public class OrderControllerTest extends BaseControllerTest {
     UserMapper userMapper;
 
     String orderId = "0";
+    String secondOrderId = "0";
     String orderDetailId = "0";
+    String secondOrderDetailId = "0";
     long paymentId = 0;
     List<String> jsonKeyValues = new ArrayList<String>();
 
@@ -58,7 +60,7 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrder();
     }
 
-    private void createOrder() throws Exception, UnsupportedEncodingException {
+    private String createOrder() throws Exception, UnsupportedEncodingException {
         String uri = "/order_create";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
@@ -68,7 +70,9 @@ public class OrderControllerTest extends BaseControllerTest {
         assertForNoError("createOrderTest", content);
         assertContentForKeyValueLargerThanZero("createOrderTest", content, "orderId");
         orderId = getValuesForGivenKey(content, "orderId");
+        return orderId;
     }
+    
 
     public void updateOrderStatusFromInitiatedToCancelled() throws Exception {
         createOrder();
@@ -96,7 +100,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void createOrderDetailTest() throws Exception {
         createOrder();
-        createOrderLineItem();
+        createOrderLineItem(orderId);
         updateOrderLineItem();// updating location to Canada/BC
 
     }
@@ -104,15 +108,18 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void deleteOrderDetailTest() throws Exception {
         createOrder();
-        createOrderLineItem();
+        createOrderLineItem(orderId);
         deleteOrderLineItem();// updating location to Canada/BC
 
     }
 
-    private void createOrderLineItem() throws Exception, UnsupportedEncodingException {
+    private void createOrderLineItem(String newOrderId) throws Exception, UnsupportedEncodingException {
+        if(null == orderId) {
+            newOrderId = this.orderId;
+        }
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", "3")
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", newOrderId).param("packageId", "3")
                         .param("quantity", "1").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -120,7 +127,7 @@ public class OrderControllerTest extends BaseControllerTest {
         assertHasValueForKey("orderLineItemId", JsonResponse.getResult(content).getResult().toString(), jsonKeyValues);
         assertForNoError("createOrderDetailTest", content);
     }
-
+    
     private void updateOrderLineItem() throws Exception {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
@@ -150,7 +157,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void getUserOrdersTest() throws Exception {
         createOrder();
-        createOrderLineItem();
+        createOrderLineItem(orderId);
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
@@ -165,7 +172,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void getUsersOrdersForStatusTest() throws Exception {
         createOrder();
-        createOrderLineItem();
+        createOrderLineItem(orderId);
         String uri = "/get_user_orders_by_status";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderStatus", "initiated")
@@ -209,7 +216,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void getUserOrders() throws Exception {
         createOrder();
-        createOrderLineItem();
+        createOrderLineItem(orderId);
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
@@ -224,7 +231,7 @@ public class OrderControllerTest extends BaseControllerTest {
     @Test
     public void getUserOrderTest() throws Exception {
         createOrder();
-        createOrderLineItem();
+        createOrderLineItem(orderId);
         String uri = "/get_user_order";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)
@@ -255,8 +262,8 @@ public class OrderControllerTest extends BaseControllerTest {
     public void getFileTransferSessions() throws Exception {
         // Create test order
         createOrder();
-        createOrderLineItem();
-        makeDummySuccessfulPayment();
+        createOrderLineItem(orderId);
+        makeDummySuccessfulPayment(orderId);
         startFileTransfer();
         testGetFileTransferSessions();
 
@@ -279,8 +286,8 @@ public class OrderControllerTest extends BaseControllerTest {
     public void getUserOrderUsages() throws Exception {
         // Create test order
         createOrder();
-        createOrderLineItem();
-        makeDummySuccessfulPayment();
+        createOrderLineItem(orderId);
+        makeDummySuccessfulPayment(orderId);
         testFileTransferUsageHistory(20, 20);
         startFileTransfer();
         testFileTransferUsageHistory(19,20);
@@ -308,6 +315,45 @@ public class OrderControllerTest extends BaseControllerTest {
             Assertions.assertTrue(content.contains("\"senderId\":" + userId + ","), "There should be a sender " + content);
         }
     }
+    
+    @Test
+    public void getUserFileTransferCounts() throws Exception {
+        // Create test order
+        
+        createOrder();
+        testFileTransferUsageCounts(0, 0);
+        createOrderLineItem(orderId);
+        testFileTransferUsageCounts(0, 0);
+        makeDummySuccessfulPayment(orderId);
+        testFileTransferUsageCounts(20, 20);
+        startFileTransfer();
+        testFileTransferUsageCounts(19,20);
+        startFileTransfer();
+        testFileTransferUsageCounts(18,20);
+        startFileTransfer();        
+        testFileTransferUsageCounts(17,20);
+        String newOrderId = createOrder();
+        createOrderLineItem(newOrderId);
+        makeDummySuccessfulPayment(newOrderId);
+        testFileTransferUsageCounts(37,40);
+    }
+
+    private void testFileTransferUsageCounts(int availTransferCounts, int originalTransferCounts)
+            throws Exception, UnsupportedEncodingException {
+        // check the usage history
+        String uri = "/order/get_filetransfer_usage_counts";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.get(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+       
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        Assertions.assertTrue(content.contains(
+                "\"availableTransferCounts\":" + availTransferCounts + ",\"originalTransferCounts\":" + originalTransferCounts + ""),"The number of file transfers and avialble ones are not correct.");
+        if (originalTransferCounts < originalTransferCounts) {
+            Assertions.assertTrue(content.contains("\"senderId\":" + userId + ","), "There should be a sender " + content);
+        }
+    }
 
     private void startFileTransfer() {
         // start a file transfer
@@ -317,17 +363,18 @@ public class OrderControllerTest extends BaseControllerTest {
         System.out.println(vo);
     }
 
-    private void makeDummySuccessfulPayment() {
-        IdVO paymentIDVO = paymentMapper.setPaymentInitiate(Long.parseLong(userId), Long.parseLong(orderId), "paypal");
+    private void makeDummySuccessfulPayment(String newOrderId) {
+        IdVO paymentIDVO = paymentMapper.setPaymentInitiate(Long.parseLong(userId), Long.parseLong(newOrderId), "paypal");
         paymentId = paymentIDVO.getResult().getId();
         // do the paypal payment.
-        paymentMapper.setPaymentProcessSuccessForTest(Long.parseLong(orderId), TestUtils.createPayPalTransactionId());
+        paymentMapper.setPaymentProcessSuccessForTest(Long.parseLong(newOrderId), TestUtils.createPayPalTransactionId());
     }
+ 
 
     @Test
     public void initiatePaymentTest() throws Exception {
         createOrder();
-        createOrderLineItem();
+        createOrderLineItem(orderId);
         String uri = "/paypal/make/payment";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)

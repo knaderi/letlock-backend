@@ -12,6 +12,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,9 +24,12 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrderFileTransferUsagesResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersFileTransfersCountsResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersFileTransfersCountsVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UserProfileResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferOrderLineItemUsageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -216,14 +220,14 @@ public class OrderController {
         logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
         FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
         //TODO, should filter
-        OrdersFileTransfersCountsResponse ordersFTCounts = new OrdersFileTransfersCountsResponse();
+        OrdersFileTransfersCountsVO ordersFTCounts = new OrdersFileTransfersCountsVO();
         OrderFileTransferUsagesResponse response = null;
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             lineItemsUsageForOrderArray = orderMapper.getUsersFileTransferOrderUsageHistroy(userId, orderId);
             ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId); 
             if(null == ordersFTCounts) {
-                ordersFTCounts =  new OrdersFileTransfersCountsResponse();
+                ordersFTCounts =  new OrdersFileTransfersCountsVO();
             }
             response = new OrderFileTransferUsagesResponse(orderId, lineItemsUsageForOrderArray, ordersFTCounts);
         }else {
@@ -233,32 +237,7 @@ public class OrderController {
         }
         return response;
     }
-
-    //TODO: Do thsi later to return all order usages.
-//    @RequestMapping(method = RequestMethod.POST, value = "/get_all_user_ft_orders_usage_history", produces = { "application/JSON" })
-//    public AllOrdersFileTransferUsagesResponse getAllUserOrdersUsageHistroy(@RequestParam(value = "token") final String token) throws Exception {
-//        logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
-//
-//        List<OrderUsageVO> value = new ArrayList<OrderUsageVO>();
-//        OrdersFileTransfersCountsResponse ordersFTCounts = null;
-//        FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
-//
-//        long userId = SessionManager.getInstance().getUserId(token);
-//        if (userId > 0) {
-//            lineItemsUsageForOrderArray = orderMapper.getUsersAllFileTransferOrdersUsageHistroy(userId);
-//            ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(-1); 
-//        }
-//        int arraySize = lineItemsUsageForOrderArray.length;
-//        Map<Integer,List<OrderUsageVO>> ordersUsageMap = new HashMap<Integer,List<OrderUsageVO>>();
-//        if(lineItemsUsageForOrderArray != null && arraySize>0) {
-//            for(int i; i<arraySize; i++) {
-//                ordersUsageMap.put(ordersUsageMap.put(lineItemsUsageForOrderArray[i].getOrderId value);
-//            }
-//            
-//        }
-//
-//        return new AllOrdersFileTransferUsagesResponse(value, ordersFTCounts);
-//    }
+    
 
     @RequestMapping(method = RequestMethod.POST, value = "/buy_package_now", produces = { "application/JSON" })
     public JsonResponse buyPackageNow(@RequestParam(value = "token") final String token,
@@ -279,9 +258,39 @@ public class OrderController {
         if (returnCode.equals("SUCCESS")) {
             return getUserOrder(token, orderId);
         }else {
-            return new JsonResponse(orderId,returnCode, returnMessage) ;  
+            return new JsonResponse<Long>(orderId,returnCode, returnMessage) ;  
         }
 
+    }
+    
+    @GetMapping(value = "/order/get_filetransfer_order_usage_counts", produces = { "application/JSON" })
+    public OrdersFileTransfersCountsResponse getFileTransferUsageCount(@RequestParam(value = "token") final String token, @RequestParam(value = "orderId") final long orderId) throws Exception  {
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        long userId = SessionManager.getInstance().getUserId(token);
+        OrdersFileTransfersCountsVO fileTransferCounts = new OrdersFileTransfersCountsVO();
+        try {
+            if (userId > 0) {
+                fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
+                if(null == fileTransferCounts) {
+                    fileTransferCounts = new OrdersFileTransfersCountsVO(returnCode, returnMessage  , 0, 0);
+                }
+            }else {
+                fileTransferCounts.setReturnCode("TOKEN_INVALID");
+                fileTransferCounts.setReturnMessage("Invalid token");
+            }
+
+        } catch (Exception e) {
+            returnCode = "ERROR";
+            returnMessage = "getFileTransferUsageCount : " + e.getMessage();
+            logger.error("UserMapper.getFileTransferUsageCount threw an Exception " + returnMessage);
+        } 
+        return new OrdersFileTransfersCountsResponse(fileTransferCounts, returnCode, returnMessage);
+    }
+    
+    @GetMapping(value = "/order/get_filetransfer_usage_counts", produces = { "application/JSON" })
+    public OrdersFileTransfersCountsResponse getFileTransferUsageCount(@RequestParam(value = "token") final String token) throws Exception  {
+        return getFileTransferUsageCount(token, -1);
     }
 
 }

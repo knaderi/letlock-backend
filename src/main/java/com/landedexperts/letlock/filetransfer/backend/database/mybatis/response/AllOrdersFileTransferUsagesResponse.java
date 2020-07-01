@@ -6,17 +6,20 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderUsageVO;
 
 public class AllOrdersFileTransferUsagesResponse extends ReturnCodeMessageResponse {
 
 
-    private OrderUsageVO[]  result = new OrderUsageVO[] {};
-    OrdersFileTransfersCountsResponse allOrdersFTCounts;
+    private List<OrderUsageVO>  result = new ArrayList<OrderUsageVO>();
+    OrdersFileTransfersCountsVO allOrdersFTCounts;
     
-    public AllOrdersFileTransferUsagesResponse(OrderUsageVO[] result,
-            OrdersFileTransfersCountsResponse allOrdersFTCounts) {
-        if(null == result || result.length == 0) {
+    public AllOrdersFileTransferUsagesResponse(List<OrderUsageVO> result,
+            OrdersFileTransfersCountsVO allOrdersFTCounts) {
+        if(null == result || result.size() == 0) {
             setReturnCode("ORDER_NOT_FOUND");
             setReturnMessage("No user orders can be found.");
         }
@@ -24,23 +27,23 @@ public class AllOrdersFileTransferUsagesResponse extends ReturnCodeMessageRespon
         this.allOrdersFTCounts = allOrdersFTCounts;
     }
     
-    public OrdersFileTransfersCountsResponse getAllOrdersFTCounts() {
+    public OrdersFileTransfersCountsVO getAllOrdersFTCounts() {
         return allOrdersFTCounts;
     }
 
 
 
-    public void setAllOrdersFTCounts(OrdersFileTransfersCountsResponse allOrdersFTCounts) {
+    public void setAllOrdersFTCounts(OrdersFileTransfersCountsVO allOrdersFTCounts) {
         this.allOrdersFTCounts = allOrdersFTCounts;
     }
 
 
 
-    public void setResult(OrderUsageVO[] result) {
+    public void setResult(List<OrderUsageVO> result) {
         this.result = result;
     }
 
-    public OrderUsageVO[] getResult() {
+    public List<OrderUsageVO> getResult() {
         return result;
     }
 }

@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public class FileTransferOrderLineItemUsageVO {
     private UUID uuid;
+    private long order_id;
     private long order_line_item_id;
     private long sender_id;
     private String sender_login_name;
@@ -29,6 +30,14 @@ public class FileTransferOrderLineItemUsageVO {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+    
+    public long getOrderId() {
+        return order_id;
+    }
+
+    public void setOrderIdd(long order_id) {
+        this.order_id = order_id;
     }
 
 
