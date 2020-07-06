@@ -274,10 +274,13 @@ public class OrderController {
                 fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
                 if(null == fileTransferCounts) {
                     fileTransferCounts = new OrdersFileTransfersCountsVO(returnCode, returnMessage  , 0, 0);
+                }else {
+                    returnCode = fileTransferCounts.getReturnCode();
+                    returnMessage = fileTransferCounts.getReturnMessage();
                 }
             }else {
-                fileTransferCounts.setReturnCode("TOKEN_INVALID");
-                fileTransferCounts.setReturnMessage("Invalid token");
+                returnCode = "TOKEN_INVALID";
+                returnMessage = "Invalid token";
             }
 
         } catch (Exception e) {

@@ -6,13 +6,19 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
 
-public class OrdersFileTransfersCountsVO extends ReturnCodeMessageResponse {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class OrdersFileTransfersCountsVO  {
 
     private int availableTransferCounts = 0;
     private int originalTransferCounts = 0;
     
+    protected String returnCode = "SUCCESS";
+    protected String returnMessage = "";
+    
     public OrdersFileTransfersCountsVO(String returnCode, String returnMessage, int availableTransferCounts, int originalTransferCounts) {
-        super(returnCode, returnMessage);
+        this.returnCode = returnCode;
+        this.returnMessage = returnMessage;
         this.availableTransferCounts = availableTransferCounts;
         this.originalTransferCounts = originalTransferCounts;
     }
@@ -23,6 +29,7 @@ public class OrdersFileTransfersCountsVO extends ReturnCodeMessageResponse {
     public void setAvailableTransferCounts(int availableTransferCounts) {
         this.availableTransferCounts = availableTransferCounts;
     }
+    
     public int getOriginalTransferCounts() {
         return originalTransferCounts;
     }
@@ -31,7 +38,16 @@ public class OrdersFileTransfersCountsVO extends ReturnCodeMessageResponse {
     }
 
     public OrdersFileTransfersCountsVO() {
-        // TODO Auto-generated constructor stub
+    }
+
+    @JsonIgnore
+    public String getReturnCode() {
+        return returnCode;
+    }
+    
+    @JsonIgnore
+    public String getReturnMessage() {
+        return returnMessage;
     }
 
 }
