@@ -1,5 +1,12 @@
 version: 0.2
 
+env:
+  secrets-manager:
+    username: prd/Appdata/letlock/postgres:username
+    password: prd/Appdata/letlock/postgres:password
+    host: prd/Appdata/letlock/postgres:host
+    port: prd/Appdata/letlock/postgres:port
+    databasename: prd/Appdata/letlock/postgres:databasename
 phases:
   install:
     runtime-versions:
@@ -10,7 +17,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`      
-      - mvn clean install -Dmaven.test.skip=true -Dspring.profiles.active="prod"
+      - mvn clean install -Dmaven.test.skip=true -Dspring.profiles.active="prd"
   post_build:
     commands:
       - echo Build completed on `date`
@@ -18,3 +25,4 @@ phases:
 artifacts:
   files:
     - application.jar
+    - Procfile

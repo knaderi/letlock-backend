@@ -67,7 +67,6 @@ public class S3StorageService implements RemoteStorageService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.length());// If not provided, the library will have to buffer the contents of the input
                                                      // stream in order to calculate it.
-            // metadata.setContentType("plain/text");
             request.setMetadata(metadata);
             s3Client.putObject(request);
         } catch (AmazonServiceException e) {
