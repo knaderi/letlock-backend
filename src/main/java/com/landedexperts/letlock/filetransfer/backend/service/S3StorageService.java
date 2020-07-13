@@ -61,11 +61,13 @@ public class S3StorageService implements RemoteStorageService {
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
             final File file = convertMultiPartFileToFile(multipartFile);
-            
+
             // Upload a file as a new object with ContentType and title specified.
             PutObjectRequest request = new PutObjectRequest(s3Bucket, remoteFilePath, file);
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("plain/text");
+            metadata.setContentLength(file.length());// If not provided, the library will have to buffer the contents of the input
+                                                     // stream in order to calculate it.
+            // metadata.setContentType("plain/text");
             request.setMetadata(metadata);
             s3Client.putObject(request);
         } catch (AmazonServiceException e) {
@@ -87,7 +89,7 @@ public class S3StorageService implements RemoteStorageService {
         }
 
     }
-    
+
     private File convertMultiPartFileToFile(final MultipartFile multipartFile) {
         final File file = new File(multipartFile.getOriginalFilename());
         try (final FileOutputStream outputStream = new FileOutputStream(file)) {
@@ -98,6 +100,5 @@ public class S3StorageService implements RemoteStorageService {
         }
         return file;
     }
-
 
 }
