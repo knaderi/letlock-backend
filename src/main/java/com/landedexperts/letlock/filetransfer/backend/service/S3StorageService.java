@@ -6,9 +6,7 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +16,34 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.retry.PredefinedRetryPolicies;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
 
 @Service
 public class S3StorageService implements RemoteStorageService {
+
+    private static final int UPLOAD_THREADPOOL_SIZE = 10;
+
+    private static final int UPLOAD_MAX_RETRY = 5;
+
+    private static final int MINIMUM_UPLOAD_PART_SIZE = 5*1024*1024; //5MB
+
+    private static final int UPLOAD_TRESHHOLD = 1000*1024*1024; //1GB
 
     private final Logger logger = LoggerFactory.getLogger(S3StorageService.class);
 
@@ -55,20 +66,20 @@ public class S3StorageService implements RemoteStorageService {
     }
 
     @Override
-    public void uploadFileToRemote(MultipartFile multipartFile, String remoteFilePath) {
-        Regions clientRegion = Regions.DEFAULT_REGION;
+    public void uploadFileToRemote(MultipartFile multipartFile, String remoteFilePath){
+         Regions clientRegion = Regions.DEFAULT_REGION;
 
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
-            final File file = convertMultiPartFileToFile(multipartFile);
+            
+            StopWatch watch = new StopWatch("TM stop watch is being set");
+            watch.start();            
+            uploadUsingTransferManager(remoteFilePath, s3Client, multipartFile);
+            watch.stop();
+            long uploadDuration = watch.getTotalTimeMillis(); 
+            logger.debug("Object upload using TM completed in " + uploadDuration + " miliseconds");
+            System.out.println("Object upload using TM completed in " + uploadDuration + " miliseconds");
 
-            // Upload a file as a new object with ContentType and title specified.
-            PutObjectRequest request = new PutObjectRequest(s3Bucket, remoteFilePath, file);
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(file.length());// If not provided, the library will have to buffer the contents of the input
-                                                     // stream in order to calculate it.
-            request.setMetadata(metadata);
-            s3Client.putObject(request);
         } catch (AmazonServiceException e) {
             e.printStackTrace();
             // The call was transmitted successfully, but Amazon S3 couldn't process
@@ -89,15 +100,22 @@ public class S3StorageService implements RemoteStorageService {
 
     }
 
-    private File convertMultiPartFileToFile(final MultipartFile multipartFile) {
-        final File file = new File(multipartFile.getOriginalFilename());
-        try (final FileOutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(multipartFile.getBytes());
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-            logger.error("Error converting the multi-part file to file= ", ex.getMessage());
-        }
-        return file;
+    private void uploadUsingTransferManager(String remoteFilePath, AmazonS3 s3Client, MultipartFile multipartFile) throws Exception {
+      //  final File file = convertMultiPartFileToFile(multipartFile);
+        ClientConfiguration clientConfiguration=new ClientConfiguration();
+        clientConfiguration.setRetryPolicy(
+                        PredefinedRetryPolicies.getDefaultRetryPolicyWithCustomMaxRetries(UPLOAD_MAX_RETRY));
+        TransferManagerBuilder standard = TransferManagerBuilder.standard();
+        standard.setMultipartUploadThreshold(new Long(UPLOAD_TRESHHOLD));
+        standard.setMinimumUploadPartSize(new Long(MINIMUM_UPLOAD_PART_SIZE));
+        TransferManager tm = standard
+                .withS3Client(s3Client).withExecutorFactory(() -> Executors.newFixedThreadPool(UPLOAD_THREADPOOL_SIZE))
+                .build();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(multipartFile.getSize());
+        Upload upload = tm.upload(s3Bucket, remoteFilePath, multipartFile.getInputStream(), metadata);
+        // Optionally, wait for the upload to finish before continuing.
+        upload.waitForCompletion();        
     }
 
 }

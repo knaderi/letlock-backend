@@ -6,19 +6,13 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,19 +38,13 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
 
     @Test
     public void testUploadFile() throws Exception {
-//        File newFile = new File("c:\\LetLock-FileTransfer-Setup.exe");
+//        File newFile = new File("C:\\Users\\rkaur\\LetLock\\files\\100MB");
+//       //  File newFile = new File("c:\\LetLock-FileTransfer-Setup.exe");
 //        boolean flag = newFile.exists();
 //        FileInputStream inputStream = new FileInputStream(newFile);
 //        try {
-//            MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_NAME, null, inputStream);
-//
-//            // METHOD-1: creating aan uploading small file
-//            // creating bigger multipart file
-//            // byte[] bytes = new byte[1024 * 1024 * 1]; //uploading large file
-//            // MockMultipartFile localFile = new MockMultipartFile("TEST_FILE_NAME",
-//            // "file1.txt", "text/plain", bytes);
-//
-//            S3StorageService.uploadFileToRemote(localFile, localFile.getName());
+//            MultipartFile localFile = new MockMultipartFile(newFile.getName(), newFile.getName(), null, inputStream);
+//            S3StorageService.uploadFileToRemote(localFile, newFile.getName());
 //        } catch (Error e) {
 //            e.printStackTrace();
 //        } finally {
