@@ -1,0 +1,142 @@
+{
+	"info": {
+		"_postman_id": "43d5320d-f3b2-4212-aeb3-bd95904b441c",
+		"name": "Paypal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "paypal-sandbox-test",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "ED3_YwDCnHump5HwL8KLXxXY5Mp_X3ii7-ufXfxk9X_v6OnEGOSb1_GsgKPvHkC4ALY5T9LDDZmGPQtg",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "ATiJNdLkRuPsxovgGb2WuLIKgge5U9gbffljtwvbBoGOZLzUnAqFawPTO8Qn3jltX2F28f52i5K84Zaa",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.sandbox.paypal.com/v1/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"api",
+						"sandbox",
+						"paypal",
+						"com"
+					],
+					"path": [
+						"v1",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "paypal-sandbox-test Copy",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "ED3_YwDCnHump5HwL8KLXxXY5Mp_X3ii7-ufXfxk9X_v6OnEGOSb1_GsgKPvHkC4ALY5T9LDDZmGPQtg",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "ATiJNdLkRuPsxovgGb2WuLIKgge5U9gbffljtwvbBoGOZLzUnAqFawPTO8Qn3jltX2F28f52i5K84Zaa",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.sandbox.paypal.com/v1/oauth2/token",
+					"protocol": "https",
+					"host": [
+						"api",
+						"sandbox",
+						"paypal",
+						"com"
+					],
+					"path": [
+						"v1",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "makepayment",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "makepayment-letlock",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
