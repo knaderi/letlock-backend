@@ -84,7 +84,7 @@ public interface FileTransferMapper {
             + " _funding_2_send_docinfo_transaction_hash AS funding2SendDocinfoTransactionHash,"
             + " _funding_3_rec_final_status AS funding3RecFinalStatus,"
             + " _funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,"
-            + " _file_transfer_is_active AS fileTransferIsActive,"
+            + " _file_transfer_active_code AS fileTransferActiveCode,"
             + " _clear_file_hash AS clearFileHash,"
             + " _encrypted_file_hash AS encryptedFileHash,"
             + " _gateway AS gateway,"
@@ -112,7 +112,7 @@ public interface FileTransferMapper {
             + " funding_2_send_docinfo_transaction_hash AS funding2SendDocinfoTransactionHash,"
             + " funding_3_rec_final_status AS funding3RecFinalStatus,"
             + " funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,"
-            + " file_transfer_is_active AS fileTransferIsActive,"
+            + " file_transfer_active_code AS fileTransferActiveCode,"
             + " file_transfer_create_dt AS fileTransferCreate,"
             + " file_transfer_update_dt AS fileTransferUpdate"
             + " FROM gochain.get_file_transfer_sessions_for_user( #{ userId } )")

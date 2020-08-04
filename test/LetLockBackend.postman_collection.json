@@ -66,37 +66,27 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "loginName",
-							"value": "{{aliceloginname}}",
-							"type": "text"
-						},
-						{
 							"key": "email",
 							"value": "{{aliceemail}}",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "{{alicepassword}}",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/register",
+					"raw": "http://{{dev}}/handle_forgot_password",
 					"protocol": "http",
 					"host": [
-						"{{localhost}}"
+						"{{dev}}"
 					],
 					"path": [
-						"register"
+						"handle_forgot_password"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "getAliceUserInfo",
+			"name": "getAliceResetToken",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -123,13 +113,13 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/get_user_object",
+					"raw": "http://{{localhost}}/get_reset_token",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"get_user_object"
+						"get_reset_token"
 					]
 				}
 			},
@@ -157,7 +147,7 @@
 						},
 						{
 							"key": "resetToken",
-							"value": "3e960e9d-68ba-444d-b887-a7b2610d2d0c",
+							"value": "5ca40466-de3b-49f0-bfa2-259268ceadfa",
 							"type": "text"
 						}
 					]
@@ -203,11 +193,16 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/login",
+					"raw": "http://Letlockbackend-qa.w7h3jxji58.us-west-2.elasticbeanstalk.com:5000/login",
 					"protocol": "http",
 					"host": [
-						"{{localhost}}"
+						"Letlockbackend-qa",
+						"w7h3jxji58",
+						"us-west-2",
+						"elasticbeanstalk",
+						"com"
 					],
+					"port": "5000",
 					"path": [
 						"login"
 					]
@@ -261,7 +256,7 @@
 			"response": []
 		},
 		{
-			"name": "getBobUserInfo",
+			"name": "getBobResetToken",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -288,13 +283,13 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/get_user_object",
+					"raw": "http://{{localhost}}/get_reset_token",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"get_user_object"
+						"get_reset_token"
 					]
 				}
 			},
@@ -471,7 +466,7 @@
 			"response": []
 		},
 		{
-			"name": "Get user orders",
+			"name": "Get user orders by status",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -674,6 +669,130 @@
 					"port": "3000",
 					"path": [
 						"update_order_status_to_initiated"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user orders",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "orderId",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{dev}}/get_user_orders",
+					"protocol": "http",
+					"host": [
+						"{{dev}}"
+					],
+					"path": [
+						"get_user_orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order file transfer counts",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "orderId",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/order/get_filetransfer_usage_counts",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"order",
+						"get_filetransfer_usage_counts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order file transfer usage history",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "orderId",
+							"value": "1",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/order/get_filetransfer_usage_counts",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"order",
+						"get_filetransfer_usage_counts"
 					]
 				}
 			},
