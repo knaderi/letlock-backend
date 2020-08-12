@@ -380,7 +380,7 @@ public class UserController {
     
     @GetMapping(value = "/user/get_user_profile", produces = { "application/JSON" })
     public UserProfileResponse getUserProfile(@RequestParam(value = "token") final String token) throws Exception  {
-        String returnCode = "INVALID_TOKEN";
+        String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
         long userId = SessionManager.getInstance().getUserId(token);
         UserVO userVO = new UserVO();
