@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WORKSPACE_DIR=${PWD}/workspace
+WORKSPACE_DIR=${PWD}/../workspace
 
 #------------------------------------------------------------------------------
 # FUNCTIONS
@@ -57,7 +57,7 @@ rebaseEnv() {
         exit
     fi
 
-    git push
+    git push -f
     if [ $? != 0 ]; then
         exit
     fi
