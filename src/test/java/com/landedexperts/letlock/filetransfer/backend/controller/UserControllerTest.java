@@ -68,7 +68,7 @@ public class UserControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertForError("getUserProfileTest", content, "INVALID_TOKEN");
+        assertForError("getUserProfileTest", content, "TOKEN_INVALID");
     }
 
     @Test

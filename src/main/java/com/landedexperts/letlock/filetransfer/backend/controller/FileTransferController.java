@@ -293,14 +293,14 @@ public class FileTransferController {
             walletAddress = walletAddress.substring(2);
         }
 
-        BooleanResponse isAvailable = fileTransferMapper.setFileTransferStepAvailability(fileTransferUuid, walletAddress,
+        BooleanResponse canStart = fileTransferMapper.canStartStep(fileTransferUuid, walletAddress,
                 step);
 
-        returnCode = isAvailable.getReturnCode();
-        returnMessage = isAvailable.getReturnMessage();
+        returnCode = canStart.getReturnCode();
+        returnMessage = canStart.getReturnMessage();
 
         String transactionHash = "";
-        if (returnCode.equals("SUCCESS") && isAvailable.getResult().getValue()) {
+        if (returnCode.equals("SUCCESS") && canStart.getResult().getValue()) {
             transactionHash = getBlockChainGateWayService().fund(fileTransferUuid, signedTransactionHex, step);
         }
 

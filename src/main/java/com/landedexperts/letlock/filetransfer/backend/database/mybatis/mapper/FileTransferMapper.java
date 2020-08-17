@@ -130,15 +130,15 @@ public interface FileTransferMapper {
             @Param("walletAddress") String walletAddress);
 
     @Select("SELECT"
-            + " _is_available AS value,"
+            + " _can_start AS value,"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM gochain.set_file_transfer_step_availability("
+            + " FROM gochain.can_start_step("
             + " #{ fileTransferUuid },"
             + " DECODE( #{ walletAddress }, 'hex' ),"
             + " CAST( #{ step } AS gochain.tp_funding_step )"
             + " )")
-    BooleanResponse setFileTransferStepAvailability(
+    BooleanResponse canStartStep(
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("walletAddress") String walletAddress,
             @Param("step") String step);
