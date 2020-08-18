@@ -306,6 +306,24 @@ public class FileTransferController {
 
         return new TransactionHashResponse(transactionHash, returnCode, returnMessage);
     }
+    
+    @RequestMapping(method = RequestMethod.PATCH, value = "/set_transfer_step", produces = { "application/JSON" })
+    public ReturnCodeMessageResponse setTransferStep(@RequestParam(value = "token") final String token, @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            @RequestParam(value = "transfer_step") final String transferStep,
+            @RequestParam(value = "transfer_step_status") final String transferStepStatus) throws Exception {
+        logger.info("FileTransferController.setTransferStep called for file_transfer_uuid " + fileTransferUuid);
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
+
+        long userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            return fileTransferMapper.setTransferStep(fileTransferUuid, transferStep,
+                    transferStepStatus);
+        }else {
+            return new ReturnCodeMessageResponse(returnCode, returnMessage);
+        }
+
+    }
 
     private BlockChainGatewayService getBlockChainGateWayService() {
         BlockChainGatewayServiceTypeEnum blockchainGatewayServiceType = BlockChainGatewayServiceTypeEnum

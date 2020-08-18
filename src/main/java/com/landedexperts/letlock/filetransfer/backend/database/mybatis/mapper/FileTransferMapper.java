@@ -142,6 +142,19 @@ public interface FileTransferMapper {
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("walletAddress") String walletAddress,
             @Param("step") String step);
+    
+    @Select("SELECT"
+            + " _return_code AS returnCode,"
+            + " _return_message AS returnMessage"
+            + " FROM gochain.set_filetransfer_step("
+            + " #{ fileTransferUuid },"
+            + " #{transferStep},"
+            + " #{transferStepStatus}"
+            + " )")
+    ReturnCodeMessageResponse setTransferStep(
+            @Param("fileTransferUuid") UUID fileTransferUuid,
+            @Param("transferStep") String transferStep,
+            @Param("transferStepStatus") String transferStepStatus);
 
     @Select("SELECT"
             + " _is_available AS value,"
