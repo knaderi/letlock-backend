@@ -148,8 +148,8 @@ public interface FileTransferMapper {
             + " _return_message AS returnMessage"
             + " FROM gochain.set_filetransfer_step("
             + " #{ fileTransferUuid },"
-            + " #{transferStep},"
-            + " #{transferStepStatus}"
+            + " CAST(#{transferStep} AS gochain.tp_transfer_step,"
+            + " CAST(#{transferStepStatus} AS gochain.tp_current_step_status"
             + " )")
     ReturnCodeMessageResponse setTransferStep(
             @Param("fileTransferUuid") UUID fileTransferUuid,
@@ -157,10 +157,14 @@ public interface FileTransferMapper {
             @Param("transferStepStatus") String transferStepStatus);
 
     @Select("SELECT"
-            + " _is_available AS value,"
+            + " _is_pending AS value,"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM gochain.file_transfer_is_step_pending( #{ fileTransferUuid }, #{ walletAddress }, #{ step } )")
+            + " FROM gochain.file_transfer_is_step_pending("
+            + " #{ fileTransferUuid },"
+            + " DECODE( #{ walletAddress }, 'hex' ),"
+            + " CAST( #{ step } AS gochain.tp_funding_step )"
+            + " )")
     BooleanResponse fileTransferIsStepPending(
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("walletAddress") String walletAddress,

@@ -8,6 +8,7 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -281,17 +282,15 @@ public class FileTransferController {
     public TransactionHashResponse addFunds(@RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "signed_transaction_hex") final String signedTransactionHex,
             @RequestParam(value = "step") final String step) throws Exception {
+
         logger.info("FileTransferController.addFunds called for file_transfer_uuid " + fileTransferUuid);
         String returnCode = "";
         String returnMessage = "";
 
         String walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(fileTransferUuid,
                 signedTransactionHex, step);
-
-        String prefix = walletAddress.substring(0, 2);
-        if (prefix.equals("0x")) {
-            walletAddress = walletAddress.substring(2);
-        }
+      
+        walletAddress = remove0xPrefix(walletAddress);
 
         BooleanResponse canStart = fileTransferMapper.canStartStep(fileTransferUuid, walletAddress,
                 step);
@@ -301,10 +300,29 @@ public class FileTransferController {
 
         String transactionHash = "";
         if (returnCode.equals("SUCCESS") && canStart.getResult().getValue()) {
+            logger.info("FileTransferController.addFunds calling set transfer funding step pending " + fileTransferUuid);
+            fileTransferMapper.fileTransferSetTransferStepPending(fileTransferUuid, walletAddress, step);
             transactionHash = getBlockChainGateWayService().fund(fileTransferUuid, signedTransactionHex, step);
+            
+            transactionHash = remove0xPrefix(transactionHash);
+            
+            logger.info("FileTransferController.addFunds calling set transfer funding step completed " + fileTransferUuid);
+            fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid,walletAddress, step, transactionHash);
+            
+        }else {
+            logger.error("ERROR adding funds. %s  %s  ",returnCode ,returnMessage );
         }
 
         return new TransactionHashResponse(transactionHash, returnCode, returnMessage);
+    }
+
+    private String remove0xPrefix(String oxPrefixedString) {
+        String prefix = oxPrefixedString.substring(0, 2);
+        String unPrefixedString = "";
+        if (! StringUtils.isBlank(oxPrefixedString) && prefix.equals("0x")) {
+            unPrefixedString = oxPrefixedString.substring(2);
+        }
+        return unPrefixedString;
     }
     
     @RequestMapping(method = RequestMethod.PATCH, value = "/set_transfer_step", produces = { "application/JSON" })
