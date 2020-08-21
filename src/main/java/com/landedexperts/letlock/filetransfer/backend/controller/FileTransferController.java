@@ -76,6 +76,7 @@ public class FileTransferController {
             walletAddressUuid = answer.getReceiverWalletAddressUuid();
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
+
         }
 
         return new ConsumeResponse(fileTransferUuid, walletAddressUuid, returnCode, returnMessage);
@@ -161,14 +162,17 @@ public class FileTransferController {
             produces = {
                     "application/JSON" })
     public ReturnCodeMessageResponse setFileTransferFileHashes(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "clearFileHash") final String clearFileHash, @RequestParam(value = "encryptedFileHash") final String encryptedFileHash) throws Exception {
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            @RequestParam(value = "clearFileHash") final String clearFileHash,
+            @RequestParam(value = "encryptedFileHash") final String encryptedFileHash) throws Exception {
         logger.info("FileTransferController.setFileTransferFilesHash called for token " + token);
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferFileHashes(userId, fileTransferUuid, clearFileHash, encryptedFileHash);
+            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferFileHashes(userId, fileTransferUuid, clearFileHash,
+                    encryptedFileHash);
 
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
@@ -251,10 +255,24 @@ public class FileTransferController {
                         fileTransferUuid);
                 String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
                 String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
-                logger.info("FileTransferController.setFileTransferReceiverAddress is deploying smart contarct for Filetransferuid: " + fileTransferUuid);
-                @SuppressWarnings("unused")
-                boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
-                        "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
+                logger.info("FileTransferController.setFileTransferReceiverAddress is deploying smart contarct for Filetransferuid: "
+                        + fileTransferUuid);
+                try {
+                    @SuppressWarnings("unused")
+                    boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
+                            "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
+                } catch (Exception e) {
+                    if (e instanceof java.net.ConnectException) {
+                        returnCode = "GOCHAIN_CONNECTION_EXCEPTION";
+                        returnMessage = "Connecting to Blockchain failed trying to deploy smart contract.";
+
+                    } else {
+                        returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
+                        returnMessage = "Deploy smart contract faild throwing an Exception.";
+                    }
+                    logger.error("Deploy smart contract failed returnCode: %s  returnMessage:  %s   Exception: %s", returnCode,
+                            returnMessage, e.getMessage());
+                }
             }
         }
 
@@ -270,9 +288,24 @@ public class FileTransferController {
         long userId = SessionManager.getInstance().getUserId(token);
         TransactionHashResponse transactionHashResponse = null;
         if (userId > 0) {
-            transactionHashResponse = getBlockChainGateWayService().getTransactionStatus(transactionHash);
+            try {
+                transactionHashResponse = getBlockChainGateWayService().getTransactionStatus(transactionHash);
+            } catch (Exception e) {
+                if (e instanceof java.net.ConnectException) {
+                    returnCode = "GOCHAIN_CONNECTION_EXCEPTION";
+                    returnMessage = "Connecting to Blockchain failed trying to get transaction status.";
 
-        } else {
+                } else {
+                    returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
+                    returnMessage = "Retrieving transaction status failed  throwing an Exception.";
+                }
+                logger.error("Retrieving transaction status failed returnCode: %s  returnMessage:  %s   Exception: %s", returnCode,
+                        returnMessage, e.getMessage());
+            }
+
+        } else
+
+        {
             transactionHashResponse = new TransactionHashResponse(returnCode, returnMessage);
         }
         return transactionHashResponse;
@@ -286,10 +319,24 @@ public class FileTransferController {
         logger.info("FileTransferController.addFunds called for file_transfer_uuid " + fileTransferUuid);
         String returnCode = "";
         String returnMessage = "";
+        String walletAddress = "";
+        try {
+            walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(fileTransferUuid,
+                    signedTransactionHex, step);
 
-        String walletAddress = getBlockChainGateWayService().getWalletAddressFromTransaction(fileTransferUuid,
-                signedTransactionHex, step);
-      
+        } catch (Exception e) {
+            if (e instanceof java.net.ConnectException) {
+                returnCode = "GOCHAIN_CONNECTION_EXCEPTION";
+                returnMessage = "Connecting to Blockchain failed trying to get wallet address from transaction.";
+
+            } else {
+                returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
+                returnMessage = "Retrieving wallet address from transaction failed  throwing an Exception.";
+            }
+            logger.error("Retrieving wallet address from transaction failed  returnCode: %s  returnMessage:  %s   Exception: %s",
+                    returnCode, returnMessage, e.getMessage());
+        }
+
         walletAddress = remove0xPrefix(walletAddress);
 
         BooleanResponse canStart = fileTransferMapper.canStartStep(fileTransferUuid, walletAddress,
@@ -302,15 +349,19 @@ public class FileTransferController {
         if (returnCode.equals("SUCCESS") && canStart.getResult().getValue()) {
             logger.info("FileTransferController.addFunds calling set transfer funding step pending " + fileTransferUuid);
             fileTransferMapper.fileTransferSetTransferStepPending(fileTransferUuid, walletAddress, step);
-            transactionHash = getBlockChainGateWayService().fund(fileTransferUuid, signedTransactionHex, step);
-            
+            try {
+                transactionHash = getBlockChainGateWayService().fund(fileTransferUuid, signedTransactionHex, step);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+
             transactionHash = remove0xPrefix(transactionHash);
-            
+
             logger.info("FileTransferController.addFunds calling set transfer funding step completed " + fileTransferUuid);
-            fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid,walletAddress, step, transactionHash);
-            
-        }else {
-            logger.error("ERROR adding funds. %s  %s  ",returnCode ,returnMessage );
+            fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, walletAddress, step, transactionHash);
+
+        } else {
+            logger.error("ERROR adding funds. %s  %s  ", returnCode, returnMessage);
         }
 
         return new TransactionHashResponse(transactionHash, returnCode, returnMessage);
@@ -319,14 +370,15 @@ public class FileTransferController {
     private String remove0xPrefix(String oxPrefixedString) {
         String prefix = oxPrefixedString.substring(0, 2);
         String unPrefixedString = "";
-        if (! StringUtils.isBlank(oxPrefixedString) && prefix.equals("0x")) {
+        if (!StringUtils.isBlank(oxPrefixedString) && prefix.equals("0x")) {
             unPrefixedString = oxPrefixedString.substring(2);
         }
         return unPrefixedString;
     }
-    
+
     @RequestMapping(method = RequestMethod.PATCH, value = "/set_transfer_step", produces = { "application/JSON" })
-    public ReturnCodeMessageResponse setTransferStep(@RequestParam(value = "token") final String token, @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+    public ReturnCodeMessageResponse setTransferStep(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "transfer_step") final String transferStep,
             @RequestParam(value = "transfer_step_status") final String transferStepStatus) throws Exception {
         logger.info("FileTransferController.setTransferStep called for file_transfer_uuid " + fileTransferUuid);
@@ -337,7 +389,7 @@ public class FileTransferController {
         if (userId > 0) {
             return fileTransferMapper.setTransferStep(fileTransferUuid, transferStep,
                     transferStepStatus);
-        }else {
+        } else {
             return new ReturnCodeMessageResponse(returnCode, returnMessage);
         }
 

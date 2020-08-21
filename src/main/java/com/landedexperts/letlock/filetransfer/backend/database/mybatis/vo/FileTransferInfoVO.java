@@ -156,4 +156,20 @@ public class FileTransferInfoVO extends ReturnCodeMessageResponse {
     public void setFileTransferUpdate(Date fileTransferUpdate) {
         fileTransferInfoRecordVO.setFileTransferUpdate(fileTransferUpdate);
     }
+    
+    public String getFileTransferCurrentStep() {
+        return fileTransferInfoRecordVO.getFileTransferCurrentStep();
+    }
+
+    public void setFileTransferCurrentStep(String fileTransferCurrentStep) {
+        fileTransferInfoRecordVO.setFileTransferCurrentStep(fileTransferCurrentStep);
+    }
+
+    public String getFileTransferCurrentStepStatus() {
+        return fileTransferInfoRecordVO.getFileTransferCurrentStepStatus();
+    }
+
+    public void setFileTransferCurrentStepStatus(String fileTransferCurrentStepStatus) {
+        fileTransferInfoRecordVO.setFileTransferCurrentStepStatus(fileTransferCurrentStepStatus);
+    }
 }

@@ -84,6 +84,8 @@ public interface FileTransferMapper {
             + " _funding_2_send_docinfo_transaction_hash AS funding2SendDocinfoTransactionHash,"
             + " _funding_3_rec_final_status AS funding3RecFinalStatus,"
             + " _funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,"
+            + " _current_transfer_step AS fileTransferCurrentStep,"
+            + " _current_transfer_step_status AS fileTransferCurrentStepStatus,"
             + " _file_transfer_active_code AS fileTransferActiveCode,"
             + " _clear_file_hash AS clearFileHash,"
             + " _encrypted_file_hash AS encryptedFileHash,"

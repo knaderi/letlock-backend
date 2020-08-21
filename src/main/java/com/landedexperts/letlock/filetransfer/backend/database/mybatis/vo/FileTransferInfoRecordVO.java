@@ -9,6 +9,30 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo;
 import java.util.Date;
 
 public class FileTransferInfoRecordVO {
+
+    private String fileTransferUuid;
+    private String senderLoginName;
+    private String senderWalletAddressUuid;
+    private String senderWalletAddress;
+    private String receiverLoginName;
+    private String receiverWalletAddressUuid;
+    private String receiverWalletAddress;
+    private String smartContractAddress;
+    private String funding1RecPubkeyStatus;
+    private String funding1RecPubkeyTransactionHash;
+    private String funding2SendDocinfoStatus;
+    private String funding2SendDocinfoTransactionHash;
+    private String funding3RecFinalStatus;
+    private String funding3RecFinalTransactionHash;
+    private String fileTransferActiveCode;
+    private String gateway;
+    private String clearFileHash;
+    private String encryptedFileHash;
+    private String fileTransferCurrentStep;
+    private String fileTransferCurrentStepStatus;
+    private Date fileTransferCreate;
+    private Date fileTransferUpdate;
+
     @Override
     public String toString() {
         return "FileTransferInfoRecordVO [fileTransferUuid="
@@ -39,6 +63,10 @@ public class FileTransferInfoRecordVO {
                 + funding3RecFinalStatus
                 + ", funding3RecFinalTransactionHash="
                 + funding3RecFinalTransactionHash
+                + ", fileTransferCurrentStep="
+                + fileTransferCurrentStep
+                + ", fileTransferCurrentStepStatus="
+                + fileTransferCurrentStepStatus
                 + ", fileTransferActiveCode="
                 + fileTransferActiveCode
                 + ", isfileTransferIsActive="
@@ -58,30 +86,11 @@ public class FileTransferInfoRecordVO {
 
     public boolean isFileTransferIsActive() {
         boolean isActive = false;
-        if(this.fileTransferActiveCode.equals("ACTIVE"))
-            isActive  = true;
+        if (this.fileTransferActiveCode.equals("ACTIVE"))
+            isActive = true;
         return isActive;
-                        
-    }
 
-    private String fileTransferUuid;
-    private String senderLoginName;
-    private String senderWalletAddressUuid;
-    private String senderWalletAddress;
-    private String receiverLoginName;
-    private String receiverWalletAddressUuid;
-    private String receiverWalletAddress;
-    private String smartContractAddress;
-    private String funding1RecPubkeyStatus;
-    private String funding1RecPubkeyTransactionHash;
-    private String funding2SendDocinfoStatus;
-    private String funding2SendDocinfoTransactionHash;
-    private String funding3RecFinalStatus;
-    private String funding3RecFinalTransactionHash;
-    private String fileTransferActiveCode;
-    private String gateway;
-    private String clearFileHash;
-    private String encryptedFileHash;
+    }
 
     public String getGateway() {
         return gateway;
@@ -106,9 +115,6 @@ public class FileTransferInfoRecordVO {
     public void setEncryptedFileHash(String encryptedFileHash) {
         this.encryptedFileHash = encryptedFileHash;
     }
-
-    private Date fileTransferCreate;
-    private Date fileTransferUpdate;
 
     public String getFileTransferUuid() {
         return fileTransferUuid;
@@ -244,5 +250,21 @@ public class FileTransferInfoRecordVO {
 
     public void setFileTransferUpdate(Date fileTransferUpdate) {
         this.fileTransferUpdate = fileTransferUpdate;
+    }
+
+    public String getFileTransferCurrentStep() {
+        return fileTransferCurrentStep;
+    }
+
+    public void setFileTransferCurrentStep(String fileTransferCurrentStep) {
+        this.fileTransferCurrentStep = fileTransferCurrentStep;
+    }
+
+    public String getFileTransferCurrentStepStatus() {
+        return fileTransferCurrentStepStatus;
+    }
+
+    public void setFileTransferCurrentStepStatus(String fileTransferCurrentStepStatus) {
+        this.fileTransferCurrentStepStatus = fileTransferCurrentStepStatus;
     }
 }
