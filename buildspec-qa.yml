@@ -22,6 +22,9 @@ phases:
     commands:
       - echo Build completed on `date`
       - mv target/letlock-filetransfer-backend-0.0.1-SNAPSHOT.jar  application.jar
+cache:
+  paths:
+    - '/root/.m2/**/*'      
 artifacts:
   files:
     - application.jar
