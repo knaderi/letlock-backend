@@ -47,9 +47,7 @@ public interface FileTransferMapper {
     ReturnCodeMessageResponse setFileTransferAsActive(
             @Param("userId") long userId,
             @Param("fileTransferUuid") UUID fileTransferUuid);
-    
-    
-    
+
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
@@ -59,7 +57,6 @@ public interface FileTransferMapper {
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("clearFileHash") String clearFileHash,
             @Param("encryptedFileHash") String encryptedFileHash);
-    
 
     @Select("SELECT"
             + " _return_code AS returnCode,"
@@ -114,6 +111,8 @@ public interface FileTransferMapper {
             + " funding_2_send_docinfo_transaction_hash AS funding2SendDocinfoTransactionHash,"
             + " funding_3_rec_final_status AS funding3RecFinalStatus,"
             + " funding_3_rec_final_transaction_hash AS funding3RecFinalTransactionHash,"
+            + " current_transfer_step AS fileTransferCurrentStep,"
+            + " current_transfer_step_status AS fileTransferCurrentStepStatus,"
             + " file_transfer_active_code AS fileTransferActiveCode,"
             + " file_transfer_create_dt AS fileTransferCreate,"
             + " file_transfer_update_dt AS fileTransferUpdate"
@@ -144,14 +143,14 @@ public interface FileTransferMapper {
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("walletAddress") String walletAddress,
             @Param("step") String step);
-    
+
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
             + " FROM gochain.set_filetransfer_step("
             + " #{ fileTransferUuid },"
-            + " CAST(#{transferStep} AS gochain.tp_transfer_step,"
-            + " CAST(#{transferStepStatus} AS gochain.tp_current_step_status"
+            + " CAST(#{transferStep} AS gochain.tp_transfer_step),"
+            + " CAST(#{transferStepStatus} AS gochain.tp_current_step_status)"
             + " )")
     ReturnCodeMessageResponse setTransferStep(
             @Param("fileTransferUuid") UUID fileTransferUuid,
