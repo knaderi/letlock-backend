@@ -378,9 +378,9 @@ public class FileTransferController {
 
     @RequestMapping(method = RequestMethod.PATCH, value = "/set_transfer_step", produces = { "application/JSON" })
     public ReturnCodeMessageResponse setTransferStep(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
-            @RequestParam(value = "transfer_step") final String transferStep,
-            @RequestParam(value = "transfer_step_status") final String transferStepStatus) throws Exception {
+            @RequestParam(value = "fileTransferUuid") final UUID fileTransferUuid,
+            @RequestParam(value = "transferStep") final String transferStep,
+            @RequestParam(value = "transferStepStatus") final String transferStepStatus) throws Exception {
         logger.info("FileTransferController.setTransferStep called for file_transfer_uuid " + fileTransferUuid);
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";

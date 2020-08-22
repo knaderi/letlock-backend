@@ -421,7 +421,7 @@
 		{
 			"name": "setFileTransferStep",
 			"request": {
-				"method": "POST",
+				"method": "PATCH",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -434,26 +434,26 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "file_transfer_uuid",
-							"value": "ce0cfa85-e000-4278-b378-413f036a6b51\n",
+							"key": "fileTransferUuid",
+							"value": "d6c400bb-c274-4d8b-a70c-11bc4b558ba6",
 							"description": "file transfer uuid",
 							"type": "text"
 						},
 						{
-							"key": "transfer_step",
+							"key": "transferStep",
 							"value": "step1_receiver_accept",
 							"description": "sender wallet address",
 							"type": "text"
 						},
 						{
-							"key": "transfer_step_status",
+							"key": "transferStepStatus",
 							"value": "completed",
 							"description": "Receiver wallet address",
 							"type": "text"
 						},
 						{
 							"key": "token",
-							"value": "92tSney+M0FdNhIAzBXka4o7FPP7bXlXj/9Hfex4R158Or48rr/4D4l4/xpjunWtbGvx+i0shPl7f46YGyWH64hr4XDW+v6KoNANzyMqSQ8OJ7O2cbaO7Vo4vm4LEpF0ENJzeagw8+iaQ4x6ce/3F3cpgD61yJbChRJ0J9umyso=",
+							"value": "t61Q/r5Rfik5E9cf04fB+u3ZiLu9384rkINYkjzNXtSEootGRnKwVGR/Qdp+DVK0otvAI37bEh3X9vIOe2NRVa7YaUEXb0M6ireT51WmNCpbtO6kCUQ4sj8eE6ZEZOTU5JRp14Fd4RjAvnJ2qDa9Y5hw6yAa7642/iUo72HDywA=",
 							"description": "receiver token",
 							"type": "text"
 						}
