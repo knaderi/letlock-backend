@@ -376,7 +376,7 @@ public class FileTransferController {
         return unPrefixedString;
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, value = "/set_transfer_step", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/set_transfer_step", produces = { "application/JSON" })
     public ReturnCodeMessageResponse setTransferStep(@RequestParam(value = "token") final String token,
             @RequestParam(value = "fileTransferUuid") final UUID fileTransferUuid,
             @RequestParam(value = "transferStep") final String transferStep,

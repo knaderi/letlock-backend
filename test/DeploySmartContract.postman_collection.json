@@ -421,7 +421,7 @@
 		{
 			"name": "setFileTransferStep",
 			"request": {
-				"method": "PATCH",
+				"method": "POST",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -453,7 +453,7 @@
 						},
 						{
 							"key": "token",
-							"value": "t61Q/r5Rfik5E9cf04fB+u3ZiLu9384rkINYkjzNXtSEootGRnKwVGR/Qdp+DVK0otvAI37bEh3X9vIOe2NRVa7YaUEXb0M6ireT51WmNCpbtO6kCUQ4sj8eE6ZEZOTU5JRp14Fd4RjAvnJ2qDa9Y5hw6yAa7642/iUo72HDywA=",
+							"value": "Hory190CmHDI8YG2HIJuJ+80wuy9VuIa0/Yk4EHbWHgPoMfeTXST04eUsoGUhNytG5p9vly8atzVG718GcuDt2JBzi/4cNNIHJkzJUfX3Cvt4lYsJELYvs50bgfYal1Dv0VcSshxdoNU+tKW4CdkMV3moabowmrAL+ntoCG1Hgo=",
 							"description": "receiver token",
 							"type": "text"
 						}
