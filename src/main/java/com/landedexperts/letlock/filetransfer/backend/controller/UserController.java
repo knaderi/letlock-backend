@@ -204,7 +204,8 @@ public class UserController {
                 returnCode = answer.getReturnCode();
                 returnMessage = answer.getReturnMessage();
                 if ("SUCCESS".equals(returnCode)) {
-                    emailServiceFacade.sendChangePasswordEmail(email);
+                   //TODO: enable after LLW-249 is implemented in sprint 16
+                  //  emailServiceFacade.sendChangePasswordEmail(email);
                     result = true;
                 } else {
                     logger.error("UserController.changePassword failed for email "
