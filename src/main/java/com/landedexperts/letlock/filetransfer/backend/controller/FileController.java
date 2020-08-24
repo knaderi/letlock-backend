@@ -63,8 +63,8 @@ public class FileController {
             throws Exception {
         logger.info("FileController.upload_file called for token " + token);
         boolean result = false;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
@@ -97,6 +97,9 @@ public class FileController {
                 }
             }
 
+        }else {
+            returnCode = "TOKEN_INVALID";
+            returnMessage = "Invalid token";
         }
         
         logger.info("FileController.uploadFile returning response with result " + result);
