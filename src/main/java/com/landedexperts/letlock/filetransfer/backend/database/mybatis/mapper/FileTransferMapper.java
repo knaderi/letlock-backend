@@ -194,7 +194,7 @@ public interface FileTransferMapper {
             + " CAST( #{ step } AS gochain.tp_funding_step ),"
             + " DECODE( #{ transactionHash }, 'hex' )"
             + " )")
-    IdVO fileTransferSetTransferStepCompleted(
+    IdVO setTransferFundingStepCompleted(
             @Param("fileTransferUuid") UUID fileTransferUuid,
             @Param("walletAddress") String walletAddress,
             @Param("step") String step,

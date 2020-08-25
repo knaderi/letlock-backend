@@ -90,7 +90,7 @@ public class DBGatewayService extends BlockChainGatewayService {
             logger.error(response.getReturnMessage());
             throw new Exception(response.getReturnMessage());
         }
-        IdVO result = fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, receiverAddressTrimmed, "step_1_rec_pubkey", createTransactionHash());
+        IdVO result = fileTransferMapper.setTransferFundingStepCompleted(fileTransferUuid, receiverAddressTrimmed, "step_1_rec_pubkey", createTransactionHash());
         if (null != result && !result.getReturnCode().equals("SUCCESS")) {
             logger.error(result.getReturnMessage());
             throw new Exception(result.getReturnMessage());
@@ -106,7 +106,7 @@ public class DBGatewayService extends BlockChainGatewayService {
 
     @Override
     public String fund(UUID fileTransferUuid, String signedTransactionHex, String step) throws Exception {
-        fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, getWalletAddressForStep(step), step, signedTransactionHex);
+        fileTransferMapper.setTransferFundingStepCompleted(fileTransferUuid, getWalletAddressForStep(step), step, signedTransactionHex);
         return signedTransactionHex;
     }
     

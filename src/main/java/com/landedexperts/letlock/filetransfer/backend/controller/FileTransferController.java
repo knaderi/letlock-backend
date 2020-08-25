@@ -358,10 +358,10 @@ public class FileTransferController {
             transactionHash = remove0xPrefix(transactionHash);
 
             logger.info("FileTransferController.addFunds calling set transfer funding step completed " + fileTransferUuid);
-            fileTransferMapper.fileTransferSetTransferStepCompleted(fileTransferUuid, walletAddress, step, transactionHash);
+            fileTransferMapper.setTransferFundingStepCompleted(fileTransferUuid, walletAddress, step, transactionHash);
 
         } else {
-            logger.error("ERROR adding funds. %s  %s  ", returnCode, returnMessage);
+            logger.error("Canot start adding funds for step. %s %s  %s  ", step, returnCode, returnMessage);
         }
 
         return new TransactionHashResponse(transactionHash, returnCode, returnMessage);
