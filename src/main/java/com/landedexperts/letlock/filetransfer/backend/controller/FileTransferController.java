@@ -261,16 +261,20 @@ public class FileTransferController {
                     @SuppressWarnings("unused")
                     boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
                             "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
+                    if(!response) {
+                       throw new Exception("DeploySmartContract returned false");
+                    }
+                    
                 } catch (Exception e) {
                     if (e instanceof java.net.ConnectException) {
-                        returnCode = "GOCHAIN_CONNECTION_EXCEPTION";
+                        returnCode = "BLOCKCHAIN_CONNECTION_EXCEPTION";
                         returnMessage = "Connecting to Blockchain failed trying to deploy smart contract.";
 
                     } else {
-                        returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
+                        returnCode = "BLOCKCHAIN_UKNOWN_EXCEPTION";
                         returnMessage = "Deploy smart contract faild throwing an Exception.";
                     }
-                    logger.error("Deploy smart contract failed returnCode: %s  returnMessage:  %s   Exception: %s", returnCode,
+                    logger.error("Deploy smart contract failed returnCode: {} returnMessage: {}   Exception: {}", returnCode,
                             returnMessage, e.getMessage());
                 }
             }
@@ -299,7 +303,7 @@ public class FileTransferController {
                     returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
                     returnMessage = "Retrieving transaction status failed  throwing an Exception.";
                 }
-                logger.error("Retrieving transaction status failed returnCode: %s  returnMessage:  %s   Exception: %s", returnCode,
+                logger.error("Retrieving transaction status failed returnCode: {}  returnMessage:  {}   Exception:{}", returnCode,
                         returnMessage, e.getMessage());
             }
 
@@ -333,7 +337,7 @@ public class FileTransferController {
                 returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
                 returnMessage = "Retrieving wallet address from transaction failed  throwing an Exception.";
             }
-            logger.error("Retrieving wallet address from transaction failed  returnCode: %s  returnMessage:  %s   Exception: %s",
+            logger.error("Retrieving wallet address from transaction failed  returnCode: {}  returnMessage:  {}  Exception: {}",
                     returnCode, returnMessage, e.getMessage());
         }
 
@@ -352,7 +356,16 @@ public class FileTransferController {
             try {
                 transactionHash = getBlockChainGateWayService().fund(fileTransferUuid, signedTransactionHex, step);
             } catch (Exception e) {
-                System.out.println(e);
+                if (e instanceof java.net.ConnectException) {
+                    returnCode = "BLOCKCHAIN_CONNECTION_EXCEPTION";
+                    returnMessage = "Connecting to Blockchain failed trying to get wallet address from transaction.";
+
+                } else {
+                    returnCode = "BLOCKCHAIN_UKNOWN_EXCEPTION";
+                    returnMessage = "Retrieving wallet address from transaction failed  throwing an Exception.";
+                }
+                logger.error("Calling blockchain to fund  step {}  failed with exception {}",
+                        step, e.getMessage());
             }
 
             transactionHash = remove0xPrefix(transactionHash);
@@ -361,7 +374,7 @@ public class FileTransferController {
             fileTransferMapper.setTransferFundingStepCompleted(fileTransferUuid, walletAddress, step, transactionHash);
 
         } else {
-            logger.error("Canot start adding funds for step. %s %s  %s  ", step, returnCode, returnMessage);
+            logger.error("Canot start adding funds for step: {} , returnCode:  {}, returnMessage:  {}  ", step, returnCode, returnMessage);
         }
 
         return new TransactionHashResponse(transactionHash, returnCode, returnMessage);
