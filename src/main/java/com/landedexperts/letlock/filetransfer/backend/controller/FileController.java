@@ -119,7 +119,7 @@ public class FileController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/can_download_file")
+    @RequestMapping(method = RequestMethod.GET, value = "/can_download_file")
     public BooleanResponse canDownloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileController.canDownloadFile called for token " + token);
