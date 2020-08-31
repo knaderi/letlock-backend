@@ -68,7 +68,7 @@ public class PayPalClient {
     public void loadPayPalProperties() {
         if (!isSandBoxEnv() && remotePaypalProperties == null) {
             LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
-            remotePaypalProperties = AWSSecretManagerFacade.getPayPalProperties(mode);
+            remotePaypalProperties = AWSSecretManagerFacade.getPayPalProperties(constants.getEnv());
             paypalClientId = remotePaypalProperties.getProperty(constants.SECRET_PAYPAL_CLIENT_ID_KEY);
             paypalClientSecret = remotePaypalProperties.getProperty(constants.SECRET_PAYPAL_CLIENT_SECRET_KEY);
         }
@@ -170,7 +170,7 @@ public class PayPalClient {
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         // The last checks forces to use sandbox when running app locally
         return SANDBOX_PAYPAL_MODE.equals(mode)
-                || constants.LOCAL_ENV_NAME.contentEquals(System.getProperty(constants.SPRING_PROFILES_ACTIVE))
+                || constants.LOCAL_ENV_NAME.equals(System.getProperty(constants.SPRING_PROFILES_ACTIVE))
                 || constants.LOCAL_ENV_NAME.equals(constants.getEnv());
     }
 
