@@ -23,16 +23,16 @@ workspace() {
 }
 
 #------------------------------------------------------------------------------
-#pushALL() {
-#    rebaseApp letlock-backend dev qa master
-#}
+pushALL() {
+    rebaseApp letlock-backend dev qa master
+}
 
 pushQA() {
     rebaseApp letlock-backend dev qa
 }
 
 pushPROD() {
-    rebaseApp letlock-backend dev master
+    rebaseApp letlock-backend qa master
 }
 
 rebaseEnv() {
@@ -40,7 +40,7 @@ rebaseEnv() {
     local DEST_BRANCH=${2}
 
     echo "--------------------------------------------------------------------"
-    echo "Rebase ${SRC_BRANCH} ${DEST_BRANCH}"
+    echo "Rebase ${DEST_BRANCH}"
     echo "--------------------------------------------------------------------"
     git co ${DEST_BRANCH}
     if [ $? != 0 ]; then
@@ -85,7 +85,7 @@ rebaseApp() {
 
     shift
     shift
-    while [ "${1}" != "" ]; do   
+    while [ "${1}" != "" ]; do
         rebaseEnv ${SRC_BRANCH} ${1}
         shift
     done
@@ -99,7 +99,7 @@ echo
 echo "Welcome to the environment deployment script. Options are:"
 echo "  qa:   push dev to qa"
 echo "  prd: push qa  to prod"
-#echo "  all:  push main development branch to qa, prd"
+echo "  all:  push main development branch to qa, prd"
 echo
 
 read -p "What would you like to do (qa/prd/all): " input
@@ -107,6 +107,6 @@ read -p "What would you like to do (qa/prd/all): " input
 case ${input} in
     qa)   pushQA;;
     prd) pushPROD;;
-    #all)  pushALL;;
+    all)  pushALL;;
     *) echo "Unknown answer."
 esac
