@@ -276,6 +276,7 @@ public class FileTransferController {
                     }
                     logger.error("Deploy smart contract failed returnCode: {} returnMessage: {}   Exception: {}", returnCode,
                             returnMessage, e.getMessage());
+                    return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
                 }
             }
         }
@@ -330,11 +331,11 @@ public class FileTransferController {
 
         } catch (Exception e) {
             if (e instanceof java.net.ConnectException) {
-                returnCode = "GOCHAIN_CONNECTION_EXCEPTION";
+                returnCode = "BLOCKCHAIN_CONNECTION_EXCEPTION";
                 returnMessage = "Connecting to Blockchain failed trying to get wallet address from transaction.";
 
             } else {
-                returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
+                returnCode = "BLOCKCHAIN_UKNOWN_EXCEPTION";
                 returnMessage = "Retrieving wallet address from transaction failed  throwing an Exception.";
             }
             logger.error("Retrieving wallet address from transaction failed  returnCode: {}  returnMessage:  {}  Exception: {}",
@@ -366,6 +367,7 @@ public class FileTransferController {
                 }
                 logger.error("Calling blockchain to fund  step {}  failed with exception {}",
                         step, e.getMessage());
+                return new TransactionHashResponse(transactionHash, returnCode, returnMessage);
             }
 
             transactionHash = remove0xPrefix(transactionHash);
