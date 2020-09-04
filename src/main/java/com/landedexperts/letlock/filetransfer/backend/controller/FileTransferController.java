@@ -340,6 +340,7 @@ public class FileTransferController {
             }
             logger.error("Retrieving wallet address from transaction failed  returnCode: {}  returnMessage:  {}  Exception: {}",
                     returnCode, returnMessage, e.getMessage());
+            return new TransactionHashResponse("", returnCode, returnMessage); 
         }
 
         walletAddress = remove0xPrefix(walletAddress);
