@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +41,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
 
     @Test
     public void testUploadFileWithNoTransferSession() throws Exception {
-        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD);
+        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
         String token = response.getResult().getToken();
         BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
@@ -49,7 +50,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
 
     @Test
     public void testDownloadFileFailingForNoTransferSession() throws Exception {
-        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD);
+        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
         String token = response.getResult().getToken();
         ResponseEntity<Resource> fileDownloadResponse = fileController.downloadFile(token, testUUId);
         // download should fail.

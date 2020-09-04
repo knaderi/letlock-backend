@@ -8,6 +8,7 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
@@ -156,8 +157,14 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/login", produces = { "application/JSON" })
     public SessionTokenResponse login(@RequestParam(value = "loginName") final String loginName,
-            @RequestParam(value = "password") final String password) {
+            @RequestParam(value = "password") final String password, HttpServletRequest httpServletRequest) {
+        String origin = httpServletRequest.getHeader("origin");
+        String ipAddress = httpServletRequest.getRemoteAddr() ;
+        String userAgent =  httpServletRequest.getHeader("User-Agent");
+        
+        logger.info("Origin: {}, ipAddress: {}, userAgent: {}", origin, ipAddress, userAgent);
         logger.info("UserController.login called for loginName " + loginName);
+
         String returnCode = "SUCCESS";
         String returnMessage = "";
         String token = "";
