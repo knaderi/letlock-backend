@@ -16,6 +16,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ResetTokenVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
+import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
 
 public interface UserMapper {
     @Select("SELECT" + " _result AS value," + " _return_code AS returnCode," + " _return_message AS returnMessage"
@@ -32,13 +33,13 @@ public interface UserMapper {
     AlgoVO getUserPasswordAlgo(@Param("loginName") String loginName);
 
     @Select("SELECT" + " _user_id AS id," + " _return_code AS returnCode," + " _return_message AS returnMessage"
-            + " FROM users.login( #{loginId}, #{password} )")
-    IdVO login(@Param("loginId") String loginId, @Param("password") String password);
+            + " FROM users.login( #{loginId}, #{password} , #{requestData})")
+    IdVO login(@Param("loginId") String loginId, @Param("password") String password, @Param("requestData") String requestData);
 
     @Select("SELECT" + " _return_code AS returnCode," + " _return_message AS returnMessage"
-            + " FROM users.update_user_password( #{ loginName } , #{ oldPassword } , #{ newPassword } )")
+            + " FROM users.update_user_password( #{ loginName } , #{ oldPassword } , #{ newPassword }, #{requestData} )")
     ReturnCodeMessageResponse updateUserPassword(@Param("loginName") String loginName, @Param("oldPassword") String oldPassword,
-            @Param("newPassword") String newPassword);
+            @Param("newPassword") String newPassword, @Param("requestData") String requestData);
 
     @Select("SELECT" + " _return_code AS returnCode," + " _return_message AS returnMessage"
             + " FROM users.update_user_status( #{userId} , #{ status } )")

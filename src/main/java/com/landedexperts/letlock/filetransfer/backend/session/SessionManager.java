@@ -32,11 +32,11 @@ public class SessionManager {
     /*
      * Generates a new session token for the user
      */
-    public String generateSessionToken(final long userId) {
+    public String generateSessionToken(final long userId, final String tokenPrefix) {
         /* Generate the token */
         byte[] randomBytes = new byte[128];
         random.nextBytes(randomBytes);
-        String token = Base64.getEncoder().encodeToString(randomBytes);
+        String token = tokenPrefix + Base64.getEncoder().encodeToString(randomBytes);
 
         /* Generate the user's session and associate it with the generated token */
         sessionTokens.put(token, new UserSession(userId));

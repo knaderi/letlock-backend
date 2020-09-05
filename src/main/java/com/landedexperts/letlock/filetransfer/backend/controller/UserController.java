@@ -36,6 +36,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
+import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
 
 @RestController
 public class UserController {
@@ -159,9 +160,10 @@ public class UserController {
     public SessionTokenResponse login(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "password") final String password, HttpServletRequest httpServletRequest) {
         String origin = httpServletRequest.getHeader("origin");
-        String ipAddress = httpServletRequest.getRemoteAddr() ;
-        String userAgent =  httpServletRequest.getHeader("User-Agent");
-        
+        String ipAddress = httpServletRequest.getRemoteAddr();
+        String userAgent = httpServletRequest.getHeader("User-Agent");
+        RequestData requestData = new RequestData(ipAddress, userAgent, origin);
+
         logger.info("Origin: {}, ipAddress: {}, userAgent: {}", origin, ipAddress, userAgent);
         logger.info("UserController.login called for loginName " + loginName);
 
@@ -169,14 +171,14 @@ public class UserController {
         String returnMessage = "";
         String token = "";
         try {
-            IdVO answer = userMapper.login(loginName, password);
+            IdVO answer = userMapper.login(loginName, password, requestData.toJSON());
 
             long userId = answer.getResult().getId();
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
 
             if (returnCode.equals("SUCCESS")) {
-                token = SessionManager.getInstance().generateSessionToken(userId);
+                token = SessionManager.getInstance().generateSessionToken(userId, requestData.getTokenPrefix());
             }
         } catch (Exception e) {
             returnCode = "LOGIN_ERROR";
@@ -199,15 +201,20 @@ public class UserController {
     @PostMapping(value = "/user/change_password", produces = { "application/JSON" })
     public BooleanResponse changePassword(@RequestParam(value = "token") final String token,
             @RequestParam(value = "loginName") final String loginName, @RequestParam(value = "email") final String email,
-            @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword) {
+            @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword, HttpServletRequest httpServletRequest) {
         logger.info("UserController.changePassword called for a user");
+        String origin = httpServletRequest.getHeader("origin");
+        String ipAddress = httpServletRequest.getRemoteAddr() ;
+        String userAgent =  httpServletRequest.getHeader("User-Agent");
+        RequestData requestData = new RequestData(ipAddress, userAgent, origin);
+        
         long userId = SessionManager.getInstance().getUserId(token);
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
         boolean result = false;
         try {
             if (userId > 0) {
-                ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword);
+                ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword, requestData.toJSON());
                 returnCode = answer.getReturnCode();
                 returnMessage = answer.getReturnMessage();
                 if ("SUCCESS".equals(returnCode)) {
@@ -385,9 +392,9 @@ public class UserController {
         resetTokenResponse = new ResetTokenResponse(userVO, returnCode, returnMessage);
         return resetTokenResponse;
     }
-    
+
     @GetMapping(value = "/user/get_user_profile", produces = { "application/JSON" })
-    public UserProfileResponse getUserProfile(@RequestParam(value = "token") final String token) throws Exception  {
+    public UserProfileResponse getUserProfile(@RequestParam(value = "token") final String token) throws Exception {
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
         long userId = SessionManager.getInstance().getUserId(token);
@@ -402,13 +409,13 @@ public class UserController {
             returnCode = "ERROR";
             returnMessage = "getUserProfilefailed : " + e.getMessage();
             logger.error("UserMapper.getUserObject threw an Exception " + returnMessage);
-        } 
+        }
         return new UserProfileResponse(userVO, returnCode, returnMessage);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/confirm_signup", produces = { "application/JSON" })
     public BooleanResponse confirmSignup(@RequestParam(value = "email") final String email,
-            @RequestParam(value = "resetToken") final String resetToken){
+            @RequestParam(value = "resetToken") final String resetToken) {
         logger.info("UserController.confirm_signup called for email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
@@ -437,7 +444,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/user/message", produces = { "application/JSON" })
-    public BooleanResponse submitContactUsForm(@Valid @RequestBody ContactUsModel contactUsModel){
+    public BooleanResponse submitContactUsForm(@Valid @RequestBody ContactUsModel contactUsModel) {
         logger.info("UserController.submitContactUsForm called for ContactUsModel " + contactUsModel);
         String returnCode = "SUCCESS";
         String returnMessage = "";
