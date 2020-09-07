@@ -253,30 +253,35 @@ public class FileTransferController {
             if (returnCode.equals("SUCCESS")) {
                 FileTransferInfoVO fileTransferInfo = fileTransferMapper.getUserFileTransferInfo(userId,
                         fileTransferUuid);
-                String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
-                String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
-                logger.info("FileTransferController.setFileTransferReceiverAddress is deploying smart contarct for Filetransferuid: "
-                        + fileTransferUuid);
-                try {
-                    @SuppressWarnings("unused")
-                    boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
-                            "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
-                    if(!response) {
-                       throw new Exception("DeploySmartContract returned false");
-                    }
-                    
-                } catch (Exception e) {
-                    if (e instanceof java.net.ConnectException) {
-                        returnCode = "BLOCKCHAIN_CONNECTION_EXCEPTION";
-                        returnMessage = "Connecting to Blockchain failed trying to deploy smart contract.";
+                String contractAddress = fileTransferInfo.getSmartContractAddress();
+                if (StringUtils.isEmpty(contractAddress)) {
+                    String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
+                    String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
+                    logger.info("FileTransferController.setFileTransferReceiverAddress is deploying smart contarct for Filetransferuid: "
+                            + fileTransferUuid);
+                    try {
+                        @SuppressWarnings("unused")
+                        boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
+                                "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
+                        if (!response) {
+                            throw new Exception("DeploySmartContract returned false");
+                        }
 
-                    } else {
-                        returnCode = "BLOCKCHAIN_UKNOWN_EXCEPTION";
-                        returnMessage = "Deploy smart contract faild throwing an Exception.";
+                    } catch (Exception e) {
+                        if (e instanceof java.net.ConnectException) {
+                            returnCode = "BLOCKCHAIN_CONNECTION_EXCEPTION";
+                            returnMessage = "Connecting to Blockchain failed trying to deploy smart contract.";
+
+                        } else {
+                            returnCode = "BLOCKCHAIN_UKNOWN_EXCEPTION";
+                            returnMessage = "Deploy smart contract faild throwing an Exception.";
+                        }
+                        logger.error("Deploy smart contract failed returnCode: {} returnMessage: {}   Exception: {}", returnCode,
+                                returnMessage, e.getMessage());
+                        return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
                     }
-                    logger.error("Deploy smart contract failed returnCode: {} returnMessage: {}   Exception: {}", returnCode,
-                            returnMessage, e.getMessage());
-                    return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
+                }else {
+                    logger.info("smart contract was deployed and set previously.");
                 }
             }
         }
@@ -340,7 +345,7 @@ public class FileTransferController {
             }
             logger.error("Retrieving wallet address from transaction failed  returnCode: {}  returnMessage:  {}  Exception: {}",
                     returnCode, returnMessage, e.getMessage());
-            return new TransactionHashResponse("", returnCode, returnMessage); 
+            return new TransactionHashResponse("", returnCode, returnMessage);
         }
 
         walletAddress = remove0xPrefix(walletAddress);
