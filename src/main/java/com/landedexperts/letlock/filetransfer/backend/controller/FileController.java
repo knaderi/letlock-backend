@@ -7,16 +7,10 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanPathnameVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -59,7 +54,8 @@ public class FileController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/upload_file", produces = { "application/JSON" })
     public BooleanResponse uploadFile(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "file") final MultipartFile file)
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "file") final MultipartFile file,
+            @RequestParam(value ="file_byte_size") final Double fileByteSize)
             throws Exception {
         logger.info("FileController.upload_file called for token " + token);
         boolean result = false;
@@ -79,8 +75,7 @@ public class FileController {
             Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
 
             try {
-               // saveFileOnDisk(file, localFilePath);
-                remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(file, remotePathName);
+                remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(file, remotePathName, fileByteSize);
             } catch (FileUploadException e) {
                 e.printStackTrace();
                 logger.error("FileController.upload_file Could not upload the file due to: " + e.getMessage());
@@ -107,18 +102,31 @@ public class FileController {
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
-    public void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
-        logger.info("Saving file on disk before upload. localFilePath", localFilePath);
-        InputStream fileStream = localFile.getInputStream();
-        OutputStream localFileCopy = new FileOutputStream(localFilePath);
-        try {
-            IOUtils.copy(fileStream, localFileCopy);
-        } finally {
-            IOUtils.closeQuietly(fileStream);
-            IOUtils.closeQuietly(localFileCopy);
-        }
-    }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/upload_progress")
+    public JsonResponse<Double> getUploadProgress(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "file") final String fileName) throws Exception {
+        logger.info("FileController.getUploadProgress called for token " + token);
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        double uploadPercentage = 0;
+
+        long userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            try {
+                uploadPercentage = remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).getUploadSize(fileName);
+            }catch(Exception e) {
+                returnCode = "ERROR_READING_UPLOAD_PROGRESS";
+                returnMessage = "Reading upload progress threw an exception.";
+            }
+        }else {
+            returnCode = "TOKEN_INVALID";
+            returnMessage = "Invalid token";
+        }
+
+        return new JsonResponse<Double>(uploadPercentage, returnCode, returnMessage);
+    }
+    
     @RequestMapping(method = RequestMethod.GET, value = "/can_download_file")
     public BooleanResponse canDownloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {

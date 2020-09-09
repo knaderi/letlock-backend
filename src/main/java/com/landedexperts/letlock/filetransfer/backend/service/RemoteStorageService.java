@@ -14,6 +14,8 @@ public interface RemoteStorageService {
 
     ResponseEntity<Resource> downloadRemoteFile(final String remotePathName);
     
-    void uploadFileToRemote(final MultipartFile file, final String remoteStoragePath );
+    void uploadFileToRemote(final MultipartFile file, final String remoteStoragePath, double fileByteSize );
+    
+    double getUploadSize(final String name);
     
 }

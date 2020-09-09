@@ -42,8 +42,8 @@ public class FileControllerTest extends BaseControllerTest {
         SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
         String token = response.getResult().getToken();
-        BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
-        Assertions.assertFalse(uploadResponse.getResult().getValue(), "upload should fail as there is no transfer session");
+        BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile, 100000.00);
+        Assertions.assertFalse(uploadResponse.getResult().getValue(),"upload should fail as there is no transfer session");
     }
 
     @Test

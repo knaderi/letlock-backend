@@ -38,18 +38,36 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
 
     @Test
     public void testUploadFile() throws Exception {
-//        File newFile = new File("C:\\Users\\rkaur\\LetLock\\files\\100MB");
-//       //  File newFile = new File("c:\\LetLock-FileTransfer-Setup.exe");
-//        boolean flag = newFile.exists();
-//        FileInputStream inputStream = new FileInputStream(newFile);
-//        try {
-//            MultipartFile localFile = new MockMultipartFile(newFile.getName(), newFile.getName(), null, inputStream);
-//            S3StorageService.uploadFileToRemote(localFile, newFile.getName());
-//        } catch (Error e) {
-//            e.printStackTrace();
-//        } finally {
-//            inputStream.close();
-//        }
+        File newFile = new File("C:\\Users\\rkaur\\LetLock\\files\\100MB");
+        // File newFile = new File("c:\\LetLock-FileTransfer-Setup.exe");
+        boolean flag = newFile.exists();
+        FileInputStream inputStream = new FileInputStream(newFile);
+        try {
+            Thread t1 = new Thread(new S3StorageServiceTest().new CheckProgress());
+            t1.start();
+            MultipartFile localFile = new MockMultipartFile(newFile.getName(), newFile.getName(), null, inputStream);
+            S3StorageService.uploadFileToRemote(localFile, localFile.getName(), 1.08837101E8);
+        } catch (Error e) {
+            e.printStackTrace();
+        } finally {
+            inputStream.close();
+        }
+    }
+
+    private class CheckProgress implements Runnable {
+
+        @Override
+        public void run() {
+            double pct = 0.00;
+            while (true) {
+                pct = new S3StorageService().getUploadSize("100MB");
+     //           if (pct > 0) {
+                    System.out.println("Upload size is " + pct);
+       //         }
+            }
+
+        }
+
     }
 
     @Test
