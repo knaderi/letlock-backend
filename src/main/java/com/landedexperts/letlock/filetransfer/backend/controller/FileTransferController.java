@@ -188,8 +188,6 @@ public class FileTransferController {
                     "application/JSON" })
     public FileTransferSessionsResponse getFileTransferSessionsForUser(
             @RequestParam(value = "token") final String token) throws Exception {
-        logger.info("FileTransferController.getFileTransferSessionsForUser called for token " + token + "\n");
-
         FileTransferInfoRecordVO[] value = null;
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
