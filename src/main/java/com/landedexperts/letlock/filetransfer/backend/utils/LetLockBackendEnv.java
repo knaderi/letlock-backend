@@ -32,6 +32,7 @@ public class LetLockBackendEnv {
     public final String SECRET_DS_PASSWORD_SECRET_KEY = "password";
     public final String SECRET_DS_USER_SECRET_KEY = "username";
     public final String SECRET_DS_HOST_SECRET_KEY = "host";
+    public final String SECRET_DS_DBNAME_SECRET_KEY = "databasename";
 
     // Paypal props secret keys
     public final String SECRET_PAYPAL_CLIENT_ID_KEY = "PAYPAL_CLIENT_ID";

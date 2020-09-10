@@ -97,7 +97,7 @@ public class LetLockPGDataSource extends PGSimpleDataSource {
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         Properties remoteDataSourceProps = getRemoteDataSourceProperties();
         dataSource.setServerName(remoteDataSourceProps.getProperty(constants.SECRET_DS_HOST_SECRET_KEY));
-        dataSource.setDatabaseName(LETLOCK_FILETRANSFER);
+        dataSource.setDatabaseName(remoteDataSourceProps.getProperty(constants.SECRET_DS_DBNAME_SECRET_KEY));
         dataSource.setPortNumber(Integer.parseInt(remoteDataSourceProps.getProperty(constants.SECRET_DS_PORT_SECRET_KEY)));
         // Get these from AWS secret manager
         dataSource.setUser(remoteDataSourceProps.getProperty(constants.SECRET_DS_USER_SECRET_KEY));
