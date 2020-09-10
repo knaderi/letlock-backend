@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ResetTokenResponse;
@@ -50,6 +51,7 @@ public class UserController {
     @Autowired
     private UserMapper userMapper;
 
+   
     @Autowired
     EmailServiceFacade emailServiceFacade;
 
@@ -437,7 +439,8 @@ public class UserController {
                         " return Message: " + returnMessage);
             }else {
                 if (freeTransferCreditOnSignup) {
-                    userMapper.addFreeTransferCredit(1, email); //TODO: This has to be done on behalf of admin/system
+                    IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); //TODO: This has to be done on behalf of admin/system
+                    logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(), addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId()) ;
                 }
             }
         } catch (Exception e) {
@@ -489,7 +492,7 @@ public class UserController {
         boolean result = false;
         try {
             if (userId > 0 && userId == 1) {//TODO: check for admin role later
-                ReturnCodeMessageResponse answer = userMapper.addFreeTransferCredit(userId, customerLoginName);
+                IdVO answer = userMapper.addFreeTransferCredit(userId, customerLoginName);
                 returnCode = answer.getReturnCode();
                 returnMessage = answer.getReturnMessage();
                 if ("SUCCESS".equals(returnCode)) {
