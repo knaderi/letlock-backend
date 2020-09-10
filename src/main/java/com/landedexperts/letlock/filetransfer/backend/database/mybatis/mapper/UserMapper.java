@@ -76,5 +76,14 @@ public interface UserMapper {
     void setSignupConfirmationForTest(
             @Param("userId") long userId);
     
+    @Select("SELECT"
+            + " _return_code AS returnCode,"
+            + " _return_message AS returnMessage"
+            + " FROM orders.add_free_credit("
+            + " #{userId},"
+            + "cast(#{customerLoginName} AS users.name)"
+            + ")")
+    ReturnCodeMessageResponse addFreeTransferCredit(@Param("userId") long userId, @Param("customerLoginName") String customerLoginName);
+    
         
 }

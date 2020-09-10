@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +52,9 @@ public class UserController {
 
     @Autowired
     EmailServiceFacade emailServiceFacade;
+
+    @Value("${signup.free.transfer.credit}")
+    private boolean freeTransferCreditOnSignup;
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) {
@@ -201,13 +205,14 @@ public class UserController {
     @PostMapping(value = "/user/change_password", produces = { "application/JSON" })
     public BooleanResponse changePassword(@RequestParam(value = "token") final String token,
             @RequestParam(value = "loginName") final String loginName, @RequestParam(value = "email") final String email,
-            @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword, HttpServletRequest httpServletRequest) {
+            @RequestParam(value = "oldPassword") final String oldPassword, @RequestParam(value = "newPassword") final String newPassword,
+            HttpServletRequest httpServletRequest) {
         logger.info("UserController.changePassword called for a user");
         String origin = httpServletRequest.getHeader("origin");
-        String ipAddress = httpServletRequest.getRemoteAddr() ;
-        String userAgent =  httpServletRequest.getHeader("User-Agent");
+        String ipAddress = httpServletRequest.getRemoteAddr();
+        String userAgent = httpServletRequest.getHeader("User-Agent");
         RequestData requestData = new RequestData(ipAddress, userAgent, origin);
-        
+
         long userId = SessionManager.getInstance().getUserId(token);
         String returnCode = "TOKEN_INVALID";
         String returnMessage = "Invalid token";
@@ -218,8 +223,8 @@ public class UserController {
                 returnCode = answer.getReturnCode();
                 returnMessage = answer.getReturnMessage();
                 if ("SUCCESS".equals(returnCode)) {
-                   //TODO: enable after LLW-249 is implemented in sprint 16
-                  //  emailServiceFacade.sendChangePasswordEmail(email);
+                    // TODO: enable after LLW-249 is implemented in sprint 16
+                    // emailServiceFacade.sendChangePasswordEmail(email);
                     result = true;
                 } else {
                     logger.error("UserController.changePassword failed for email "
@@ -430,6 +435,10 @@ public class UserController {
             if (!"SUCCESS".equals(returnCode)) {
                 logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
                         " return Message: " + returnMessage);
+            }else {
+                if (freeTransferCreditOnSignup) {
+                    userMapper.addFreeTransferCredit(1, email); //TODO: This has to be done on behalf of admin/system
+                }
             }
         } catch (Exception e) {
             logger.error("Exception thrown sening email." + e.getMessage());
@@ -468,6 +477,45 @@ public class UserController {
                     " return Message: " + returnMessage);
         }
         return new BooleanResponse(false, returnCode, returnMessage);
+    }
+
+    @PostMapping(value = "/user/transferCredit", produces = { "application/JSON" })
+    public BooleanResponse addFreeTransferCredit(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "customerLoginName") final String customerLoginName) {
+        logger.info("UserController.addFreeTransferCredit called for user " + customerLoginName);
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        long userId = SessionManager.getInstance().getUserId(token);
+        boolean result = false;
+        try {
+            if (userId > 0 && userId == 1) {//TODO: check for admin role later
+                ReturnCodeMessageResponse answer = userMapper.addFreeTransferCredit(userId, customerLoginName);
+                returnCode = answer.getReturnCode();
+                returnMessage = answer.getReturnMessage();
+                if ("SUCCESS".equals(returnCode)) {
+                    result = true;
+                } else {
+                    logger.error("UserController.addFreeTransferCredit failed for logginName "
+                            + customerLoginName
+                            + " failed. returnCode: "
+                            + returnCode
+                            + " returnMessage: "
+                            + returnMessage);
+                }
+            }else {
+                returnCode = "ADMIN_USER_EXPECTED";
+                returnMessage = "Admin user is required to add free credit.";
+            }
+        } catch (Exception e) {
+            returnCode = "ADD_TRANSFER_CREDIT_ERROR";
+            logger.error("UserController.addFreeTransferCredit failed for logginName "
+                    + customerLoginName
+                    + " failed. returnCode: "
+                    + returnCode
+                    + " returnMessage: "
+                    + e.getMessage());
+        }
+        return new BooleanResponse(result, returnCode, returnMessage);
     }
 
 }
