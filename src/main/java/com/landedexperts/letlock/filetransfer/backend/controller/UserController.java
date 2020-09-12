@@ -6,12 +6,18 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ResetTokenResponse;
@@ -35,6 +42,8 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ResetT
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 import com.landedexperts.letlock.filetransfer.backend.session.AppSettingsManager;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
+import com.landedexperts.letlock.filetransfer.backend.utils.AntideoEmailValiationVO;
+import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidationResult;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
@@ -85,33 +94,91 @@ public class UserController {
         String returnCode = "SUCCESS";
         String returnMessage = "";
         IdVO answer = new IdVO();
-        if (!isLoginCriteriaAnEmail(email)) {
-            returnCode = INVALID_LOGIN;
-            returnMessage = EMAIL_IS_INVALID;
-        } else if (!LoginNameValidator.isValid(loginName)) {
-            returnCode = INVALID_LOGINNAME;
-            returnMessage = String.format(LOGIN_NAME_IS_INVALID + " for loginName: %s", loginName);
-        } else {
-            String resetToken = UUID.randomUUID().toString();
-            try {
-                answer = userMapper.register(loginName, email, password, resetToken);
-                returnCode = answer.getReturnCode();
-                returnMessage = answer.getReturnMessage();
-
-                if ("SUCCESS".equals(returnCode)) {
-                    logger.info("regsitered user with email " + email + " and with loginName " + loginName);
-                    emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
+        boolean loginNameValid = true;
+        try {
+            EmailValidationResult emailValidationResult = validateEmail(email);
+            if (emailValidationResult.isValid()) {
+                loginNameValid = LoginNameValidator.isValid(loginName);
+                if (!loginNameValid) {
+                    returnCode = INVALID_LOGINNAME;
+                    returnMessage = String.format(LOGIN_NAME_IS_INVALID + " for loginName: %s", loginName);
+                    answer.setReturnCode(returnCode);
+                    answer.setReturnMessage(returnMessage);
+                    return answer;
                 }
-            } catch (Exception e) {
-                returnCode = "REGISTER_ERROR";
-                returnMessage = e.getMessage();
-                logger.error("Error in UserController.register returnMessage: " + returnMessage);
+            } else {
+                answer.setReturnCode(emailValidationResult.getReturnCode());
+                answer.setReturnMessage(emailValidationResult.getReturnMessage());
+                return answer;
             }
-        }
-        answer.setReturnCode(returnCode);
-        answer.setReturnMessage(returnMessage);
 
+            String resetToken = UUID.randomUUID().toString();
+            answer = userMapper.register(loginName, email, password, resetToken);
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+
+            if ("SUCCESS".equals(returnCode)) {
+                logger.info("regsitered user with email " + email + " and with loginName " + loginName);
+                emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
+            }
+            answer.setReturnCode(returnCode);
+            answer.setReturnMessage(returnMessage);
+        } catch (Exception e) {
+            answer.setReturnCode("REGISTER_ERROR");
+            answer.setReturnMessage(e.getMessage());
+            logger.error("Error in UserController.register returnMessage: " + returnMessage);
+        }
         return answer;
+    }
+
+    private EmailValidationResult validateEmail(final String email) throws Exception {
+        EmailValidationResult emailValidationResult = new EmailValidationResult();
+
+        if (new EmailValidator().isValid(email)) {
+            AntideoEmailValiationVO antideoValidationInfo = getAntideoValidationInfo(email);
+            if (antideoValidationInfo.isSpam() || antideoValidationInfo.isScam()) {
+                emailValidationResult.setReturnCode("UNRELIABLE_EMAIL");
+                emailValidationResult.setReturnMessage("Email is listed in spam or scam email list");
+                emailValidationResult.setValid(false);
+            } else if (null != antideoValidationInfo.getError()) {
+                if (antideoValidationInfo.getError().getCode().equals("429")) {
+                    logger.error("LetLock has reached maximum Antideo email validation treshhold. Need to increase the limit");
+                    // TODO: Send email to admin
+                } else {
+                    emailValidationResult.setReturnCode("EMAIL_VALIDATION_ERROR");
+                    emailValidationResult.setReturnMessage("validaton code: "
+                            + antideoValidationInfo.getError().getCode()
+                            + " validation message: "
+                            + antideoValidationInfo.getError().getMessage());
+                    emailValidationResult.setValid(false);
+                }
+            }
+        } else {
+            emailValidationResult.setReturnCode(INVALID_LOGIN);
+            emailValidationResult.setReturnMessage(EMAIL_IS_INVALID);
+            emailValidationResult.setValid(false);
+        }
+        return emailValidationResult;
+    }
+
+    public AntideoEmailValiationVO getAntideoValidationInfo(String email) throws Exception {
+
+        String url = "http://api.antideo.com/email/" + email;
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet(url);
+
+        // add request header
+        HttpResponse response = client.execute(request);
+        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        StringBuffer result = new StringBuffer();
+        String line = "";
+        while ((line = rd.readLine()) != null)
+            result.append(line);
+
+        AntideoEmailValiationVO vo = new Gson().fromJson(result.toString(),
+                AntideoEmailValiationVO.class);
+
+        return vo;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/resend_signup_email", produces = { "application/JSON" })
@@ -491,7 +558,7 @@ public class UserController {
         long userId = SessionManager.getInstance().getUserId(token);
         boolean result = false;
         try {
-            if (userId > 0 && userId == 1) {//TODO: check for admin role later
+            if (userId > 0 && userId == 1) {// TODO: check for admin role later
                 IdVO answer = userMapper.addFreeTransferCredit(userId, customerLoginName);
                 returnCode = answer.getReturnCode();
                 returnMessage = answer.getReturnMessage();
@@ -505,7 +572,7 @@ public class UserController {
                             + " returnMessage: "
                             + returnMessage);
                 }
-            }else {
+            } else {
                 returnCode = "ADMIN_USER_EXPECTED";
                 returnMessage = "Admin user is required to add free credit.";
             }

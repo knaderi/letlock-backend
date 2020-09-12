@@ -51,7 +51,7 @@ public class UserControllerTest extends BaseControllerTest {
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.get(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
         
-        resultAction.andExpect(ok);
+        resultAction.andExpect(ok); 
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         assertForNoError("getUserProfileTest", content);
