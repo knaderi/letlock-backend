@@ -359,7 +359,7 @@ public class OrderControllerTest extends BaseControllerTest {
         // start a file transfer
         String walletAddressTrimmed = TestUtils.createWalletAddress();
         FileTransferInfoVO vo = fileTransferMapper.insertFileTransferSessionRecord(Long.parseLong(userId),
-                walletAddressTrimmed, "Bob1111", BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue());
+                walletAddressTrimmed, "llftReceiver", BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue());
         System.out.println(vo);
     }
 
