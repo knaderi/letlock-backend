@@ -12,36 +12,39 @@
     * {
       margin: 0;
     }
-
-    table {
-      text-align: center;
-      font-family: 'Nunito Sans', sans-serif;
-      max-width: 800px;
-    }
-
-    tbody {
-      text-align: center;
-    }
-
-    td {
-      text-align: center;
-    }
-
-    tr {
-      text-align: center;
-    }
   </style>
 
-  <body>
-    <table style="margin: 0 auto;">
+  <body style="text-align: center;">
+    <table
+      style="
+        margin: 0 auto;
+        background-color: white;
+        border: 1px solid lightgray;
+        margin-top: 12px;
+        width: 600px;
+        font-family: 'Nunito Sans', sans-serif;
+      "
+    >
       <tbody>
         <tr>
           <td>
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <img src="%LETLOCK_LOGO_URL_TOKEN%" alt="let lock logo" />
+            <table
+              style="
+                margin: 0 auto;
+                background-color: white;
+                margin-top: 12px;
+                width: 600px;
+                font-family: 'Nunito Sans', sans-serif;
+              "
+            >
+              <tbody style="text-align: center;">
+                <tr style="text-align: center;">
+                  <td style="text-align: center;">
+                    <img
+                      style="margin-top: 12px;"
+                      src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/logo@172px.png"
+                      alt="letlock logo"
+                    />
                   </td>
                 </tr>
                 <tr>
@@ -51,7 +54,7 @@
                 </tr>
                 <tr>
                   <td>
-                    <p style="font-size: 20px;">
+                    <p style="font-size: 16px;">
                       We are sending you this email because you have signed up to our services. Click the button below
                       to confirm your email.
                     </p>
@@ -60,29 +63,26 @@
                 <tr>
                   <td>
                     <br />
-                    <form action="%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%" target="_blank" method="get">
-                      <input style="display: none;" type="text" name="token" id="token" value="%USER_CONFIRM_TOKEN%" />
-                      <input style="display: none;" type="text" name="email" id="email" value="%EMAIL_TOKEN%" />
-                      <button
-                        type="submit"
-                        style="
-                          background-color: #2fafff;
-                          border: 0;
-                          border-radius: 3px;
-                          padding: 12px 24px;
-                          color: white;
-                          font-size: 16px;
-                          font-weight: bold;
-                          text-decoration: none;
-                          margin: 0 0;
-                          cursor: pointer;
-                        "
-                      >
-                        CONFIRM SIGNUP
-                      </button>
-                    </form>
+                    <a
+                      href="%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%/?token=%USER_CONFIRM_TOKEN%&email=%EMAIL_TOKEN%"
+                      target="_blank"
+                    >
+                      <img
+                        src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/confirm-signup.png"
+                        alt="confirm signup button"
+                    /></a>
                     <br />
-                    <br />                    
+                    <br />
+                    <a
+                      style="font-size: 12px;"
+                      href="%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%/?token=%USER_CONFIRM_TOKEN%&email=%EMAIL_TOKEN%"
+                      target="_blank"
+                    >
+                      %VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%/?token=%USER_CONFIRM_TOKEN%&email=%EMAIL_TOKEN%
+                    </a>
+                    <br />
+                    <p style="font-size: 14px;">Or copy and paste the link above into your browser.</p>
+                    <br />
                     <br />
                   </td>
                 </tr>
@@ -99,9 +99,13 @@
           </td>
         </tr>
         <tr>
-          <td style="background-color: #f3f3f4;">
-            <img src="%LETLOCK_FOOTER_LOGO_TOKEN%" alt="let lock gray logo" style="margin-top: 24px;" />
-            <p style="font-size: 14px; padding: 24px 0;">
+          <td style="background-color: #f3f3f4; text-align: left; padding: 12px;">
+            <img
+              src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/footer_logo@94px.png"
+              alt="letlock gray logo"
+              style="margin-top: 20px;"
+            />
+            <p style="font-size: 14px; padding: 0;">
               Digital security solution that makes digital property storage and transfer more secure than ever.
             </p>
           </td>
