@@ -23,6 +23,7 @@ import com.amazonaws.services.secretsmanager.model.DecryptionFailureException;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.google.gson.Gson;
+import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
 
 public final class AWSSecretManagerFacade {
 
@@ -37,8 +38,12 @@ public final class AWSSecretManagerFacade {
     private static final String DEFAULT_AWS_CLOUD_REGION = "us-west-2";
 
     public static Properties getSpringMailProperties(String env) {
-
-        String secretName = env + APPDATA_LETLOCK_MAIL_SECRET;
+        String secretName;
+        if(LetLockBackendEnv.getInstance().isLocalEnv()) {
+            secretName = LetLockBackendEnv.getInstance().DEV_ENV_NAME + APPDATA_LETLOCK_MAIL_SECRET;
+        }else {
+            secretName = env + APPDATA_LETLOCK_MAIL_SECRET;
+        }
         return getSecretValue(secretName);
 
     }

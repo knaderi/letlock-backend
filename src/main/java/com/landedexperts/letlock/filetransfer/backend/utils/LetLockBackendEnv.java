@@ -41,6 +41,7 @@ public class LetLockBackendEnv {
 
     // Environment related constants
     public final String LOCAL_ENV_NAME = "local";
+    public final String DEV_ENV_NAME = "dev";
     public final String SPRING_PROFILES_ACTIVE = "spring.profiles.active";
     private String env;
 

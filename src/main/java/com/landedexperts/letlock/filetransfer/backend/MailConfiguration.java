@@ -25,52 +25,45 @@ import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
  */
 @Configuration
 public class MailConfiguration {
-    
 
     @Value("${spring.mail.host}")
     private String mailHost;
-    
+
     @Value("${spring.mail.port}")
-    private String mailPort;    
-    
-    
+    private String mailPort;
+
     @Value("${spring.profiles.active}")
-    private String env; 
-    
+    private String env;
+
     @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
     private String tlsEnabled;
-        
+
     @Value("${spring.mail.properties.mail.smtp.starttls.required}")
     private String tlsRequired;
-    
+
     @Value("${spring.mail.properties.mail.smtp.auth}")
     private String smtpAuth;
-    
+
     @Value("${spring.mail.properties.mail.smtp.connectiontimeout}")
     private String connectionTimeOut;
-    
+
     @Value("${spring.mail.properties.mail.smtp.timeout}")
     private String smtpTimeOut;
-    
+
     @Value("${spring.mail.properties.mail.smtp.writetimeout}")
     private String writeTimeOut;
-   
+
     @Value("${spring.mail.properties.mail.transport.protocol}")
     private String transportProtocol;
-    
-    
+
     @Bean
     public JavaMailSender getMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance(env);
-        if(constants.isLocalEnv()) {
-            mailSender.setUsername( "letlock-notifications@landedexperts.com");
-            mailSender.setPassword("7JqbmMu8ddAz3uS2YpNIWcjz7aE!");
-        }else {
-            Properties mailProperties = AWSSecretManagerFacade.getSpringMailProperties(constants.getEnv());
-            mailSender.setUsername(mailProperties.getProperty(constants.SECRET_SPRING_MAIL_USERNAME_KEY));
-            mailSender.setPassword(mailProperties.getProperty(constants.SECRET_SPRING_MAIL_PASSWORD_KEY));
-        }
+        Properties mailProperties = AWSSecretManagerFacade.getSpringMailProperties(constants.getEnv());
+        mailSender.setUsername(mailProperties.getProperty(constants.SECRET_SPRING_MAIL_USERNAME_KEY));
+        mailSender.setPassword(mailProperties.getProperty(constants.SECRET_SPRING_MAIL_PASSWORD_KEY));
+
         mailSender.setHost(mailHost);
         mailSender.setPort(Integer.valueOf(mailPort));
 
@@ -82,7 +75,6 @@ public class MailConfiguration {
         javaMailProperties.put("mail.smtp.connectiontimeout", connectionTimeOut);
         javaMailProperties.put("mail.smtp.timeout", smtpTimeOut);
         javaMailProperties.put("mail.smtp.writetimeout", writeTimeOut);
-
 
         mailSender.setJavaMailProperties(javaMailProperties);
         return mailSender;
