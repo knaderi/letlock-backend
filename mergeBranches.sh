@@ -97,9 +97,9 @@ rebaseApp() {
 #------------------------------------------------------------------------------
 echo
 echo "Welcome to the environment deployment script. Options are:"
-echo "  qa:   push dev to qa"
+echo "  qa:   push ${SRC_BRANCH} to qa"
 echo "  prd: push qa  to prod"
-echo "  all:  push main development branch to qa, prd"
+echo "  all:  push ${SRC_BRANCH} branch to qa, prd"
 echo
 
 read -p "What would you like to do (qa/prd/all): " input
