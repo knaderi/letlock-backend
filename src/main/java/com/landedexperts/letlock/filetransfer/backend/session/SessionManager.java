@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class SessionManager {
+
     private static SessionManager singleInstance = null;
 
     public static SessionManager getInstance() {
@@ -108,4 +109,5 @@ public class SessionManager {
             sessionTokens.get(token).extend();
         }
     }
+
 }

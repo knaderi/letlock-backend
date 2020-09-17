@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AppsSettingsVO;
 
 public interface MgmtMapper {
 
@@ -17,5 +18,9 @@ public interface MgmtMapper {
             + " FROM mgmt.is_free_signup_credit(cast (#{ appName } AS mgmt.tp_app_name))")
     JsonResponse<String> isFreeSignupTransferCredit(
             @Param("appName") String appName);
+    
+    @Select("SELECT *"
+            + " FROM mgmt.apps_settings where deleted=false")
+    AppsSettingsVO[] readSettings();
 
 }
