@@ -36,7 +36,7 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
         super.setUp();
     }
 
-    @Test
+   // @Test
     public void testUploadFile() throws Exception {
         File newFile = new File("C:\\Users\\rkaur\\LetLock\\files\\100MB");
         // File newFile = new File("c:\\LetLock-FileTransfer-Setup.exe");
