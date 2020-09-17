@@ -25,7 +25,7 @@ public class MgmtController {
     @Autowired
     private MgmtMapper adminMapper;
 
-    @GetMapping(value = "/setting/freeTransferCredit", produces = { "application/JSON" })
+    @GetMapping(value = "/setting/is_free_signup_credit", produces = { "application/JSON" })
     public JsonResponse<String> isFreeSignUpTransferCredit(
             @RequestParam(value = "appName") final String appName) {
         logger.info("MgmtController.isFreeSignUpTransferCredit called for app " + appName);

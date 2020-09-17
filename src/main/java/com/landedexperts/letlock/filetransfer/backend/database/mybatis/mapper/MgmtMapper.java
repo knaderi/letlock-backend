@@ -13,10 +13,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 
 public interface MgmtMapper {
 
-    @Select("SELECT"
-            + " _result AS value,"
-            + " _return_code AS returnCode,"
-            + " _return_message AS returnMessage"
+    @Select("SELECT *"
             + " FROM mgmt.is_free_signup_credit(cast (#{ appName } AS mgmt.tp_app_name))")
     JsonResponse<String> isFreeSignupTransferCredit(
             @Param("appName") String appName);
