@@ -53,7 +53,7 @@ public class FileController {
     @Autowired
     RemoteStorageServiceFactory remoteStorageService;
 
-    @RequestMapping(method = RequestMethod.POST, value = "/upload_file", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/file/upload", produces = { "application/JSON" })
     public BooleanResponse uploadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "file") final MultipartFile file,
             @RequestParam(value ="file_byte_size") final Double fileByteSize)
@@ -104,7 +104,7 @@ public class FileController {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/upload_progress")
+    @RequestMapping(method = RequestMethod.GET, value = "file/upload_progress")
     public JsonResponse<UploadProgressStat> getUploadProgress(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file") final String fileName) throws Exception {
         logger.info("FileController.getUploadProgress called for token " + token);
@@ -128,7 +128,7 @@ public class FileController {
         return new JsonResponse<UploadProgressStat>(uploadProgress, returnCode, returnMessage);
     }
     
-    @RequestMapping(method = RequestMethod.GET, value = "/can_download_file")
+    @RequestMapping(method = RequestMethod.GET, value = "/file/can_download")
     public BooleanResponse canDownloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileController.canDownloadFile called for token " + token);
@@ -148,7 +148,7 @@ public class FileController {
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/download_file")
+    @RequestMapping(method = RequestMethod.POST, value = "/file/download")
     public ResponseEntity<Resource> downloadFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileController.downloadFile called for token " + token);
@@ -169,7 +169,7 @@ public class FileController {
                 .body(new DescriptiveResource(DOWNLOAD_FAILED));
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/delete_file", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.POST, value = "/file/delete", produces = { "application/JSON" })
     public BooleanResponse deleteFile(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
         logger.info("FileController.deleteFile called for token " + token);

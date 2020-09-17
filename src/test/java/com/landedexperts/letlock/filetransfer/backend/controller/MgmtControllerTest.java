@@ -35,9 +35,9 @@ public class MgmtControllerTest extends BaseControllerTest {
 
     @Test
     public void testIsFreeSignUpCreditForWrongAppName() throws Exception {
-        String uri = "/setting/is_free_signup_credit";
+        String uri = "/setting/is_free_signup_credit_for_app";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).param("token", token)
+                .perform(MockMvcRequestBuilders.get(uri).param("token", token).param("appName", "sadasdsa")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
