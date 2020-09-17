@@ -18,12 +18,10 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.landedexperts.letlock.filetransfer.backend.AbstractTest;
-import com.landedexperts.letlock.filetransfer.backend.BackendTestConstants;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 
-public class FileControllerTest extends AbstractTest implements BackendTestConstants {
+public class FileControllerTest extends BaseControllerTest {
 
     @Autowired
     private FileController fileController;
@@ -33,7 +31,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
 
     @Override
     @BeforeEach
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         super.setUp();
     }
 
@@ -45,7 +43,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
         String token = response.getResult().getToken();
         BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
-        Assertions.assertFalse(uploadResponse.getResult().getValue(),"upload should fail as there is no transfer session");
+        Assertions.assertFalse(uploadResponse.getResult().getValue(), "upload should fail as there is no transfer session");
     }
 
     @Test
@@ -54,7 +52,7 @@ public class FileControllerTest extends AbstractTest implements BackendTestConst
         String token = response.getResult().getToken();
         ResponseEntity<Resource> fileDownloadResponse = fileController.downloadFile(token, testUUId);
         // download should fail.
-        Assertions.assertEquals(FileController.DOWNLOAD_FAILED, fileDownloadResponse.getBody().toString(),"download should fail");
+        Assertions.assertEquals(FileController.DOWNLOAD_FAILED, fileDownloadResponse.getBody().toString(), "download should fail");
     }
 
     private UUID getUuid() {
