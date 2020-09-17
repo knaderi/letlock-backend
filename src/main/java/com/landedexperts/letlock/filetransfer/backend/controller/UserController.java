@@ -437,7 +437,7 @@ public class UserController {
                 logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
                         " return Message: " + returnMessage);
             }else {
-                boolean isFreeSignupCredit = appsSettingsManager.isFreeSignUpCreditForClientWeb();
+                boolean isFreeSignupCredit = appsSettingsManager.isFreeSignUpCreditForapps();
                 if (isFreeSignupCredit) {
                     IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); //TODO: This has to be done on behalf of admin/system
                     logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(), addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId()) ;
