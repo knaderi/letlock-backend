@@ -48,4 +48,8 @@ public class AppSettingsManager {
         }
         return setting.getValue();
     }
+    
+    public boolean isFreeSignUpCreditForClientWeb() {
+        return  "true".contentEquals(getSettingValue("client_web_app", "signup_free_credit"));
+    }
 }

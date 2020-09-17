@@ -27,7 +27,7 @@ public class MgmtController {
 
 
     @GetMapping(value = "/setting/is_free_signup_credit", produces = { "application/JSON" })
-    public JsonResponse<String> isFreeSignUpTransferCredit2(
+    public JsonResponse<String> isFreeSignUpTransferCredit(
             @RequestParam(value = "appName") final String appName) {
         logger.info("MgmtController.isFreeSignUpTransferCredit called for app " + appName);
         String settingValue = appSettingManager.getSettingValue(appName, "signup_free_credit");

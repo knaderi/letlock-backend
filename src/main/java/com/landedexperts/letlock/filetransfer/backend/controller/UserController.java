@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +33,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ResetTokenVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
+import com.landedexperts.letlock.filetransfer.backend.session.AppSettingsManager;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
@@ -49,13 +49,14 @@ public class UserController {
     private static final String INVALID_LOGIN = "INVALID_LOGIN";
     @Autowired
     private UserMapper userMapper;
+    
+    @Autowired
+    private AppSettingsManager appsSettingsManager;
 
    
     @Autowired
     EmailServiceFacade emailServiceFacade;
 
-    @Value("${signup.free.transfer.credit}")
-    private boolean freeTransferCreditOnSignup;
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) {
@@ -92,7 +93,6 @@ public class UserController {
             returnMessage = String.format(LOGIN_NAME_IS_INVALID + " for loginName: %s", loginName);
         } else {
             String resetToken = UUID.randomUUID().toString();
-            logger.info("****************Calling register on db side");
             try {
                 answer = userMapper.register(loginName, email, password, resetToken);
                 returnCode = answer.getReturnCode();
@@ -437,7 +437,8 @@ public class UserController {
                 logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
                         " return Message: " + returnMessage);
             }else {
-                if (freeTransferCreditOnSignup) {
+                boolean isFreeSignupCredit = appsSettingsManager.isFreeSignUpCreditForClientWeb();
+                if (isFreeSignupCredit) {
                     IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); //TODO: This has to be done on behalf of admin/system
                     logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(), addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId()) ;
                 }
