@@ -58,11 +58,11 @@ public class S3StorageServiceTest extends AbstractTest implements BackendTestCon
 
         @Override
         public void run() {
-            double pct = 0.00;
+            UploadProgressStat pct = null;
             while (true) {
-                pct = new S3StorageService().getUploadSize("100MB");
+                pct = new S3StorageService().getUploadProgress("100MB");
      //           if (pct > 0) {
-                    System.out.println("Upload size is " + pct);
+                    System.out.println("Upload percentage is " + pct.uploadPercentage);
        //         }
             }
 

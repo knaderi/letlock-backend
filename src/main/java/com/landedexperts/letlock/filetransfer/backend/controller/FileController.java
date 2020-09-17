@@ -32,6 +32,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.Boolea
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.service.FileUploadException;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
+import com.landedexperts.letlock.filetransfer.backend.service.UploadProgressStat;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
@@ -104,17 +105,17 @@ public class FileController {
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/upload_progress")
-    public JsonResponse<Double> getUploadProgress(@RequestParam(value = "token") final String token,
+    public JsonResponse<UploadProgressStat> getUploadProgress(@RequestParam(value = "token") final String token,
             @RequestParam(value = "file") final String fileName) throws Exception {
         logger.info("FileController.getUploadProgress called for token " + token);
         String returnCode = "SUCCESS";
         String returnMessage = "";
-        double uploadPercentage = 0;
+        UploadProgressStat uploadProgress = new UploadProgressStat();
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             try {
-                uploadPercentage = remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).getUploadSize(fileName);
+                uploadProgress = remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).getUploadProgress(fileName);
             }catch(Exception e) {
                 returnCode = "ERROR_READING_UPLOAD_PROGRESS";
                 returnMessage = "Reading upload progress threw an exception.";
@@ -124,7 +125,7 @@ public class FileController {
             returnMessage = "Invalid token";
         }
 
-        return new JsonResponse<Double>(uploadPercentage, returnCode, returnMessage);
+        return new JsonResponse<UploadProgressStat>(uploadProgress, returnCode, returnMessage);
     }
     
     @RequestMapping(method = RequestMethod.GET, value = "/can_download_file")

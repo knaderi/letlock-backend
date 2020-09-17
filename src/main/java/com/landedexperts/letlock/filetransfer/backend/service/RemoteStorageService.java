@@ -16,6 +16,6 @@ public interface RemoteStorageService {
     
     void uploadFileToRemote(final MultipartFile file, final String remoteStoragePath, double fileByteSize );
     
-    double getUploadSize(final String name);
+    UploadProgressStat getUploadProgress(final String name);
     
 }

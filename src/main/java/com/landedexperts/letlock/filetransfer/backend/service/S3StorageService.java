@@ -6,7 +6,6 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.service;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 
@@ -51,7 +50,7 @@ public class S3StorageService implements RemoteStorageService {
     private static final int UPLOAD_TRESHHOLD = 1000 * 1024 * 1024; // 1GB
 
     private final Logger logger = LoggerFactory.getLogger(S3StorageService.class);
-    private static ConcurrentHashMap<String, Double> uploadProgressMap = new ConcurrentHashMap<String, Double>();
+    private static ConcurrentHashMap<String, UploadProgressStat> uploadProgressMap = new ConcurrentHashMap<String, UploadProgressStat>();
 
     @Value("${s3.storage.bucket}")
     private String s3Bucket;
@@ -122,11 +121,11 @@ public class S3StorageService implements RemoteStorageService {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         Upload upload = tm.upload(s3Bucket, remoteFilePath, multipartFile.getInputStream(), metadata);
-        updateProgressReport(multipartFile.getName(), 0.0);
+        updateProgressReport(multipartFile.getName(), 0.0, multipartFile.getSize());
         upload.addProgressListener(new ProgressListener() {
             public void progressChanged(ProgressEvent e) {
-//                double pct = (e.getBytesTransferred() + getUploadProgress)* 100.0 / fileByteSize;
-                updateProgressReport(multipartFile.getName(), e.getBytesTransferred());
+
+                updateProgressReport(multipartFile.getName(), e.getBytesTransferred(), multipartFile.getSize());
             }
         });
         // Optionally, wait for the upload to finish before continuing.
@@ -136,40 +135,30 @@ public class S3StorageService implements RemoteStorageService {
         System.out.println(": " + xfer_state);
     }
 
-    // prints a simple text progressbar: [##### ]
-    public static void updateProgressReport(String name, double uploadedChunkSize) {
-        Double existinuploadSize = uploadProgressMap.get(name);
-        if(existinuploadSize == null) {
-            existinuploadSize = 0.00;
+    private static void updateProgressReport(String name, double uploadedChunkSize, double fileSize) {
+        UploadProgressStat uploadStat = uploadProgressMap.get(name);
+        if(null == uploadStat) {
+            uploadStat = new UploadProgressStat();
         }
-        System.out.println("adding " + existinuploadSize + " with " + uploadedChunkSize);
-       double updatedUploadSize = existinuploadSize + uploadedChunkSize;
-        uploadProgressMap.put(name, updatedUploadSize);
-//        // if bar_size changes, then change erase_bar (in eraseProgressBar) to
-//        // match.
-//        final int bar_size = 40;
-//        final String empty_bar = "                                        ";
-//        final String filled_bar = "########################################";
-//        int amt_full = (int) (bar_size * (pct / 100.0));
-//        System.out.format("  [%s%s]", filled_bar.substring(0, amt_full),
-//                empty_bar.substring(0, bar_size - amt_full));
+       double updatedUploadSize = uploadStat.getCurrentUploadSize()  + uploadedChunkSize;
+       uploadStat.setCurrentUploadSize(updatedUploadSize);
+       Double pct = (updatedUploadSize/fileSize) * 100;
+       uploadStat.setUploadPercentage(pct);
+        uploadProgressMap.put(name, uploadStat);
     }
 
     @Override
-    public double getUploadSize(String name) {
+    public UploadProgressStat getUploadProgress(String name) {
         if(uploadProgressMap.containsKey(name)) {
             return uploadProgressMap.get(name);
         }else {
-            return 0;
+            return new UploadProgressStat();
         }
     }
 
     // erases the progress bar.
-    public static void removeProgressRecord(String name) {
+    private static void removeProgressRecord(String name) {
         uploadProgressMap.remove(name);
-//        // erase_bar is bar_size (from printProgressBar) + 4 chars.
-//        final String erase_bar = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
-//        System.out.format(erase_bar);
     }
 
 
