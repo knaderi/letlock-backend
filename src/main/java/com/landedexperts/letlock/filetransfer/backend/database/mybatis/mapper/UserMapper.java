@@ -111,5 +111,10 @@ public interface UserMapper {
             + "cast(#{customerLoginName} AS users.name)"
             + ")")
     IdVO addFreeTransferCredit(@Param("userId") long userId, @Param("customerLoginName") String customerLoginName);
+    
+    @Select("SELECT"
+            + " * "
+            + " FROM users.is_email_registered( #{email})")
+    BooleanResponse isEmailRegistered(@Param("email") String email);
 
 }
