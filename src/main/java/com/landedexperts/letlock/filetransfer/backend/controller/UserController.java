@@ -51,21 +51,26 @@ import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
 @RestController
 public class UserController {
 
+    private static final String EMAIL_UNRELIABLE = "EMAIL_UNRELIABLE";
+    private static final String EMAIL_DISPOSABLE = "EMAIL_DISPOSABLE";
+    private static final String EMAIL_VALIDATION_ERROR = "EMAIL_VALIDATION_ERROR";
+    private static final String EMAIL_INVALID = "EMAIL_INVALID";
+    private static final String EMAIL_INVALID_MSG = "The specified email is invalid";
+    private static final String REACHED_MAXIMUM_ANTIDEO_CALL_CODE = "429";
+    private static final String EMAIL_TAKEN = "EMAIL_TAKEN";
+    private static final String EMAIL_VARIATION_EXIST = "EMAIL_VARIATION_EXIST";
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private static final String LOGIN_NAME_IS_INVALID = "Login name is invalid";
-    private static final String INVALID_LOGINNAME = "INVALID_LOGINNAME";
-    private static final String EMAIL_IS_INVALID = "Email is invalid";
-    private static final String INVALID_LOGIN = "INVALID_LOGIN";
+    private static final String LOGIN_NAME_INVALID_MSG = "Login name is invalid";
+
+    private static final String LOGIN_NAME_INVALID = "INVALID_NAME_LOGIN";
     @Autowired
     private UserMapper userMapper;
-    
+
     @Autowired
     private AppSettingsManager appsSettingsManager;
 
-   
     @Autowired
     EmailServiceFacade emailServiceFacade;
-
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) {
@@ -100,8 +105,8 @@ public class UserController {
             if (emailValidationResult.isValid()) {
                 loginNameValid = LoginNameValidator.isValid(loginName);
                 if (!loginNameValid) {
-                    returnCode = INVALID_LOGINNAME;
-                    returnMessage = String.format(LOGIN_NAME_IS_INVALID + " for loginName: %s", loginName);
+                    returnCode = LOGIN_NAME_INVALID_MSG;
+                    returnMessage = String.format(LOGIN_NAME_INVALID_MSG + " for loginName: %s", loginName);
                     answer.setReturnCode(returnCode);
                     answer.setReturnMessage(returnMessage);
                     return answer;
@@ -132,33 +137,56 @@ public class UserController {
     }
 
     private EmailValidationResult validateEmail(final String email) throws Exception {
+        // defaults to valid email, not disposable, scam or spam.
         EmailValidationResult emailValidationResult = new EmailValidationResult();
 
         if (new EmailValidator().isValid(email)) {
-            AntideoEmailValiationVO antideoValidationInfo = getAntideoValidationInfo(email);
-            if (antideoValidationInfo.isSpam() || antideoValidationInfo.isScam()) {
-                emailValidationResult.setReturnCode("UNRELIABLE_EMAIL");
-                emailValidationResult.setReturnMessage("Email is listed in spam or scam email list");
+            if (isEmailRegistered(email).getResult().getValue()) {
                 emailValidationResult.setValid(false);
-            } else if (null != antideoValidationInfo.getError()) {
-                if (antideoValidationInfo.getError().getCode().equals("429")) {
-                    logger.error("LetLock has reached maximum Antideo email validation treshhold. Need to increase the limit");
-                    // TODO: Send email to admin
+                emailValidationResult.setReturnCode(EMAIL_TAKEN);
+                emailValidationResult.setReturnCode("Email address provided is already registered or is pending for confirmation.");
+                return emailValidationResult;
+            } else if (isEmailGmailVariation(email)) {
+                emailValidationResult.setValid(true);
+                emailValidationResult.setReturnCode(EMAIL_VARIATION_EXIST);
+                emailValidationResult.setReturnCode("Email address provided is already registed with a variation that will not be ");
+            } else {
+                AntideoEmailValiationVO antideoValidationInfo = getAntideoValidationInfo(email);
+                if (null != antideoValidationInfo.getError()) {
+                    if (antideoValidationInfo.getError().getCode().equals(REACHED_MAXIMUM_ANTIDEO_CALL_CODE)) {
+                        logger.error("LetLock has reached maximum Antideo email validation treshhold. Need to increase the limit");
+                        // TODO: Send email to admin
+                    } else {
+                        emailValidationResult.setReturnCode(EMAIL_VALIDATION_ERROR);
+                        emailValidationResult.setReturnMessage("validaton code: "
+                                + antideoValidationInfo.getError().getCode()
+                                + " validation message: "
+                                + antideoValidationInfo.getError().getMessage());
+                        emailValidationResult.setValid(false);
+                    }
                 } else {
-                    emailValidationResult.setReturnCode("EMAIL_VALIDATION_ERROR");
-                    emailValidationResult.setReturnMessage("validaton code: "
-                            + antideoValidationInfo.getError().getCode()
-                            + " validation message: "
-                            + antideoValidationInfo.getError().getMessage());
-                    emailValidationResult.setValid(false);
+                    if (antideoValidationInfo.isDisposable()) {
+                        emailValidationResult.setDisposable(true);
+                        emailValidationResult.setReturnCode(EMAIL_DISPOSABLE);
+                        emailValidationResult.setReturnMessage("Email is a disposable email");
+                    }
+                    if (antideoValidationInfo.isSpam() || antideoValidationInfo.isScam()) {
+                        emailValidationResult.setReturnCode(EMAIL_UNRELIABLE);
+                        emailValidationResult.setReturnMessage("Email is listed in spam or scam email list");
+                        emailValidationResult.setValid(false);
+                    }
                 }
             }
-        } else {
-            emailValidationResult.setReturnCode(INVALID_LOGIN);
-            emailValidationResult.setReturnMessage(EMAIL_IS_INVALID);
+        } else{
+            emailValidationResult.setReturnCode(EMAIL_INVALID);
+            emailValidationResult.setReturnMessage(EMAIL_INVALID_MSG);
             emailValidationResult.setValid(false);
         }
         return emailValidationResult;
+    }
+
+    private boolean isEmailGmailVariation(final String email) {
+        return email.toLowerCase().endsWith("gmail.com") && email.indexOf("..") != -1;
     }
 
     public AntideoEmailValiationVO getAntideoValidationInfo(String email) throws Exception {
@@ -190,8 +218,8 @@ public class UserController {
         IdVO answer = new IdVO();
         String resetToken = "";
         if (!isLoginCriteriaAnEmail(loginId) && !LoginNameValidator.isValid(loginId)) {
-            returnCode = INVALID_LOGIN;
-            returnMessage = EMAIL_IS_INVALID;
+            returnCode = LOGIN_NAME_INVALID;
+            returnMessage = LOGIN_NAME_INVALID_MSG;
         } else {
             try {
                 ResetTokenResponse resetTokenResponse = getResetToken(loginId, password);
@@ -503,11 +531,14 @@ public class UserController {
             if (!"SUCCESS".equals(returnCode)) {
                 logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
                         " return Message: " + returnMessage);
-            }else {
-                boolean isFreeSignupCredit = appsSettingsManager.isFreeSignUpCreditForapps();
-                if (isFreeSignupCredit) {
-                    IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); //TODO: This has to be done on behalf of admin/system
-                    logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(), addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId()) ;
+            } else {
+                EmailValidationResult emailValidationResult = validateEmail(email);
+                boolean isFreeSignupCreditForEmail = isFreeSignUPCreditForEmail(emailValidationResult);
+                if (isFreeSignupCreditForEmail) {
+                    IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); // TODO: This has to be done on behalf of
+                                                                                         // admin/system
+                    logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(),
+                            addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId());
                 }
             }
         } catch (Exception e) {
@@ -520,6 +551,10 @@ public class UserController {
 
         return new BooleanResponse(result, returnCode, returnMessage);
 
+    }
+
+    private boolean isFreeSignUPCreditForEmail(EmailValidationResult emailValidationResult) {
+        return emailValidationResult.isValid() && !emailValidationResult.getReturnCode().contentEquals(EMAIL_VARIATION_EXIST) && appsSettingsManager.isFreeSignUpCreditForapps();
     }
 
     @PostMapping(value = "/user/message", produces = { "application/JSON" })
@@ -586,6 +621,10 @@ public class UserController {
                     + e.getMessage());
         }
         return new BooleanResponse(result, returnCode, returnMessage);
+    }
+
+    private BooleanResponse isEmailRegistered(String email) {
+        return userMapper.isEmailRegistered(email);
     }
 
 }
