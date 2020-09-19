@@ -25,7 +25,7 @@ import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
 @Service
 public class EmailServiceFacade {
 
-    private static final String DOWNLOAD_APP_TOKEN = "%DOWNLOAD_APP_TOKEN%";
+    private static final String TRY_LETLOCK_URL_TOKEN = "%TRY_LETLOCK_URL_TOKEN%";
 
     @Autowired
     LetLockEmailService letLockEmailService;
@@ -78,8 +78,8 @@ public class EmailServiceFacade {
     @Value("${letlock.contactus.recipient.email}")
     private String letlockContactUsRecipientEmail;
 
-    @Value("${download.token.url}")
-    private String downloadTokenURL;
+    @Value("${try.letlock.token.url}")
+    private String tryLetlockURL;
     
     @Value("${letlock.welcome.free.credit.email}")
     private String freeCreditWelcomeEmail;
@@ -146,7 +146,7 @@ public class EmailServiceFacade {
         logger.info("recipientEmail: " + recipientEmail);
         String emailBody = readWelcomeWithFreeCreditHTMLEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
-                .replace(DOWNLOAD_APP_TOKEN, downloadTokenURL)
+                .replace(TRY_LETLOCK_URL_TOKEN, downloadTokenURL)
                 .replace(EMAIL_TOKEN, URLEncoder.encode(recipientEmail,"UTF8"))
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
@@ -236,7 +236,7 @@ public class EmailServiceFacade {
             }
 
             email.setSubject(WELCOME_TO_LETLOCK_FREE_CREDIT);
-            email.setMessageText(getWelcomeWithFreeCreditHTMLEmailBody(recipientEmail,downloadTokenURL));
+            email.setMessageText(getWelcomeWithFreeCreditHTMLEmailBody(recipientEmail,tryLetlockURL));
             letLockEmailService.sendHTMLMail(email);
         } else {
             logger.info("Email service is disabled in properties file.");
