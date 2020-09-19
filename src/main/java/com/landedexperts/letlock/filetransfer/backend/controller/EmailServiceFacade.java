@@ -25,6 +25,8 @@ import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
 @Service
 public class EmailServiceFacade {
 
+    private static final String DOWNLOAD_APP_TOKEN = "%DOWNLOAD_APP_TOKEN%";
+
     @Autowired
     LetLockEmailService letLockEmailService;
 
@@ -144,7 +146,7 @@ public class EmailServiceFacade {
         logger.info("recipientEmail: " + recipientEmail);
         String emailBody = readWelcomeWithFreeCreditHTMLEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
-                .replace("DOWNLOAD_APP_TOKEN", downloadTokenURL)
+                .replace(DOWNLOAD_APP_TOKEN, downloadTokenURL)
                 .replace(EMAIL_TOKEN, URLEncoder.encode(recipientEmail,"UTF8"))
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
