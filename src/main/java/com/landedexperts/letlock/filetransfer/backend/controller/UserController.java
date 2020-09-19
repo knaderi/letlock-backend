@@ -21,6 +21,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,6 +72,8 @@ public class UserController {
 
     @Autowired
     EmailServiceFacade emailServiceFacade;
+    
+   
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) {
@@ -177,7 +180,7 @@ public class UserController {
                     }
                 }
             }
-        } else{
+        } else {
             emailValidationResult.setReturnCode(EMAIL_INVALID);
             emailValidationResult.setReturnMessage(EMAIL_INVALID_MSG);
             emailValidationResult.setValid(false);
@@ -536,7 +539,10 @@ public class UserController {
                 boolean isFreeSignupCreditForEmail = isFreeSignUPCreditForEmail(emailValidationResult);
                 if (isFreeSignupCreditForEmail) {
                     IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); // TODO: This has to be done on behalf of
-                                                                                         // admin/system
+                    if ("SUCCESS".contentEquals(addCreditResponse.getReturnCode())) { // admin/system
+                        logger.info("confirm signup free credit email: " + email);
+                        emailServiceFacade.sendWelcomeWithFreeCreditEmail(email);
+                    }
                     logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(),
                             addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId());
                 }
@@ -554,7 +560,9 @@ public class UserController {
     }
 
     private boolean isFreeSignUPCreditForEmail(EmailValidationResult emailValidationResult) {
-        return emailValidationResult.isValid() && !emailValidationResult.getReturnCode().contentEquals(EMAIL_VARIATION_EXIST) && appsSettingsManager.isFreeSignUpCreditForapps();
+        return emailValidationResult.isValid()
+                && !emailValidationResult.getReturnCode().contentEquals(EMAIL_VARIATION_EXIST)
+                && appsSettingsManager.isFreeSignUpCreditForapps();
     }
 
     @PostMapping(value = "/user/message", produces = { "application/JSON" })

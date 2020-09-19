@@ -31,6 +31,7 @@ public class EmailServiceFacade {
 
     private static String FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset Your Password";
     private static String CONFIRM_SIGNUP_EMAIL_SUBJECT = "Confirm Your Email";
+    private static String WELCOME_TO_LETLOCK_FREE_CREDIT = "Welcome to Letlock file transfer!";
     private static String CHANGE_PASSWORD_EMAIL_SUBJECT = "Your password has changed";
     static String USER_CONFIRM_TOKEN = "%USER_CONFIRM_TOKEN%";
     static String EMAIL_TOKEN = "%EMAIL_TOKEN%";
@@ -61,6 +62,9 @@ public class EmailServiceFacade {
 
     @Value("${confirm.signup.email.template}")
     private String confirmSignupEmailTemplate;
+    
+    @Value("${letlock.welcome.with.free.credit.email.template}")
+    private String welcomeWithFreeCreditEmailTemplate;
 
     @Value("${letlock.logo.url}")
     String letlockLogoURL;
@@ -71,6 +75,12 @@ public class EmailServiceFacade {
     @Value("${letlock.contactus.recipient.email}")
     private String letlockContactUsRecipientEmail;
 
+    @Value("${download.token.url}")
+    private String downloadTokenURL;
+    
+    @Value("${letlock.welcome.free.credit.email}")
+    private String freeCreditWelcomeEmail;
+    
     void sendForgotPasswordHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
 
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
@@ -128,9 +138,26 @@ public class EmailServiceFacade {
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
     }
+    
+    String getWelcomeWithFreeCreditHTMLEmailBody(String recipientEmail, String downloadTokenURL) throws Exception {
+        logger.info("recipientEmail: " + recipientEmail);
+        String emailBody = readWelcomeWithFreeCreditHTMLEmailBody();
+        emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
+                .replace("DOWNLOAD_APP_TOKEN", downloadTokenURL)
+                .replace(EMAIL_TOKEN, recipientEmail)
+                .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+                .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
+        return emailBody;
+    }
 
     String readConfirmSignupdEmailBody() throws IOException {
         URL url = Resources.getResource(confirmSignupEmailTemplate);
+        String emailBody = Resources.toString(url, Charsets.UTF_8);
+        return emailBody;
+    }
+    
+    String readWelcomeWithFreeCreditHTMLEmailBody() throws IOException {
+        URL url = Resources.getResource(welcomeWithFreeCreditEmailTemplate);
         String emailBody = Resources.toString(url, Charsets.UTF_8);
         return emailBody;
     }
@@ -189,6 +216,28 @@ public class EmailServiceFacade {
             logger.info("Email service is disabled in properties file.");
         }
         
+    }
+
+    public void sendWelcomeWithFreeCreditEmail(String recipientEmail)  throws Exception   {
+        logger.info("sendWelcomeWithFreeCreditEmail, recipientEmail: " + recipientEmail);
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(freeCreditWelcomeEmail);
+
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(recipientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                logger.info("replacing recipient email: " + recipientEmail);
+                email.setTo(nonProdReceipientEmail);
+            }
+
+            email.setSubject(WELCOME_TO_LETLOCK_FREE_CREDIT);
+            email.setMessageText(getWelcomeWithFreeCreditHTMLEmailBody(recipientEmail,downloadTokenURL));
+            letLockEmailService.sendHTMLMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
+        }
     }
 
 }
