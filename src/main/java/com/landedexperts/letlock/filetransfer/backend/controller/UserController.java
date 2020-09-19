@@ -152,7 +152,7 @@ public class UserController {
             } else if (isEmailGmailVariation(email)) {
                 emailValidationResult.setValid(true);
                 emailValidationResult.setReturnCode(EMAIL_VARIATION_EXIST);
-                emailValidationResult.setReturnCode("Email address provided is already registed with a variation that will not be ");
+                emailValidationResult.setReturnMessage("Email address provided is already registed with a variation that will not be ");
             } else {
                 AntideoEmailValiationVO antideoValidationInfo = getAntideoValidationInfo(email);
                 if (null != antideoValidationInfo.getError()) {
@@ -189,7 +189,7 @@ public class UserController {
     }
 
     private boolean isEmailGmailVariation(final String email) {
-        return email.toLowerCase().endsWith("gmail.com") && email.indexOf("..") != -1;
+        return email.toLowerCase().endsWith("gmail.com") && (email.indexOf("..") != -1 || email.indexOf("+") != -1);
     }
 
     public AntideoEmailValiationVO getAntideoValidationInfo(String email) throws Exception {
@@ -531,6 +531,7 @@ public class UserController {
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
             result = true;
+            System.out.println("hello");
             if (!"SUCCESS".equals(returnCode)) {
                 logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
                         " return Message: " + returnMessage);

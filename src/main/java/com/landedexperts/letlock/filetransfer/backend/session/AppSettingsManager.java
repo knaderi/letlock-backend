@@ -50,6 +50,6 @@ public class AppSettingsManager {
     }
     
     public boolean isFreeSignUpCreditForapps() {
-        return  "true".contentEquals(getSettingValue("all", "signup_free_credit"));
+        return  "true".contentEquals(getSettingValue("all_apps", "signup_free_credit"));
     }
 }

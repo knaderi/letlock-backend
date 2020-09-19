@@ -8,6 +8,7 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,11 +104,11 @@ public class EmailServiceFacade {
         }
     }
 
-    String getForgotPasswordHTMLEmailBody(String resetEmailToken, String confirmEmailToken) throws Exception {
+    String getForgotPasswordHTMLEmailBody(String resetEmailToken, String recepientEmail) throws Exception {
         String emailBody = readForgotPasswordEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, validateResetPasswordTokenURL)
                 .replace(USER_CONFIRM_TOKEN, resetEmailToken)
-                .replace(EMAIL_TOKEN, confirmEmailToken)
+                .replace(EMAIL_TOKEN, URLEncoder.encode(recepientEmail,"UTF8"))
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
@@ -133,7 +134,7 @@ public class EmailServiceFacade {
         String emailBody = readConfirmSignupdEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
                 .replace(USER_CONFIRM_TOKEN, resetEmailToken)
-                .replace(EMAIL_TOKEN, recipientEmail)
+                .replace(EMAIL_TOKEN, URLEncoder.encode(recipientEmail,"UTF8"))
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
@@ -144,7 +145,7 @@ public class EmailServiceFacade {
         String emailBody = readWelcomeWithFreeCreditHTMLEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
                 .replace("DOWNLOAD_APP_TOKEN", downloadTokenURL)
-                .replace(EMAIL_TOKEN, recipientEmail)
+                .replace(EMAIL_TOKEN, URLEncoder.encode(recipientEmail,"UTF8"))
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
@@ -223,7 +224,7 @@ public class EmailServiceFacade {
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
         if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
             Email email = new Email();
-            email.setFrom(freeCreditWelcomeEmail);
+            email.setFrom(letlockNotificationEmail);
 
             if ("prd".equals(constants.getEnv())) {
                 email.setTo(recipientEmail);
