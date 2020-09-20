@@ -54,7 +54,7 @@ public class EmailValidationResult {
         return valid;
     }
 
-    public void setValid(boolean invalid) {
+    public void setValid(boolean valid) {
         this.valid = valid;
     }
 
