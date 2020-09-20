@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ResetTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
@@ -560,6 +561,25 @@ public class UserController {
 
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/validate_email", produces = { "application/JSON" })
+    public JsonResponse<EmailValidationResult> emailFullValidate(@RequestParam(value = "email") final String email) {
+        logger.info("UserController.emailFullValidate called for email " + email);
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        EmailValidationResult emailValidationResult = new EmailValidationResult();
+        try {
+              emailValidationResult = validateEmail(email);
+        } catch (Exception e) {
+            logger.error("Exception thrown sening email." + e.getMessage());
+            returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
+            returnMessage = e.getMessage();
+            logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
+                    " return Message: " + returnMessage);
+        }
+
+        return new JsonResponse<EmailValidationResult>(emailValidationResult, returnCode, returnMessage);
+    }
+    
     private boolean isFreeSignUPCreditForEmail(EmailValidationResult emailValidationResult) {
         return emailValidationResult.isValid()
                 && !emailValidationResult.getReturnCode().contentEquals(EMAIL_VARIATION_EXIST)
