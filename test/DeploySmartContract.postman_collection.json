@@ -471,6 +471,114 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "getFileTransferStatus",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "fileTransferUuid",
+							"value": "d6c400bb-c274-4d8b-a70c-11bc4b558ba6",
+							"description": "file transfer uuid",
+							"type": "text"
+						},
+						{
+							"key": "transferStep",
+							"value": "step1_receiver_accept",
+							"description": "sender wallet address",
+							"type": "text"
+						},
+						{
+							"key": "transferStepStatus",
+							"value": "completed",
+							"description": "Receiver wallet address",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "Hory190CmHDI8YG2HIJuJ+80wuy9VuIa0/Yk4EHbWHgPoMfeTXST04eUsoGUhNytG5p9vly8atzVG718GcuDt2JBzi/4cNNIHJkzJUfX3Cvt4lYsJELYvs50bgfYal1Dv0VcSshxdoNU+tKW4CdkMV3moabowmrAL+ntoCG1Hgo=",
+							"description": "receiver token",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/set_transfer_step",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"set_transfer_step"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getFileTransferSessionForUser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "fileTransferUuid",
+							"value": "d6c400bb-c274-4d8b-a70c-11bc4b558ba6",
+							"description": "file transfer uuid",
+							"type": "text"
+						},
+						{
+							"key": "transferStep",
+							"value": "step1_receiver_accept",
+							"description": "sender wallet address",
+							"type": "text"
+						},
+						{
+							"key": "transferStepStatus",
+							"value": "completed",
+							"description": "Receiver wallet address",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "Hory190CmHDI8YG2HIJuJ+80wuy9VuIa0/Yk4EHbWHgPoMfeTXST04eUsoGUhNytG5p9vly8atzVG718GcuDt2JBzi/4cNNIHJkzJUfX3Cvt4lYsJELYvs50bgfYal1Dv0VcSshxdoNU+tKW4CdkMV3moabowmrAL+ntoCG1Hgo=",
+							"description": "receiver token",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/set_transfer_step",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"set_transfer_step"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"protocolProfileBehavior": {}

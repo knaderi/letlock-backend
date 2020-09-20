@@ -193,16 +193,91 @@
 					]
 				},
 				"url": {
-					"raw": "http://Letlockbackend-qa.w7h3jxji58.us-west-2.elasticbeanstalk.com:5000/login",
+					"raw": "http://{{localhost}}/login",
 					"protocol": "http",
 					"host": [
-						"Letlockbackend-qa",
-						"w7h3jxji58",
-						"us-west-2",
-						"elasticbeanstalk",
-						"com"
+						"{{localhost}}"
 					],
-					"port": "5000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginSystem",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "{{aliceloginname}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{alicepassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/login",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LoginSystem Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "loginName",
+							"value": "{{aliceloginname}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{alicepassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/login",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
 					"path": [
 						"login"
 					]
@@ -392,7 +467,7 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{alicelogintoken}}",
+							"value": "{{AliceSessionToken}}",
 							"type": "text"
 						}
 					]
@@ -427,12 +502,12 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{alicelogintoken}}",
+							"value": "{{AliceSessionToken}}",
 							"type": "text"
 						},
 						{
 							"key": "orderId",
-							"value": "257",
+							"value": "62",
 							"type": "text"
 						},
 						{
@@ -466,6 +541,44 @@
 			"response": []
 		},
 		{
+			"name": "validateEmail",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "{\n    \"error\": {\n        \"code\": 429,\n        \"message\": \"You have reached your hourly requests limit. Please subscribe to one of our paid plans to increase your request quota.\"\n    }\n}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/validate_email",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"validate_email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get user orders by status",
 			"request": {
 				"method": "POST",
@@ -482,7 +595,7 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "5RuFMvlXfTKEukBkvsYvRhsce3N6D/6LF8Gm0GpA8bMfgV82UM504gLEX8Jaz7RNbSPqM6tp/UoV4Wmy8zt8dDTpPLX6fdbRj99jWguADXNchVXanlsdOsKwKny75MXMyqItLuCKD9H31jvueakgfuL/m3glG0zfjtacnWWIGEE=",
+							"value": "{{AliceSessionToken}}",
 							"type": "text"
 						},
 						{
@@ -691,21 +804,21 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{AliceSessionToken}}",
+							"value": "7yfTGQ+Nex4nKC0Gyhj3g1jd3ZClzSI9U2tb3N6HEsxbH+qGP78K/4g+MX0Gthp3pXEPfq+dOt/81A2SAdwEjrJcq+zNlzFInpIQVTUUb9S4wG7Nh/I7BJ7zTJHghWpmw/IyXTvJjp4z6NYPlI/g0SEIIYpI/+48mKhSTeGk+4g=",
 							"type": "text"
 						},
 						{
 							"key": "orderId",
-							"value": "1",
+							"value": "62",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://{{dev}}/get_user_orders",
+					"raw": "http://{{qa}}/get_user_orders",
 					"protocol": "http",
 					"host": [
-						"{{dev}}"
+						"{{qa}}"
 					],
 					"path": [
 						"get_user_orders"
@@ -716,8 +829,11 @@
 		},
 		{
 			"name": "Order file transfer counts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -727,18 +843,12 @@
 					}
 				],
 				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
+					"mode": "formdata",
+					"formdata": [
 						{
 							"key": "token",
 							"value": "{{AliceSessionToken}}",
 							"type": "text"
-						},
-						{
-							"key": "orderId",
-							"value": "1",
-							"type": "text",
-							"disabled": true
 						}
 					]
 				},
@@ -778,21 +888,19 @@
 						},
 						{
 							"key": "orderId",
-							"value": "1",
-							"type": "text",
-							"disabled": true
+							"value": "-1",
+							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/order/get_filetransfer_usage_counts",
+					"raw": "http://{{localhost}}/get_user_ft_order_usage_history",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"order",
-						"get_filetransfer_usage_counts"
+						"get_user_ft_order_usage_history"
 					]
 				}
 			},
@@ -815,7 +923,7 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{alicesessiontoken}}",
+							"value": "T0iGDPb3vuOHz4z3FxFzauk8Qq9txYTayPFdA8mhFbJXT0lI6PCd6I/ZaRCivqqpN48Sqs+5qBgkgP2/W/0JiOWl9GosQxwRapBVuLqnvFp4530NkQPzmeji5owUiMTG8v6HsjnPsfMkJ6qwE3pkHrKpXf5s4NK1N05ox7nD2j4=",
 							"type": "text"
 						},
 						{
@@ -831,14 +939,13 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/insert_start_file_transfer_session_record",
+					"raw": "http://{{qa}}/start_file_transfer_session",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{qa}}"
 					],
-					"port": "3000",
 					"path": [
-						"insert_start_file_transfer_session_record"
+						"start_file_transfer_session"
 					]
 				}
 			},
@@ -866,7 +973,7 @@
 						},
 						{
 							"key": "orderId",
-							"value": "257",
+							"value": "-1",
 							"type": "text"
 						}
 					]
@@ -997,6 +1104,17 @@
 					"path": [
 						"logout"
 					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://api.antideo.com/email/knaderi@gmail.com",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
 				}
 			},
 			"response": []
