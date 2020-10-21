@@ -6,14 +6,22 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.service;
 
+import java.util.List;
+
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 public interface RemoteStorageService {
 
     ResponseEntity<Resource> downloadRemoteFile(final String remotePathName);
     
     void uploadFileToRemote(final MultipartFile file, final String remoteStoragePath );
+
+    List<S3ObjectSummary> getInstallersList(String remotePathName);
+
+    ResponseEntity<Resource> downloadInstallerFile(String remotePathName);
     
 }

@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
@@ -27,9 +29,11 @@ import com.amazonaws.retry.PredefinedRetryPolicies;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -41,22 +45,46 @@ public class S3StorageService implements RemoteStorageService {
 
     private static final int UPLOAD_MAX_RETRY = 5;
 
-    private static final int MINIMUM_UPLOAD_PART_SIZE = 5*1024*1024; //5MB
+    private static final int MINIMUM_UPLOAD_PART_SIZE = 5 * 1024 * 1024; // 5MB
 
-    private static final int UPLOAD_TRESHHOLD = 1000*1024*1024; //1GB
+    private static final int UPLOAD_TRESHHOLD = 1000 * 1024 * 1024; // 1GB
 
     private final Logger logger = LoggerFactory.getLogger(S3StorageService.class);
 
     @Value("${s3.storage.bucket}")
     private String s3Bucket;
 
+    @Value("${s3.app.installer.storage.bucket}")
+    private String s3InstallersBucket;
+
+    @Override
+    public List<S3ObjectSummary> getInstallersList(String remotePathName) {
+        Regions clientRegion = Regions.DEFAULT_REGION;
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
+        ObjectListing fullObject = s3Client.listObjects(s3InstallersBucket, remotePathName);
+        if (null != fullObject) {
+            return fullObject.getObjectSummaries();
+        }
+        return Collections.emptyList();
+
+    }
+
     @Override
     public ResponseEntity<Resource> downloadRemoteFile(String remotePathName) {
+        return extracted(s3Bucket, remotePathName);
+    }
+    
+    @Override
+    public ResponseEntity<Resource> downloadInstallerFile(String remotePathName) {
+        return extracted(s3InstallersBucket, remotePathName);
+    }
+
+    private ResponseEntity<Resource> extracted(String bucketName, String remotePathName) {
         Regions clientRegion = Regions.DEFAULT_REGION;
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
         S3Object fullObject = null, objectPortion = null;
-        fullObject = s3Client.getObject(new GetObjectRequest(s3Bucket, remotePathName));
-        GetObjectRequest rangeObjectRequest = new GetObjectRequest(s3Bucket, remotePathName)
+        fullObject = s3Client.getObject(new GetObjectRequest(bucketName, remotePathName));
+        GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, remotePathName)
                 .withRange(0, fullObject.getObjectMetadata().getContentLength());
         objectPortion = s3Client.getObject(rangeObjectRequest);
         S3ObjectInputStream objectContent = objectPortion.getObjectContent();
@@ -66,17 +94,17 @@ public class S3StorageService implements RemoteStorageService {
     }
 
     @Override
-    public void uploadFileToRemote(MultipartFile multipartFile, String remoteFilePath){
-         Regions clientRegion = Regions.DEFAULT_REGION;
+    public void uploadFileToRemote(MultipartFile multipartFile, String remoteFilePath) {
+        Regions clientRegion = Regions.DEFAULT_REGION;
 
         try {
             AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
-            
+
             StopWatch watch = new StopWatch("TM stop watch is being set");
-            watch.start();            
+            watch.start();
             uploadUsingTransferManager(remoteFilePath, s3Client, multipartFile);
             watch.stop();
-            long uploadDuration = watch.getTotalTimeMillis(); 
+            long uploadDuration = watch.getTotalTimeMillis();
             logger.debug("Object upload using TM completed in " + uploadDuration + " miliseconds");
             System.out.println("Object upload using TM completed in " + uploadDuration + " miliseconds");
 
@@ -101,10 +129,10 @@ public class S3StorageService implements RemoteStorageService {
     }
 
     private void uploadUsingTransferManager(String remoteFilePath, AmazonS3 s3Client, MultipartFile multipartFile) throws Exception {
-      //  final File file = convertMultiPartFileToFile(multipartFile);
-        ClientConfiguration clientConfiguration=new ClientConfiguration();
+        // final File file = convertMultiPartFileToFile(multipartFile);
+        ClientConfiguration clientConfiguration = new ClientConfiguration();
         clientConfiguration.setRetryPolicy(
-                        PredefinedRetryPolicies.getDefaultRetryPolicyWithCustomMaxRetries(UPLOAD_MAX_RETRY));
+                PredefinedRetryPolicies.getDefaultRetryPolicyWithCustomMaxRetries(UPLOAD_MAX_RETRY));
         TransferManagerBuilder standard = TransferManagerBuilder.standard();
         standard.setMultipartUploadThreshold(new Long(UPLOAD_TRESHHOLD));
         standard.setMinimumUploadPartSize(new Long(MINIMUM_UPLOAD_PART_SIZE));
@@ -115,7 +143,7 @@ public class S3StorageService implements RemoteStorageService {
         metadata.setContentLength(multipartFile.getSize());
         Upload upload = tm.upload(s3Bucket, remoteFilePath, multipartFile.getInputStream(), metadata);
         // Optionally, wait for the upload to finish before continuing.
-        upload.waitForCompletion();        
+        upload.waitForCompletion();
     }
 
 }
