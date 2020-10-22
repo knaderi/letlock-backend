@@ -45,14 +45,14 @@ public class InstallerController {
     @Autowired
     RemoteStorageServiceFactory remoteStorageService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/windows/installers", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.GET, value = "/installer/windows/list", produces = { "application/JSON" })
     public JsonResponse<List<S3ObjectSummary>> getWindowsInstallers(@RequestParam(value = "token") final String token) {
 
         return getInstallersForPlatform(token, WIN_LET_LOCK_FILE_TRANSFER_SETUP);
 
     }
     
-    @RequestMapping(method = RequestMethod.GET, value = "/mac/installers", produces = { "application/JSON" })
+    @RequestMapping(method = RequestMethod.GET, value = "/installer/mac/list", produces = { "application/JSON" })
     public JsonResponse<List<S3ObjectSummary>> getMacInstallers(@RequestParam(value = "token") final String token) {
 
         return getInstallersForPlatform(token, MAC_LET_LOCK_FILE_TRANSFER_SETUP);
@@ -82,7 +82,7 @@ public class InstallerController {
     
 
     
-    @RequestMapping(method = RequestMethod.GET, value = "/win/installer")
+    @RequestMapping(method = RequestMethod.GET, value = "/installer/windows/download")
     public ResponseEntity<Resource> downloadWindowsInstaller(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("FileController.downloadWindowsInstaller called for token " + token);
         JsonResponse<List<S3ObjectSummary>> winInstallers = getWindowsInstallers(token);
@@ -95,7 +95,7 @@ public class InstallerController {
         }
     }
     
-    @RequestMapping(method = RequestMethod.GET, value = "/mac/installer")
+    @RequestMapping(method = RequestMethod.GET, value = "/installer/mac/download")
     public ResponseEntity<Resource> downloadMacInstaller(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("FileController.downloadMacInstaller called for token " + token);
         JsonResponse<List<S3ObjectSummary>> macInstallers = getMacInstallers(token);
