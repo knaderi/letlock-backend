@@ -21,6 +21,7 @@ import com.google.common.io.Resources;
 import com.landedexperts.letlock.filetransfer.backend.service.Email;
 import com.landedexperts.letlock.filetransfer.backend.service.LetLockEmailService;
 import com.landedexperts.letlock.filetransfer.backend.utils.LetLockBackendEnv;
+import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
 
 @Service
 public class EmailServiceFacade {
@@ -35,6 +36,7 @@ public class EmailServiceFacade {
     private static String FORGOT_PASSWORD_EMAIL_SUBJECT = "Reset Your Password";
     private static String CONFIRM_SIGNUP_EMAIL_SUBJECT = "Confirm Your Email";
     private static String WELCOME_TO_LETLOCK_FREE_CREDIT = "Welcome to Letlock file transfer!";
+    private static String LETLOCK_REGISTERATION_CONFIRMATION_SUBJECT = "New user confirmed signup email!";
     private static String CHANGE_PASSWORD_EMAIL_SUBJECT = "Your password has changed";
     static String USER_CONFIRM_TOKEN = "%USER_CONFIRM_TOKEN%";
     static String EMAIL_TOKEN = "%EMAIL_TOKEN%";
@@ -178,15 +180,18 @@ public class EmailServiceFacade {
                 logger.info("replacing recipient email: " + recipientEmail);
                 email.setTo(nonProdReceipientEmail);
             }
-
+            
             email.setSubject(CONFIRM_SIGNUP_EMAIL_SUBJECT);
             email.setMessageText(getConfirmSignupHTMLEmailBody(resetEmailToken, recipientEmail));
             logger.info(resetEmailToken + ", " + recipientEmail);
             letLockEmailService.sendHTMLMail(email);
+
         } else {
             logger.info("Email service is disabled in properties file.");
         }
     }
+
+
 
     /**
      * @param contactUsModel
@@ -242,5 +247,26 @@ public class EmailServiceFacade {
             logger.info("Email service is disabled in properties file.");
         }
     }
+    
+    
+    public void sendAdminRegistrationNotification(String recipientEmail, RequestData requestData) throws Exception {
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
 
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(letlockContactUsRecipientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                email.setTo(nonProdReceipientEmail);
+            }
+
+            email.setSubject(LETLOCK_REGISTERATION_CONFIRMATION_SUBJECT);
+            email.setMessageText("User " + recipientEmail + "has attempted registeration: " + requestData.toJSON());
+            letLockEmailService.sendHTMLMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
+        }
+    }
+    
 }

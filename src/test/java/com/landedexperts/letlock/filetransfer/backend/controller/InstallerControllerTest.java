@@ -43,7 +43,7 @@ public class InstallerControllerTest extends BaseControllerTest {
     public void testGetMacInstallersList() throws Exception {
         createLoggedInActiveUser();
         login();
-        JsonResponse<List<S3ObjectSummary>> installersResponse = adminController.getMacInstallers(token);
+        JsonResponse<List<S3ObjectSummary>> installersResponse = adminController.getMacInstallers(token);       
         Assertions.assertNotNull(installersResponse.getResult(), "There should be alist of installers.");
     }
     

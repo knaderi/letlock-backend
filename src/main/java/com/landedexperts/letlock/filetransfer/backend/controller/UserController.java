@@ -21,7 +21,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -73,8 +72,6 @@ public class UserController {
 
     @Autowired
     EmailServiceFacade emailServiceFacade;
-    
-   
 
     @RequestMapping(method = RequestMethod.POST, value = "/user_is_login_name_available", produces = { "application/JSON" })
     public BooleanResponse isLoginNameAvailable(@RequestParam(value = "loginName") final String loginName) {
@@ -215,7 +212,8 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/resend_signup_email", produces = { "application/JSON" })
     public IdVO resendSignUpConfirmationEmail(
-            @RequestParam(value = "loginId") final String loginId, @RequestParam(value = "password") final String password) {
+            @RequestParam(value = "loginId") final String loginId, @RequestParam(value = "password") final String password,
+            HttpServletRequest httpServletRequest) {
         logger.info("UserController.resend_signup_email called for loginId " + loginId);
         String returnCode = "SUCCESS";
         String returnMessage = "";
@@ -263,12 +261,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/login", produces = { "application/JSON" })
     public SessionTokenResponse login(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "password") final String password, HttpServletRequest httpServletRequest) {
-        String origin = httpServletRequest.getHeader("origin");
-        String ipAddress = httpServletRequest.getRemoteAddr();
-        String userAgent = httpServletRequest.getHeader("User-Agent");
-        RequestData requestData = new RequestData(ipAddress, userAgent, origin);
-
-        logger.info("Origin: {}, ipAddress: {}, userAgent: {}", origin, ipAddress, userAgent);
+        RequestData requestData = buidlRequestDataObj(httpServletRequest);
         logger.info("UserController.login called for loginName " + loginName);
 
         String returnCode = "SUCCESS";
@@ -296,6 +289,16 @@ public class UserController {
         }
 
         return new SessionTokenResponse(token, returnCode, returnMessage);
+    }
+
+    private RequestData buidlRequestDataObj(HttpServletRequest httpServletRequest) {
+        String origin = httpServletRequest.getHeader("origin");
+        String ipAddress = httpServletRequest.getRemoteAddr();
+        String userAgent = httpServletRequest.getHeader("User-Agent");
+        RequestData requestData = new RequestData(ipAddress, userAgent, origin);
+
+        logger.info("Origin: {}, ipAddress: {}, userAgent: {}", origin, ipAddress, userAgent);
+        return requestData;
     }
 
     private boolean isLoginCriteriaAnEmail(final String loginNameOrEmail) {
@@ -520,7 +523,9 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/confirm_signup", produces = { "application/JSON" })
     public BooleanResponse confirmSignup(@RequestParam(value = "email") final String email,
-            @RequestParam(value = "resetToken") final String resetToken) {
+            @RequestParam(value = "resetToken") final String resetToken,
+            HttpServletRequest httpServletRequest) {
+        RequestData requestData = buidlRequestDataObj(httpServletRequest);
         logger.info("UserController.confirm_signup called for email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
@@ -548,6 +553,7 @@ public class UserController {
                     logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(),
                             addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId());
                 }
+                emailServiceFacade.sendAdminRegistrationNotification(email, requestData);
             }
         } catch (Exception e) {
             logger.error("Exception thrown sening email." + e.getMessage());
@@ -568,7 +574,7 @@ public class UserController {
         String returnMessage = "";
         EmailValidationResult emailValidationResult = new EmailValidationResult();
         try {
-              emailValidationResult = validateEmail(email);
+            emailValidationResult = validateEmail(email);
         } catch (Exception e) {
             logger.error("Exception thrown sening email." + e.getMessage());
             returnCode = "FORGOT_PASSWORD_EMAIL_ERROR";
@@ -579,7 +585,7 @@ public class UserController {
 
         return new JsonResponse<EmailValidationResult>(emailValidationResult, returnCode, returnMessage);
     }
-    
+
     private boolean isFreeSignUPCreditForEmail(EmailValidationResult emailValidationResult) {
         return emailValidationResult.isValid()
                 && !emailValidationResult.getReturnCode().contentEquals(EMAIL_VARIATION_EXIST)
