@@ -261,7 +261,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/login", produces = { "application/JSON" })
     public SessionTokenResponse login(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "password") final String password, HttpServletRequest httpServletRequest) {
-        RequestData requestData = buidlRequestDataObj(httpServletRequest);
+        RequestData requestData = buildRequestDataObj(httpServletRequest);
         logger.info("UserController.login called for loginName " + loginName);
 
         String returnCode = "SUCCESS";
@@ -291,7 +291,7 @@ public class UserController {
         return new SessionTokenResponse(token, returnCode, returnMessage);
     }
 
-    private RequestData buidlRequestDataObj(HttpServletRequest httpServletRequest) {
+    private RequestData buildRequestDataObj(HttpServletRequest httpServletRequest) {
         String origin = httpServletRequest.getHeader("origin");
         String ipAddress = httpServletRequest.getRemoteAddr();
         String userAgent = httpServletRequest.getHeader("User-Agent");
@@ -525,7 +525,7 @@ public class UserController {
     public BooleanResponse confirmSignup(@RequestParam(value = "email") final String email,
             @RequestParam(value = "resetToken") final String resetToken,
             HttpServletRequest httpServletRequest) {
-        RequestData requestData = buidlRequestDataObj(httpServletRequest);
+        RequestData requestData = buildRequestDataObj(httpServletRequest);
         logger.info("UserController.confirm_signup called for email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
