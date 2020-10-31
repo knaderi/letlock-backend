@@ -177,7 +177,7 @@ public class EmailServiceFacade {
             if ("prd".equals(constants.getEnv())) {
                 email.setTo(recipientEmail);
             } else if ("true".contentEquals(nonProdEmailActive)) {
-                logger.info("replacing recipient email: " + recipientEmail);
+                logger.info("replacing recipient email: " + recipientEmail + "with " + nonProdReceipientEmail);
                 email.setTo(nonProdReceipientEmail);
             }
             
