@@ -219,7 +219,7 @@ public class UserController {
         String returnMessage = "";
         IdVO answer = new IdVO();
         String resetToken = "";
-        if (!isLoginCriteriaAnEmail(loginId) && !LoginNameValidator.isValid(loginId)) {
+        if (!isLoginCriteriaAnEmail(loginId)) {
             returnCode = LOGIN_NAME_INVALID;
             returnMessage = LOGIN_NAME_INVALID_MSG;
         } else {

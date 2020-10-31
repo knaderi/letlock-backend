@@ -56,7 +56,7 @@ public class EmailServiceFacade {
     @Value("${nonprod.email.enabled}")
     private String nonProdEmailActive;
 
-    @Value("${letlock.notifications.email}")
+    @Value("${letlock.notifications.sender.email}")
     private String letlockNotificationEmail;
 
     @Value("${forgot.password.email.template}")
