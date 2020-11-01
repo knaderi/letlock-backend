@@ -262,7 +262,7 @@ public class EmailServiceFacade {
             }
 
             email.setSubject(LETLOCK_REGISTERATION_CONFIRMATION_SUBJECT);
-            email.setMessageText("User " + recipientEmail + "has attempted registeration: " + requestData.toJSON());
+            email.setMessageText("User " + recipientEmail + " has attempted registeration: " + requestData.toJSON());
             letLockEmailService.sendHTMLMail(email);
         } else {
             logger.info("Email service is disabled in properties file.");
