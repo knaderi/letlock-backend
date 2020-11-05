@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700;display=swap" rel="stylesheet" />
+    <title>Confirm Signup Email</title>
+  </head>
+
+  <style>
+    * {
+      margin: 0;
+    }
+  </style>
+
+  <body style="text-align: center;">
+    <table
+      style="
+        margin: 0 auto;
+        background-color: white;
+        border: 1px solid lightgray;
+        margin-top: 12px;
+        width: 600px;
+        font-family: 'Nunito Sans', sans-serif;
+      "
+    >
+      <tbody>
+        <tr>
+          <td>
+            <table
+              style="
+                margin: 0 auto;
+                background-color: white;
+                margin-top: 12px;
+                width: 600px;
+                font-family: 'Nunito Sans', sans-serif;
+              "
+            >
+              <tbody style="text-align: center;">
+                <tr style="text-align: center;">
+                  <td style="text-align: left;">
+                    <img
+                      style="margin-top: 12px;"
+                      src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/logo@172px.png"
+                      alt="letlock logo"
+                    />
+                  </td>
+                  <td style="text-align: right;">
+                    <img
+                      style="margin-top: 12px;"
+                      src="https://letlock-media.s3-us-west-2.amazonaws.com/images/appsumo-logo.png"
+                      alt="letlock logo"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan=2>
+                    <h1 style="margin: 36px 0;">ALMOST DONE!</h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan=2>
+                    <p style="font-size: 16px;">
+                      We are sending you this email because you have signed through %PARTNER_NAME% to use LetLock File Transfer. Click the button below
+                      to confirm your email  and download the LetLock File Transfer desktop app.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan=2>
+                    <br />
+                    <a
+                      href="%CONFIRM_VIA_PARTNER_SIGNUP_URL%/?token=%USER_CONFIRM_TOKEN%&email=%EMAIL_TOKEN%"
+                      target="_blank"
+                    >
+                      <img
+                        src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/download-app.png"
+                        alt="confirm signup button"
+                    /></a>
+                    <br />
+                    <br />
+                    <a
+                      style="font-size: 12px;"
+                      href="%CONFIRM_VIA_PARTNER_SIGNUP_URL%/?token=%USER_CONFIRM_TOKEN%&email=%EMAIL_TOKEN%"
+                      target="_blank"
+                    >
+                      %CONFIRM_VIA_PARTNER_SIGNUP_URL%/?token=%USER_CONFIRM_TOKEN%&email=%EMAIL_TOKEN%
+                    </a>
+                    <br />
+                    <p style="font-size: 14px;">Or copy and paste the link above into your browser.</p>
+                    <br />
+                    <br />
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan=2>
+                    <p style="font-size: 14px; margin-bottom: 24px;">
+                      If you have not signed up to our services, and you think you've received this email in error,
+                      please simply disregard this email.
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #f3f3f4; text-align: left; padding: 12px;" colspan=2>
+            <img
+              src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/footer_logo@94px.png"
+              alt="letlock gray logo"
+              style="margin-top: 20px;"
+            />
+            <p style="font-size: 14px; padding: 0;">
+              Digital security solution that makes digital property storage and transfer more secure than ever.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #2d2f43;" colspan=2>
+            <p style="font-size: 14px; color: #d0d0d5; margin: 24px 0;">
+              <img src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/mail_icon.png" alt="mail icon" />
+              <a style="font-size: 14px; color: #d0d0d5;" href="mailto:info@landedexperts.com">
+                info@landedexperts.com
+              </a>
+              <span style="margin: 0 12px;">|</span>
+              <img
+                src="http://letlock-media.s3-website-us-west-2.amazonaws.com/images/phone_icon.png"
+                alt="phone icon"
+              />
+              <a style="font-size: 14px; color: #d0d0d5;" href="tel:6046746189">
+                (604) 674-6189
+              </a>
+            </p>
+            <p style="font-size: 12px; color: #666666; margin: 24px 0;">
+              © 2020 Landed Experts Technologies Inc. All rights reserved.
+            </p>
+            <br />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
