@@ -6,6 +6,9 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -22,5 +25,10 @@ public interface MgmtMapper {
     @Select("SELECT *"
             + " FROM mgmt.apps_settings where deleted=false")
     AppsSettingsVO[] readSettings();
+    
+    @Select("INSERT INTO product.package_discount(\r\n" + 
+            "    package_id, code, partner_name, valid_until, discount_value, discount_unit)\r\n" + 
+            "    VALUES (#{ packageId }, #{ redeemCode }, #{ partnerName },#{ validUntil }, #{ discountValue }, #{ discountUnit })")
+    AppsSettingsVO[] addRedeemCode( @Param("packageId") String packageId,  @Param("redeemCode") String redeemCode,  @Param("partnerName") String partnerName,  @Param("validUntil") Timestamp validUntil,  @Param("discountValue") BigDecimal discountValue,  @Param("discountUnit") String discountUnit);
 
 }

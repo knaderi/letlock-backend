@@ -32,6 +32,19 @@ public interface UserMapper {
             + " FROM users.add_user( #{loginName}, #{email}, #{password}, #{resetToken})")
     IdVO register(@Param("loginName") String loginName, @Param("email") String email, @Param("password") String password,
             @Param("resetToken") String resetToken);
+    
+    @Select("SELECT"
+            + " _user_id AS id,"
+            + " _return_code AS returnCode,"
+            + " _return_message AS returnMessage"
+            + " FROM users.add_user_via_partner( #{loginName}, #{email}, #{password}, #{resetToken})")
+    IdVO registerViaPartner(@Param("loginName") String loginName, @Param("email") String email, @Param("password") String password,
+            @Param("resetToken") String resetToken, @Param("redeemCode") String redeemCode);
+    
+    @Select("SELECT"
+            + " * "
+            + " FROM users.is_redeem_code_valid( #{redeemCode})")
+    BooleanResponse isRedeemCodeValid(@Param("redeemCode") String redeemCode);
 
     @Select("SELECT"
             + " _hashing_algo AS hashingAlgo,"
@@ -81,7 +94,8 @@ public interface UserMapper {
             + " _return_message AS \"returnMessage\""
             + " FROM users.record_signup_confirmation( #{email}, #{resetToken} )")
     BooleanResponse confirmSignup(@Param("email") String email, @Param("resetToken") String resetToken);
-
+    
+    
     @Select("SELECT"
             + " _result AS value,"
             + " _return_code AS returnCode,"

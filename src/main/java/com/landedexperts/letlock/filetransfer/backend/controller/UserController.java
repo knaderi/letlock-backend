@@ -47,6 +47,7 @@ import com.landedexperts.letlock.filetransfer.backend.utils.AntideoEmailValiatio
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidationResult;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
+import com.landedexperts.letlock.filetransfer.backend.utils.RedeemCodeValidationResult;
 import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
 
 @RestController
@@ -136,6 +137,59 @@ public class UserController {
         }
         return answer;
     }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/register/viapartner", produces = { "application/JSON" })
+    public IdVO registerViaPartner(@RequestParam(value = "loginName") final String loginName,
+            @RequestParam(value = "email") final String email, @RequestParam(value = "password") final String password,
+            @RequestParam(value = "redeemCode") final String redeemCode) {
+        logger.info("UserController.register called for loginName " + loginName + " email " + email);
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        IdVO answer = new IdVO();
+        boolean loginNameValid = true;
+        try {
+            EmailValidationResult emailValidationResult = validateEmail(email);
+            if (emailValidationResult.isValid()) {
+                loginNameValid = LoginNameValidator.isValid(loginName);
+                if (!loginNameValid) {
+                    returnCode = LOGIN_NAME_INVALID_MSG;
+                    returnMessage = String.format(LOGIN_NAME_INVALID_MSG + " for loginName: %s", loginName);
+                    answer.setReturnCode(returnCode);
+                    answer.setReturnMessage(returnMessage);
+                    return answer;
+                }
+            } else {
+                answer.setReturnCode(emailValidationResult.getReturnCode());
+                answer.setReturnMessage(emailValidationResult.getReturnMessage());
+                return answer;
+            }
+            BooleanResponse isRedeemCodeValid = userMapper.isRedeemCodeValid(redeemCode);
+            if(!isRedeemCodeValid.getResult().getValue()) {
+                answer.setReturnCode(isRedeemCodeValid.getReturnCode());
+                answer.setReturnMessage(isRedeemCodeValid.getReturnMessage());
+                return answer;
+            }
+
+            String resetToken = UUID.randomUUID().toString();
+            answer = userMapper.registerViaPartner(loginName, email, password, resetToken, redeemCode);
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+
+            if ("SUCCESS".equals(returnCode)) {
+                logger.info("regsitered user with email " + email + " and with loginName " + loginName);
+                emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
+            }
+            answer.setReturnCode(returnCode);
+            answer.setReturnMessage(returnMessage);
+        } catch (Exception e) {
+            answer.setReturnCode("REGISTER_ERROR");
+            answer.setReturnMessage(e.getMessage());
+            logger.error("Error in UserController.register returnMessage: " + returnMessage);
+        }
+        return answer;
+
+    }
+
 
     private EmailValidationResult validateEmail(final String email) throws Exception {
         // defaults to valid email, not disposable, scam or spam.
@@ -566,6 +620,7 @@ public class UserController {
         return new BooleanResponse(result, returnCode, returnMessage);
 
     }
+    
 
     @RequestMapping(method = RequestMethod.GET, value = "/validate_email", produces = { "application/JSON" })
     public JsonResponse<EmailValidationResult> emailFullValidate(@RequestParam(value = "email") final String email) {
