@@ -37,14 +37,14 @@ public interface UserMapper {
             + " _user_id AS id,"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM users.add_user_via_partner( #{loginName}, #{email}, #{password}, #{resetToken})")
+            + " FROM users.add_user_via_partner( #{loginName}, #{email}, #{password}, #{resetToken}, #{redeemCode}, #{partnerName})")
     IdVO registerViaPartner(@Param("loginName") String loginName, @Param("email") String email, @Param("password") String password,
-            @Param("resetToken") String resetToken, @Param("redeemCode") String redeemCode);
+            @Param("resetToken") String resetToken, @Param("redeemCode") String redeemCode, @Param("partnerName") String partnerName);
     
     @Select("SELECT"
             + " * "
-            + " FROM users.is_redeem_code_valid( #{redeemCode})")
-    BooleanResponse isRedeemCodeValid(@Param("redeemCode") String redeemCode);
+            + " FROM users.is_redeem_code_valid( #{redeemCode}, #{partnerName})")
+    BooleanResponse isRedeemCodeValid(@Param("redeemCode") String redeemCode, @Param("partnerName") String partnerName);
 
     @Select("SELECT"
             + " _hashing_algo AS hashingAlgo,"
@@ -125,6 +125,16 @@ public interface UserMapper {
             + "cast(#{customerLoginName} AS users.name)"
             + ")")
     IdVO addFreeTransferCredit(@Param("userId") long userId, @Param("customerLoginName") String customerLoginName);
+    
+    @Select("SELECT"
+            + " _return_code AS returnCode,"
+            + " _return_message AS returnMessage,"
+            + "_order_id As id"
+            + " FROM orders.add_reedeem_code_credit("
+            + " #{email},"
+            + "redeem_code_id"
+            + ")")
+    IdVO addTransferCreditUsingRedeemCode(@Param("email") String email, @Param("redeem_code_id") String redeemCodeId);
     
     @Select("SELECT"
             + " * "

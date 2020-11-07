@@ -141,7 +141,8 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/register/viapartner", produces = { "application/JSON" })
     public IdVO registerViaPartner(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "email") final String email, @RequestParam(value = "password") final String password,
-            @RequestParam(value = "redeemCode") final String redeemCode) {
+            @RequestParam(value = "redeemCode") final String redeemCode, 
+            @RequestParam(value = "partnerName") final String partnerName) {
         logger.info("UserController.register called for loginName " + loginName + " email " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
@@ -163,7 +164,7 @@ public class UserController {
                 answer.setReturnMessage(emailValidationResult.getReturnMessage());
                 return answer;
             }
-            BooleanResponse isRedeemCodeValid = userMapper.isRedeemCodeValid(redeemCode);
+            BooleanResponse isRedeemCodeValid = userMapper.isRedeemCodeValid(redeemCode, partnerName);
             if(!isRedeemCodeValid.getResult().getValue()) {
                 answer.setReturnCode(isRedeemCodeValid.getReturnCode());
                 answer.setReturnMessage(isRedeemCodeValid.getReturnMessage());
@@ -171,13 +172,14 @@ public class UserController {
             }
 
             String resetToken = UUID.randomUUID().toString();
-            answer = userMapper.registerViaPartner(loginName, email, password, resetToken, redeemCode);
+            answer = userMapper.registerViaPartner(loginName, email, password, resetToken, redeemCode, partnerName);
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
 
             if ("SUCCESS".equals(returnCode)) {
+                               
                 logger.info("regsitered user with email " + email + " and with loginName " + loginName);
-                emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
+                emailServiceFacade.sendConfirmViaPartnerSignupHTMLEmail(email, resetToken, partnerName);
             }
             answer.setReturnCode(returnCode);
             answer.setReturnMessage(returnMessage);
@@ -266,19 +268,19 @@ public class UserController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/resend_signup_email", produces = { "application/JSON" })
     public IdVO resendSignUpConfirmationEmail(
-            @RequestParam(value = "loginId") final String loginId, @RequestParam(value = "password") final String password,
+            @RequestParam(value = "loginId") final String email, @RequestParam(value = "password") final String password,
             HttpServletRequest httpServletRequest) {
-        logger.info("UserController.resend_signup_email called for loginId " + loginId);
+        logger.info("UserController.resend_signup_email called for loginId " + email);
         String returnCode = "SUCCESS";
         String returnMessage = "";
         IdVO answer = new IdVO();
         String resetToken = "";
-        if (!isLoginCriteriaAnEmail(loginId)) {
+        if (!isLoginCriteriaAnEmail(email)) {
             returnCode = LOGIN_NAME_INVALID;
             returnMessage = LOGIN_NAME_INVALID_MSG;
         } else {
             try {
-                ResetTokenResponse resetTokenResponse = getResetToken(loginId, password);
+                ResetTokenResponse resetTokenResponse = getResetToken(email, password);
 
                 if (resetTokenResponse != null && resetTokenResponse.getResult() != null) {
                     resetToken = resetTokenResponse.getResult().getResetToken();
@@ -292,10 +294,10 @@ public class UserController {
                 }
 
                 if ("SUCCESS".equals(returnCode)) {
-                    emailServiceFacade.sendConfirmSignupHTMLEmail(loginId, resetToken);
+                    emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
                 } else {
                     logger.error("UserController.resendSignUpConfirmationEmail failed for loginId "
-                            + loginId
+                            + email
                             + " failed. returnCode: "
                             + returnCode
                             + " returnMessage: "

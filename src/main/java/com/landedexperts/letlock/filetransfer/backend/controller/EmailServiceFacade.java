@@ -26,6 +26,8 @@ import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
 @Service
 public class EmailServiceFacade {
 
+    private static final String PARTNER_NAME = "%PARTNER_NAME%";
+
     private static final String TRY_LETLOCK_URL_TOKEN = "%TRY_LETLOCK_URL_TOKEN%";
 
     @Autowired
@@ -41,6 +43,7 @@ public class EmailServiceFacade {
     static String USER_CONFIRM_TOKEN = "%USER_CONFIRM_TOKEN%";
     static String EMAIL_TOKEN = "%EMAIL_TOKEN%";
     static String VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN = "%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%";
+    static String CONFIRM_SIGNUP_URL = "%CONFIRM_SIGNUP_URL%";
     static String LETLOCK_LOGO_URL_TOKEN = "%LETLOCK_LOGO_URL_TOKEN%";
     static String LETLOCK_FOOTER_LOGO_TOKEN = "%LETLOCK_FOOTER_LOGO_TOKEN%";
 
@@ -67,6 +70,9 @@ public class EmailServiceFacade {
 
     @Value("${confirm.signup.email.template}")
     private String confirmSignupEmailTemplate;
+    
+    @Value("${confirm.via.partner.signup.email.template}")
+    private String confirmViaPartnerSignupEmailTemplate;
     
     @Value("${letlock.welcome.with.free.credit.email.template}")
     private String welcomeWithFreeCreditEmailTemplate;
@@ -144,6 +150,32 @@ public class EmailServiceFacade {
         return emailBody;
     }
     
+    String getConfirmViaPartnerSignupHTMLEmailBody(String resetEmailToken, String recipientEmail, String partnerName) throws Exception {
+        logger.info("recipientEmail: " + recipientEmail);
+        URL url = Resources.getResource(confirmViaPartnerSignupEmailTemplate);
+        String emailBody = Resources.toString(url, Charsets.UTF_8);
+        emailBody = emailBody.replace(CONFIRM_SIGNUP_URL, confirmSignupURL)
+                .replace(USER_CONFIRM_TOKEN, resetEmailToken)
+                .replace(EMAIL_TOKEN, URLEncoder.encode(recipientEmail,"UTF8"))
+                .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+                .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL)
+                .replace(PARTNER_NAME, partnerName);
+         //TODO Add partner logo URL to this aas well. Currently Appsumo is hardcoded.
+        return emailBody;
+    }
+    
+        
+    String getViaPartnerConfirmSignupHTMLEmailBody(String resetEmailToken, String recipientEmail) throws Exception {
+        logger.info("recipientEmail: " + recipientEmail);
+        String emailBody = readConfirmSignupdEmailBody();
+        emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, confirmSignupURL)
+                .replace(USER_CONFIRM_TOKEN, resetEmailToken)
+                .replace(EMAIL_TOKEN, URLEncoder.encode(recipientEmail,"UTF8"))
+                .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+                .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
+        return emailBody;
+    }
+    
     String getWelcomeWithFreeCreditHTMLEmailBody(String recipientEmail, String downloadTokenURL) throws Exception {
         logger.info("recipientEmail: " + recipientEmail);
         String emailBody = readWelcomeWithFreeCreditHTMLEmailBody();
@@ -183,6 +215,30 @@ public class EmailServiceFacade {
             
             email.setSubject(CONFIRM_SIGNUP_EMAIL_SUBJECT);
             email.setMessageText(getConfirmSignupHTMLEmailBody(resetEmailToken, recipientEmail));
+            logger.info(resetEmailToken + ", " + recipientEmail);
+            letLockEmailService.sendHTMLMail(email);
+
+        } else {
+            logger.info("Email service is disabled in properties file.");
+        }
+    }
+    
+    void sendConfirmViaPartnerSignupHTMLEmail(String recipientEmail, String resetEmailToken, String partnerName) throws Exception {
+        logger.info("sendConfirmViaPartnerSignupHTMLEmail, recipientEmail: " + recipientEmail);
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
+
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(recipientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                logger.info("replacing recipient email: " + recipientEmail + "with " + nonProdReceipientEmail);
+                email.setTo(nonProdReceipientEmail);
+            }
+            
+            email.setSubject(CONFIRM_SIGNUP_EMAIL_SUBJECT);
+            email.setMessageText(getConfirmViaPartnerSignupHTMLEmailBody(resetEmailToken, recipientEmail, partnerName));
             logger.info(resetEmailToken + ", " + recipientEmail);
             letLockEmailService.sendHTMLMail(email);
 
