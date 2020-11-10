@@ -8,6 +8,7 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,6 @@ import com.landedexperts.letlock.filetransfer.backend.utils.AntideoEmailValiatio
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidationResult;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
-import com.landedexperts.letlock.filetransfer.backend.utils.RedeemCodeValidationResult;
 import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
 
 @RestController
@@ -494,8 +494,10 @@ public class UserController {
         boolean result = false;
         String returnMessage = "";
         String returnCode = "SUCCESS";
+
         try {
-            BooleanResponse response = userMapper.resetUserPassword(email, token, newPassword);
+            String decoded_email = java.net.URLDecoder.decode(email, StandardCharsets.UTF_8.name());
+            BooleanResponse response = userMapper.resetUserPassword(decoded_email, token, newPassword);
             result = response.getResult().getValue();
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
