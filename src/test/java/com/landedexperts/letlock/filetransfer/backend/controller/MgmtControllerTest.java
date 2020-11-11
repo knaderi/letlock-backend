@@ -112,7 +112,7 @@ public class MgmtControllerTest extends BaseControllerTest {
     //@Test
     public void generatePromotionStmtForAppsumo() throws Exception{
         generateRedeemCodesArtifacts("http://www.letlock.io", 10000, "prd");
-        generateRedeemCodesArtifacts("https://www.letlockweb-dev.s3-website-us-west-2.amazonaws.com", 10000,"dev");
+        generateRedeemCodesArtifacts("http://letlockweb-dev.s3-website-us-west-2.amazonaws.com", 10000,"dev");
         generateRedeemCodesArtifacts("http://letlockweb-qa.s3-website-us-west-2.amazonaws.com", 10000,"qa");
         
     }
