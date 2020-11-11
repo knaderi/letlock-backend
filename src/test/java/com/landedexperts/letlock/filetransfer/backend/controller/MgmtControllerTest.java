@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -106,19 +107,39 @@ public class MgmtControllerTest extends BaseControllerTest {
     }
     
     //Temporary solution to generate redeemcodes for  appsumo
-    @Test
+    
+    //USE this only when creating redeemcodes
+    //@Test
     public void generatePromotionStmtForAppsumo() throws Exception{
-        StringBuffer stmts = new StringBuffer();
+        generateRedeemCodesArtifacts("http://www.letlock.io", 10000, "prd");
+        generateRedeemCodesArtifacts("https://www.letlockweb-dev.s3-website-us-west-2.amazonaws.com", 10000,"dev");
+        generateRedeemCodesArtifacts("http://letlockweb-qa.s3-website-us-west-2.amazonaws.com", 10000,"qa");
+        
+    }
+    
 
-        for (int i=0; i<10000; i++) {
+    public void generateRedeemCodesArtifacts(String host, int numberOfRedeemCodes, String env) throws Exception{
+        StringBuffer stmts = new StringBuffer();
+        StringBuffer redeemCodesList = new StringBuffer();
+        redeemCodesList.append("AppSumo Code,").append("Redeem URL").append("\r\n");
+        for (int i=0; i<numberOfRedeemCodes; i++) {
             String redeemCode = UUID.randomUUID().toString();
             stmts.append("INSERT INTO product.package_discount(\r\n" + 
                     "    package_id, code, partner_name, redeem_on_action, valid_until, discount_value, discount_unit, redeemed)" + 
-                    "    VALUES (2,'" + redeemCode + "', 'AppSumo','SIGNUP','2021-04-30 00:00:00.00',100, 'percent', false);").append("\r\n");
+                    "    VALUES (3,'" + redeemCode + "', 'AppSumo','SIGNUP','2021-04-30 00:00:00.00',100, 'percent', false);").append("\r\n");
+            
+            redeemCodesList.append(redeemCode).append(",").append(host).append("/download/?signUp=true&partnerName=AppSumo&code=").append(redeemCode).append("\r\n");
             
         }
 
-        BufferedWriter bwr = new BufferedWriter(new FileWriter(new File("./redeemCodes.txt")));
+        String redeemCodesInsertStmts = "./redeemcodes/"+env+"-redeemCodes-stmts.sql";
+        String redeemCodesCSVFile = "./redeemcodes/" +env+"-AppSumo-LetLock-RedeemCodes.csv";
+        printToFile(stmts, redeemCodesInsertStmts);
+        printToFile(redeemCodesList, redeemCodesCSVFile);
+    }
+
+    private void printToFile(StringBuffer stmts, String redeemCodesInsertStmts) throws IOException {
+        BufferedWriter bwr = new BufferedWriter(new FileWriter(new File(redeemCodesInsertStmts)));
         
         //write contents of StringBuffer to a file
         bwr.write(stmts.toString());
@@ -128,7 +149,6 @@ public class MgmtControllerTest extends BaseControllerTest {
         
         //close the stream
         bwr.close();
-
     }
 
 }
