@@ -9,6 +9,11 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +68,67 @@ public class MgmtControllerTest extends BaseControllerTest {
         AppsSettingsVO[] settings = mgmtMapper.readSettings();
         assertNotNull(settings);
         assertTrue(settings.length >0);
+    }
+    
+    //TODO: The api is not integrated or working
+    
+    @Test
+    public void testAddRedeemCode() throws Exception{
+//        String uri = "/setting/add_redeem_code";
+//        String loginUrl = "/login";
+//        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(loginUrl).param("loginName", "system")
+//                .param("password", "Be to rabti naderh!").accept(MediaType.APPLICATION_JSON_VALUE));
+//
+//        resultAction.andExpect(ok);
+//        MvcResult mvcResult = resultAction.andReturn();
+//
+//        String content = mvcResult.getResponse().getContentAsString();
+//        token = getValuesForGivenKey(content, "token", "result");
+//        
+//        
+//        ResultActions addReddemCodeAction = mvc.perform(
+//                MockMvcRequestBuilders.post(uri).param("token",token)
+//                        .param("packageId","3")
+//                        .param("redeemCode",UUID.randomUUID().toString())
+//                        .param("partnerName","AppSumo")
+//                        .param("action","SIGNUP")
+//                        .param("validUntil","2021-04-30 00:00:00.00")
+//                        .param("discountValue","100")
+//                        .param("discountUnit","percent")
+//                        .accept(MediaType.APPLICATION_JSON_VALUE));
+//
+//        addReddemCodeAction.andExpect(ok);
+//        MvcResult mvcAddReddemResult = addReddemCodeAction.andReturn();
+//
+//        String addRedeemContent = mvcAddReddemResult.getResponse().getContentAsString();
+//        assertForNoError("testAddRedeemCode", content);
+
+    }
+    
+    //Temporary solution to generate redeemcodes for  appsumo
+    @Test
+    public void generatePromotionStmtForAppsumo() throws Exception{
+        StringBuffer stmts = new StringBuffer();
+
+        for (int i=0; i<10000; i++) {
+            String redeemCode = UUID.randomUUID().toString();
+            stmts.append("INSERT INTO product.package_discount(\r\n" + 
+                    "    package_id, code, partner_name, redeem_on_action, valid_until, discount_value, discount_unit, redeemed)" + 
+                    "    VALUES (2,'" + redeemCode + "', 'AppSumo','SIGNUP','2021-04-30 00:00:00.00',100, 'percent', false);").append("\r\n");
+            
+        }
+
+        BufferedWriter bwr = new BufferedWriter(new FileWriter(new File("./redeemCodes.txt")));
+        
+        //write contents of StringBuffer to a file
+        bwr.write(stmts.toString());
+        
+        //flush the stream
+        bwr.flush();
+        
+        //close the stream
+        bwr.close();
+
     }
 
 }

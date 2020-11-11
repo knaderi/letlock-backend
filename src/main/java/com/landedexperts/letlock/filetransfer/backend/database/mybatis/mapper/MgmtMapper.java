@@ -26,9 +26,15 @@ public interface MgmtMapper {
             + " FROM mgmt.apps_settings where deleted=false")
     AppsSettingsVO[] readSettings();
     
-    @Select("INSERT INTO product.package_discount(\r\n" + 
-            "    package_id, code, partner_name, valid_until, discount_value, discount_unit)\r\n" + 
-            "    VALUES (#{ packageId }, #{ redeemCode }, #{ partnerName },#{ validUntil }, #{ discountValue }, #{ discountUnit })")
-    AppsSettingsVO[] addRedeemCode( @Param("packageId") String packageId,  @Param("redeemCode") String redeemCode,  @Param("partnerName") String partnerName,  @Param("validUntil") Timestamp validUntil,  @Param("discountValue") BigDecimal discountValue,  @Param("discountUnit") String discountUnit);
+    @Select("INSERT INTO product.package_discount(" + 
+            "    package_id, code, partner_name, redeem_on_action, valid_until, discount_value, discount_unit)" + 
+            "    VALUES (#{ packageId }, #{ redeemCode }, #{ partnerName },#{action}, CAST (#{ validUntil } AS Timestamp), #{ discountValue }, #{ discountUnit })")
+    AppsSettingsVO[] addRedeemCode( @Param("packageId") int packageId,  
+                                    @Param("redeemCode") String redeemCode,
+                                    @Param("partnerName") String partnerName,
+                                    @Param("action") String action,
+                                    @Param("validUntil") Timestamp validUntil,
+                                    @Param("discountValue") BigDecimal discountValue,
+                                    @Param("discountUnit") String discountUnit);
 
 }
