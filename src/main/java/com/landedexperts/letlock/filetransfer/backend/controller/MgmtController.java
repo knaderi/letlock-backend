@@ -35,23 +35,29 @@ public class MgmtController {
     MgmtMapper mgmtMapper;
 
     @GetMapping(value = "/setting/is_free_signup_credit_for_app", produces = { "application/JSON" })
-    public JsonResponse<String> isFreeSignUpTransferCreditForApp(
+    public JsonResponse<Boolean> isFreeSignUpTransferCreditForApp(
             @RequestParam(value = "appName") final String appName) {
         logger.info("MgmtController.isFreeSignUpTransferCredit called for app " + appName);
-        String settingValue = appSettingManager.getSettingValue(appName, "signup_free_credit");
+        String settingValueStr = appSettingManager.getSettingValue(appName, "signup_free_credit");
+        boolean settingValue = false;
         String returnCode = "SUCCESS";
         String returnMessage = "";
 
-        if ("NOT_FOUND".equals(settingValue)) {
-            return new JsonResponse<String>(settingValue, "APP_SETTING_NOT_FOUND",
+        if ("NOT_FOUND".equals(settingValueStr)) {
+            return new JsonResponse<Boolean>(false, "APP_SETTING_NOT_FOUND",
                     "Did not find any active setting for the specified app.");
+        }else {
+            if(settingValueStr.contentEquals("true")){
+                settingValue = true;
+            }
+            
         }
-        return new JsonResponse<String>(settingValue, returnCode, returnMessage);
+        return new JsonResponse<Boolean>(settingValue, returnCode, returnMessage);
 
     }
 
     @GetMapping(value = "/setting/is_free_signup_credit", produces = { "application/JSON" })
-    public JsonResponse<String> isFreeSignUpTransferCredit() {
+    public JsonResponse<Boolean> isFreeSignUpTransferCredit() {
         return isFreeSignUpTransferCreditForApp("all_apps");
     }
 
