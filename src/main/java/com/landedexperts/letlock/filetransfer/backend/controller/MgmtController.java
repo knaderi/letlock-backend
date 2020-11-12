@@ -130,5 +130,38 @@ public class MgmtController {
         return new BooleanResponse(result, returnCode, returnMessage);
 
     }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/setting/update_apps_setting", produces = { "application/JSON" })
+    public BooleanResponse updateAppsSetting(
+            @RequestParam(value = "token") final String token,
+            @RequestParam(value = "key") final String key,
+            @RequestParam(value = "value") final String value,
+            @RequestParam(value = "app") final String app) {
+        logger.info("UserController.updateAppsSetting called");
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        long userId = SessionManager.getInstance().getUserId(token);
+        boolean result = true;
+        try {
+           if (userId > 0 && userId == 1) {// TODO: check for admin role later
+                mgmtMapper.updateAppSettings(key, value, app);
+
+            } else {
+                returnCode = "UPDATE_SETTINGS_FAIED";
+                returnMessage = "Updating app settings failed";
+                result = false;
+            }
+        } catch (Exception e) {
+            returnCode = "UPDATE_SETTINGS_ERROR";
+            logger.error("UserController.updateAppsSetting failed."
+                    + " returnCode: "
+                    + returnCode
+                    + " returnMessage: "
+                    + e.getMessage());
+        }
+        return new BooleanResponse(result, returnCode, returnMessage);
+
+        
+    }
 
 }

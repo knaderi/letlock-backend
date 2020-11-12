@@ -120,6 +120,21 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         Assertions.assertTrue(content.contains("\"returnCode\":\"USER_NOT_CONFIRMED\""), "loginTest: returnCode should be SUCCESS");
     }
     
+    void loginAsSystem() throws Exception {
+
+        String uri = "/login";
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", "System")
+                .param("password", "Be to rabti naderh!").accept(MediaType.APPLICATION_JSON_VALUE));
+
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+
+        String content = mvcResult.getResponse().getContentAsString();
+        token = getValuesForGivenKey(content, "token", "result");
+        Assertions.assertTrue(content.length() > 0, "loginTest: content length should be larger than zero");
+        Assertions.assertTrue(content.contains("\"returnCode\":\"USER_NOT_CONFIRMED\""), "loginTest: returnCode should be SUCCESS");
+    }
+    
     private String getPendingUserResetToken() throws Exception, UnsupportedEncodingException {
         String uri3 = "/get_reset_token";
         ResultActions resultAction3 = mvc

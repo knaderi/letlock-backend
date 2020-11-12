@@ -11,7 +11,9 @@ import java.sql.Timestamp;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AppsSettingsVO;
 
@@ -36,5 +38,10 @@ public interface MgmtMapper {
                                     @Param("validUntil") Timestamp validUntil,
                                     @Param("discountValue") BigDecimal discountValue,
                                     @Param("discountUnit") String discountUnit);
+    
+    @Select("UPDATE mgmt.apps_settings SET value = #{value} WHERE key= #{key} AND app=#{app}")
+    BooleanResponse updateAppSettings(@Param("key") String key,  
+            @Param("value") String value,
+            @Param("app") String app);
 
 }

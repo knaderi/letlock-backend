@@ -8,11 +8,14 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,18 +28,55 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.MgmtMapper;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AppsSettingsVO;
+import com.landedexperts.letlock.filetransfer.backend.session.AppSettingsManager;
 
 public class MgmtControllerTest extends BaseControllerTest {
 
     @Autowired
     MgmtMapper mgmtMapper;
+    List<String> jsonKeyValues = new ArrayList<String>();
 
     @Override
     @BeforeEach
     @Transactional
     public void setUp() throws Exception {
         super.setUp();
+    }
+    
+    private AppSettingsManager appsSettingsManager;
+    @Test
+    public void getIsFreeSignUPCreditForEmail() throws Exception{
+        appsSettingsManager.loadAppsSettings();
+        boolean isFreeSignup = appsSettingsManager.isFreeSignUpCreditForapps();
+        if(isFreeSignup) {
+           loginAsSystem();
+           String uri = "/setting/update_apps_setting";
+           ResultActions resultAction = mvc
+                   .perform(MockMvcRequestBuilders.get(uri).param("token", token).param("key", "signup_free_credit").param("value","true").param("app", "all_apps")
+                           .accept(MediaType.APPLICATION_JSON_VALUE));
+           resultAction.andExpect(ok);
+           MvcResult mvcResult = resultAction.andReturn();
+           String content1 = mvcResult.getResponse().getContentAsString();
+           String content2 = isFreeSignUpCredit();
+           assertHasValueForKey("value", JsonResponse.getResult(content2).getResult().toString(), jsonKeyValues);
+           assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", content2, "value", "false", "equalsto");
+           assertFalse(appsSettingsManager.isFreeSignUpCreditForapps());
+        }else {
+            loginAsSystem();
+            String uri = "/setting/update_apps_setting";
+            ResultActions resultAction = mvc
+                    .perform(MockMvcRequestBuilders.get(uri).param("token", token).param("key", "signup_free_credit").param("value","false").param("app", "all_apps")
+                            .accept(MediaType.APPLICATION_JSON_VALUE));
+            resultAction.andExpect(ok);
+            MvcResult mvcResult = resultAction.andReturn();
+            String content1 = mvcResult.getResponse().getContentAsString();
+            String content2 = isFreeSignUpCredit();
+            assertHasValueForKey("value", JsonResponse.getResult(content2).getResult().toString(), jsonKeyValues);
+            assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", content2, "value", "true", "equalsto");
+            assertTrue(appsSettingsManager.isFreeSignUpCreditForapps());
+        }
     }
 
     @Test
@@ -54,6 +94,11 @@ public class MgmtControllerTest extends BaseControllerTest {
 
     @Test
     public void testIsFreeSignUpCreditFound() throws Exception {
+        String content = isFreeSignUpCredit();
+        assertForError("isFreeSignUpCredit", content, "SUCCESS");
+    }
+
+    private String isFreeSignUpCredit() throws Exception, UnsupportedEncodingException {
         String uri = "/setting/is_free_signup_credit";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON_VALUE));
@@ -61,7 +106,7 @@ public class MgmtControllerTest extends BaseControllerTest {
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        assertForError("isFreeSignUpCredit", content, "SUCCESS");
+        return content;
     }
 
     @Test
