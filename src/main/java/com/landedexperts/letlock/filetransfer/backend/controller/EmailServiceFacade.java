@@ -159,7 +159,7 @@ public class EmailServiceFacade {
                 .replace(EMAIL_TOKEN, URLEncoder.encode(recipientEmail,"UTF8"))
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL)
-                .replace(PARTNER_NAME, partnerName);
+                .replace(PARTNER_NAME, partnerName.toUpperCase());
          //TODO Add partner logo URL to this aas well. Currently Appsumo is hardcoded.
         return emailBody;
     }
