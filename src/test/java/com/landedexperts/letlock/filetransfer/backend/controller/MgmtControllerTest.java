@@ -6,9 +6,10 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -28,7 +29,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.MgmtMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AppsSettingsVO;
 import com.landedexperts.letlock.filetransfer.backend.session.AppSettingsManager;
 
@@ -44,37 +44,41 @@ public class MgmtControllerTest extends BaseControllerTest {
     public void setUp() throws Exception {
         super.setUp();
     }
-    
+    @Autowired
     private AppSettingsManager appsSettingsManager;
+    
     @Test
     public void getIsFreeSignUPCreditForEmail() throws Exception{
         appsSettingsManager.loadAppsSettings();
         boolean isFreeSignup = appsSettingsManager.isFreeSignUpCreditForapps();
+        loginAsSystem();
+        String updateSettingURL = "/setting/update_apps_setting";
+        String isFreeSignUPCreditResponse = "";
         if(isFreeSignup) {
-           loginAsSystem();
-           String uri = "/setting/update_apps_setting";
            ResultActions resultAction = mvc
-                   .perform(MockMvcRequestBuilders.get(uri).param("token", token).param("key", "signup_free_credit").param("value","true").param("app", "all_apps")
+                   .perform(MockMvcRequestBuilders.post(updateSettingURL).param("token", token).param("key", "signup_free_credit").param("value","false").param("app", "all_apps")
                            .accept(MediaType.APPLICATION_JSON_VALUE));
            resultAction.andExpect(ok);
            MvcResult mvcResult = resultAction.andReturn();
-           String content1 = mvcResult.getResponse().getContentAsString();
-           String content2 = isFreeSignUpCredit();
-           assertHasValueForKey("value", JsonResponse.getResult(content2).getResult().toString(), jsonKeyValues);
-           assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", content2, "value", "false", "equalsto");
+           mvcResult.getResponse().getContentAsString();
+           isFreeSignUPCreditResponse = isFreeSignUpCredit();
+           assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "true", "equalsTo");
+           appsSettingsManager.loadAppsSettings();
+           isFreeSignUPCreditResponse = isFreeSignUpCredit();
+           assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "false", "equalsTo");
            assertFalse(appsSettingsManager.isFreeSignUpCreditForapps());
         }else {
-            loginAsSystem();
-            String uri = "/setting/update_apps_setting";
             ResultActions resultAction = mvc
-                    .perform(MockMvcRequestBuilders.get(uri).param("token", token).param("key", "signup_free_credit").param("value","false").param("app", "all_apps")
+                    .perform(MockMvcRequestBuilders.post(updateSettingURL).param("token", token).param("key", "signup_free_credit").param("value","true").param("app", "all_apps")
                             .accept(MediaType.APPLICATION_JSON_VALUE));
             resultAction.andExpect(ok);
             MvcResult mvcResult = resultAction.andReturn();
-            String content1 = mvcResult.getResponse().getContentAsString();
-            String content2 = isFreeSignUpCredit();
-            assertHasValueForKey("value", JsonResponse.getResult(content2).getResult().toString(), jsonKeyValues);
-            assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", content2, "value", "true", "equalsto");
+            mvcResult.getResponse().getContentAsString();
+            isFreeSignUPCreditResponse = isFreeSignUpCredit();
+            assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "false", "equalsTo");
+            appsSettingsManager.loadAppsSettings();
+            isFreeSignUPCreditResponse = isFreeSignUpCredit();
+            assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "true", "equalsTo");
             assertTrue(appsSettingsManager.isFreeSignUpCreditForapps());
         }
     }

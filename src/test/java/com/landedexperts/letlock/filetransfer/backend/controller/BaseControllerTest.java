@@ -132,7 +132,6 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         String content = mvcResult.getResponse().getContentAsString();
         token = getValuesForGivenKey(content, "token", "result");
         Assertions.assertTrue(content.length() > 0, "loginTest: content length should be larger than zero");
-        Assertions.assertTrue(content.contains("\"returnCode\":\"USER_NOT_CONFIRMED\""), "loginTest: returnCode should be SUCCESS");
     }
     
     private String getPendingUserResetToken() throws Exception, UnsupportedEncodingException {

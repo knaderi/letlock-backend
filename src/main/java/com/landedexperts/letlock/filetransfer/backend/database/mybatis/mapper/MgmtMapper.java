@@ -39,7 +39,7 @@ public interface MgmtMapper {
                                     @Param("discountValue") BigDecimal discountValue,
                                     @Param("discountUnit") String discountUnit);
     
-    @Select("UPDATE mgmt.apps_settings SET value = #{value} WHERE key= #{key} AND app=#{app}")
+    @Select("UPDATE mgmt.apps_settings SET value = #{value} WHERE key= #{key} AND app= CAST(#{app} AS mgmt.tp_app_name)")
     BooleanResponse updateAppSettings(@Param("key") String key,  
             @Param("value") String value,
             @Param("app") String app);
