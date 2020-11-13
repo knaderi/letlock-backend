@@ -297,7 +297,7 @@ public class UserControllerTest extends BaseControllerTest {
         String content = mvcResult.getResponse().getContentAsString();
 
         Assertions.assertTrue(content.contains("\"returnCode\":\"INVALID_PASSWORD\""), "Content have error");
-        Assertions.assertTrue(content.contains("\"returnMessage\":\"Password is invalid\""),
+        Assertions.assertTrue(content.contains("\"returnMessage\":\"The user password provide is wrong\""),
                 "Content error message should be token is invalid");
         Assertions.assertTrue(content.contains("\"value\":false"), "Content value should be false");
     }

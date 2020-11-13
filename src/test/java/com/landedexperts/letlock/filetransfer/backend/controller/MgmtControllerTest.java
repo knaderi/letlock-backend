@@ -62,9 +62,6 @@ public class MgmtControllerTest extends BaseControllerTest {
            MvcResult mvcResult = resultAction.andReturn();
            mvcResult.getResponse().getContentAsString();
            isFreeSignUPCreditResponse = isFreeSignUpCredit();
-           assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "true", "equalsTo");
-           appsSettingsManager.loadAppsSettings();
-           isFreeSignUPCreditResponse = isFreeSignUpCredit();
            assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "false", "equalsTo");
            assertFalse(appsSettingsManager.isFreeSignUpCreditForapps());
         }else {
@@ -73,10 +70,7 @@ public class MgmtControllerTest extends BaseControllerTest {
                             .accept(MediaType.APPLICATION_JSON_VALUE));
             resultAction.andExpect(ok);
             MvcResult mvcResult = resultAction.andReturn();
-            mvcResult.getResponse().getContentAsString();
-            isFreeSignUPCreditResponse = isFreeSignUpCredit();
-            assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "false", "equalsTo");
-            appsSettingsManager.loadAppsSettings();
+            mvcResult.getResponse().getContentAsString();           
             isFreeSignUPCreditResponse = isFreeSignUpCredit();
             assertJsonForKeyValue("getIsFreeSignUPCreditForEmail", isFreeSignUPCreditResponse, "result", "true", "equalsTo");
             assertTrue(appsSettingsManager.isFreeSignUpCreditForapps());

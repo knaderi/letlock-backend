@@ -208,31 +208,33 @@ public class UserController {
                 emailValidationResult.setReturnCode(EMAIL_VARIATION_EXIST);
                 emailValidationResult.setReturnMessage("Email address provided is already registed with a variation that will not be ");
             } else {
-                AntideoEmailValiationVO antideoValidationInfo = getAntideoValidationInfo(email);
-                if (null != antideoValidationInfo.getError()) {
-                    if (antideoValidationInfo.getError().getCode().equals(REACHED_MAXIMUM_ANTIDEO_CALL_CODE)) {
-                        logger.error("LetLock has reached maximum Antideo email validation treshhold. Need to increase the limit");
-                        // TODO: Send email to admin
-                    } else {
-                        emailValidationResult.setReturnCode(EMAIL_VALIDATION_ERROR);
-                        emailValidationResult.setReturnMessage("validaton code: "
-                                + antideoValidationInfo.getError().getCode()
-                                + " validation message: "
-                                + antideoValidationInfo.getError().getMessage());
-                        emailValidationResult.setValid(false);
-                    }
-                } else {
-                    if (antideoValidationInfo.isDisposable()) {
-                        emailValidationResult.setDisposable(true);
-                        emailValidationResult.setReturnCode(EMAIL_DISPOSABLE);
-                        emailValidationResult.setReturnMessage("Email is a disposable email");
-                    }
-                    if (antideoValidationInfo.isSpam() || antideoValidationInfo.isScam()) {
-                        emailValidationResult.setReturnCode(EMAIL_UNRELIABLE);
-                        emailValidationResult.setReturnMessage("Email is listed in spam or scam email list");
-                        emailValidationResult.setValid(false);
-                    }
-                }
+                
+                //disabled Anideo email check as it makes the system too slow.
+//                AntideoEmailValiationVO antideoValidationInfo = getAntideoValidationInfo(email);
+//                if (null != antideoValidationInfo.getError()) {
+//                    if (antideoValidationInfo.getError().getCode().equals(REACHED_MAXIMUM_ANTIDEO_CALL_CODE)) {
+//                        logger.error("LetLock has reached maximum Antideo email validation treshhold. Need to increase the limit");
+//                        // TODO: Send email to admin
+//                    } else {
+//                        emailValidationResult.setReturnCode(EMAIL_VALIDATION_ERROR);
+//                        emailValidationResult.setReturnMessage("validaton code: "
+//                                + antideoValidationInfo.getError().getCode()
+//                                + " validation message: "
+//                                + antideoValidationInfo.getError().getMessage());
+//                        emailValidationResult.setValid(false);
+//                    }
+//                } else {
+//                    if (antideoValidationInfo.isDisposable()) {
+//                        emailValidationResult.setDisposable(true);
+//                        emailValidationResult.setReturnCode(EMAIL_DISPOSABLE);
+//                        emailValidationResult.setReturnMessage("Email is a disposable email");
+//                    }
+//                    if (antideoValidationInfo.isSpam() || antideoValidationInfo.isScam()) {
+//                        emailValidationResult.setReturnCode(EMAIL_UNRELIABLE);
+//                        emailValidationResult.setReturnMessage("Email is listed in spam or scam email list");
+//                        emailValidationResult.setValid(false);
+//                    }
+//                }
             }
         } else {
             emailValidationResult.setReturnCode(EMAIL_INVALID);

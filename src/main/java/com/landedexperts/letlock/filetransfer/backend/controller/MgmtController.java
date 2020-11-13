@@ -145,7 +145,7 @@ public class MgmtController {
         try {
            if (userId > 0 && userId == 1) {// TODO: check for admin role later
                 mgmtMapper.updateAppSettings(key, value, app);
-
+                appSettingManager.loadAppsSettings(); //load the new settings.
             } else {
                 returnCode = "UPDATE_SETTINGS_FAIED";
                 returnMessage = "Updating app settings failed";
