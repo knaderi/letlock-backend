@@ -158,15 +158,24 @@ public class OrderControllerTest extends BaseControllerTest {
     public void getUserOrdersTest() throws Exception {
         createOrder();
         createOrderLineItem(orderId);
+        String content = getUserOrdersContent();
+        Assertions.assertTrue(content.length() > 0, "content should exist but value should be empty");
+        if (content.contains("\"orderId\" :")) {
+            Assertions.assertFalse(content.contains("\"orderId\":" + orderId), "response should not contain initiated orders");
+        }
+        makeDummySuccessfulPayment(orderId);
+        content = getUserOrdersContent();
+        String result = JsonResponse.getResult(content).getResult().toString();
+        Assertions.assertEquals(orderId,getValuesForGivenKey(result, "orderId", orderId));        
+    }
+    
+    private String getUserOrdersContent() throws Exception {
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
-        String content = mvcResult.getResponse().getContentAsString();
-        Assertions.assertTrue(content.length() > 0, "content should exist but value should be empty");
-        Assertions.assertEquals("{\"type\":\"json\", \"value\":\"{}\"}", JsonResponse.getResult(content).getResult().toString());
-        
+        return mvcResult.getResponse().getContentAsString();
     }
 
     @Test
@@ -284,17 +293,25 @@ public class OrderControllerTest extends BaseControllerTest {
     
     @Test
     public void getUserOrderUsages() throws Exception {
-        // Create test order
-        createOrder();
-        createOrderLineItem(orderId);
-        makeDummySuccessfulPayment(orderId);
-        testFileTransferUsageHistory(20, 20);
+        int credits = 0;
+        String result = JsonResponse.getResult(getUserOrdersContent()).getResult().toString();
+        if (result.contains("\"orderId\" :")) {
+            orderId = getKeyName(result,0); 
+            credits = 10;
+        } else {
+            // Create test order
+            createOrder();
+            createOrderLineItem(orderId);
+            makeDummySuccessfulPayment(orderId);
+            credits = 20;
+        }
+        testFileTransferUsageHistory(credits, credits);
         startFileTransfer();
-        testFileTransferUsageHistory(19,20);
+        testFileTransferUsageHistory(credits-1,credits);
         startFileTransfer();
-        testFileTransferUsageHistory(18,20);
+        testFileTransferUsageHistory(credits-2,credits);
         startFileTransfer();        
-        testFileTransferUsageHistory(17,20);
+        testFileTransferUsageHistory(credits-3,credits);
     }
 
     private void testFileTransferUsageHistory(int availTransferCounts, int originalTransferCounts)
@@ -311,31 +328,36 @@ public class OrderControllerTest extends BaseControllerTest {
         // "\"creditUsed\":1,"));
         Assertions.assertTrue(content.contains(
                 "\"availableTransferCounts\":" + availTransferCounts + ",\"originalTransferCounts\":" + originalTransferCounts + ""),"The number of file transfers and avialble ones are not correct.");
-        if (originalTransferCounts < originalTransferCounts) {
+        if (availTransferCounts < originalTransferCounts) {
             Assertions.assertTrue(content.contains("\"senderId\":" + userId + ","), "There should be a sender " + content);
         }
     }
     
     @Test
     public void getUserFileTransferCounts() throws Exception {
-        // Create test order
+        int credits = 0;
+        String result = JsonResponse.getResult(getUserOrdersContent()).getResult().toString();
+        if (result.contains("\"orderId\" :")) {
+            credits = 10;
+        }
         
+        // Create test order
         createOrder();
-        testFileTransferUsageCounts(0, 0);
+        testFileTransferUsageCounts(credits, credits);
         createOrderLineItem(orderId);
-        testFileTransferUsageCounts(0, 0);
+        testFileTransferUsageCounts(credits, credits);
         makeDummySuccessfulPayment(orderId);
-        testFileTransferUsageCounts(20, 20);
+        testFileTransferUsageCounts(credits + 20, credits + 20);
         startFileTransfer();
-        testFileTransferUsageCounts(19,20);
+        testFileTransferUsageCounts(credits + 19, credits + 20);
         startFileTransfer();
-        testFileTransferUsageCounts(18,20);
+        testFileTransferUsageCounts(credits + 18, credits + 20);
         startFileTransfer();        
-        testFileTransferUsageCounts(17,20);
+        testFileTransferUsageCounts(credits + 17, credits + 20);
         String newOrderId = createOrder();
         createOrderLineItem(newOrderId);
         makeDummySuccessfulPayment(newOrderId);
-        testFileTransferUsageCounts(37,40);
+        testFileTransferUsageCounts(credits + 37, credits + 40);
     }
 
     private void testFileTransferUsageCounts(int availTransferCounts, int originalTransferCounts)

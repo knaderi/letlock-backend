@@ -95,7 +95,7 @@ public abstract class AbstractTest {
         check(key, jsonElement, list);
         Assertions.assertTrue(list.size() > 0);
     }
-
+    
     protected void assertContentForKeyValueLargerThanZero(String testName, String content, String keyName) throws Exception {
         assertJsonForKeyValue(testName, content, keyName, "0", "greaterThan");
     }
@@ -145,6 +145,11 @@ public abstract class AbstractTest {
         } else {
             return jsonObject.getJSONObject(parent).getString(key);
         }
+    }
+
+    protected String getKeyName(String jsonArrayStr, int num) throws Exception {
+        JSONObject jsonObject = new JSONObject(jsonArrayStr);
+        return  jsonObject.names().getString(num);
     }
 
     protected static void check(String key, String jsonString, List<String> list) {
