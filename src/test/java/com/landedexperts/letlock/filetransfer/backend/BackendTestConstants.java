@@ -14,4 +14,6 @@ public interface BackendTestConstants {
     static final String NEW_PASSWORD = "newpassw0rd!";
     static final String TEST_EMAIL = "knaderi@landedexperts.com";
     static final String TEST_USER_ID = "knaderi12";
+    static final String TEST_PACKAGE_ID = "3";
+    static final int TRANSFER_CREDITS_FOR_TEST_PACKAGE = 20;
 }

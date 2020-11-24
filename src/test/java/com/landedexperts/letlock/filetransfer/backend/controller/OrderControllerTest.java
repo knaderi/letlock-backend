@@ -46,6 +46,7 @@ public class OrderControllerTest extends BaseControllerTest {
     String secondOrderDetailId = "0";
     long paymentId = 0;
     List<String> jsonKeyValues = new ArrayList<String>();
+    int credits = 0;
 
     @Override
     @BeforeEach
@@ -119,7 +120,7 @@ public class OrderControllerTest extends BaseControllerTest {
         }
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", newOrderId).param("packageId", "3")
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", newOrderId).param("packageId", TEST_PACKAGE_ID)
                         .param("quantity", "1").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -131,7 +132,7 @@ public class OrderControllerTest extends BaseControllerTest {
     private void updateOrderLineItem() throws Exception {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", "3")
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", TEST_PACKAGE_ID)
                         .param("quantity", "1").param("locationId", "3").accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -145,7 +146,7 @@ public class OrderControllerTest extends BaseControllerTest {
     public void deleteOrderLineItem() throws Exception {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", "3")
+                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", TEST_PACKAGE_ID)
                         .param("quantity", "0").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));// set the quantity to
                                                                                                                    // zero
         resultAction.andExpect(ok);
@@ -293,17 +294,18 @@ public class OrderControllerTest extends BaseControllerTest {
     
     @Test
     public void getUserOrderUsages() throws Exception {
-        int credits = 0;
         String result = JsonResponse.getResult(getUserOrdersContent()).getResult().toString();
+        // Check if the user has free credits added upon registration
         if (result.contains("\"orderId\" :")) {
+            // Use the complimentary order for the test
             orderId = getKeyName(result,0); 
-            credits = 10;
+            credits = getFreeCreditsCount();
         } else {
             // Create test order
             createOrder();
             createOrderLineItem(orderId);
             makeDummySuccessfulPayment(orderId);
-            credits = 20;
+            credits = TRANSFER_CREDITS_FOR_TEST_PACKAGE;
         }
         testFileTransferUsageHistory(credits, credits);
         startFileTransfer();
@@ -312,6 +314,16 @@ public class OrderControllerTest extends BaseControllerTest {
         testFileTransferUsageHistory(credits-2,credits);
         startFileTransfer();        
         testFileTransferUsageHistory(credits-3,credits);
+    }
+    
+    private int getFreeCreditsCount() throws Exception {
+        String uri = "/order/get_filetransfer_order_usage_counts";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.get(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));       
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        return Integer.parseInt(getValuesForGivenKey(content,"originalTransferCounts","result"));
     }
 
     private void testFileTransferUsageHistory(int availTransferCounts, int originalTransferCounts)
@@ -335,10 +347,11 @@ public class OrderControllerTest extends BaseControllerTest {
     
     @Test
     public void getUserFileTransferCounts() throws Exception {
-        int credits = 0;
         String result = JsonResponse.getResult(getUserOrdersContent()).getResult().toString();
+        // Check if the user has free credits added upon registration
         if (result.contains("\"orderId\" :")) {
-            credits = 10;
+            orderId = getKeyName(result,0);
+            credits = getFreeCreditsCount();
         }
         
         // Create test order
@@ -347,17 +360,19 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem(orderId);
         testFileTransferUsageCounts(credits, credits);
         makeDummySuccessfulPayment(orderId);
-        testFileTransferUsageCounts(credits + 20, credits + 20);
+        credits = credits + TRANSFER_CREDITS_FOR_TEST_PACKAGE;
+        testFileTransferUsageCounts(credits, credits);
         startFileTransfer();
-        testFileTransferUsageCounts(credits + 19, credits + 20);
+        testFileTransferUsageCounts(credits - 1, credits);
         startFileTransfer();
-        testFileTransferUsageCounts(credits + 18, credits + 20);
+        testFileTransferUsageCounts(credits - 2, credits);
         startFileTransfer();        
-        testFileTransferUsageCounts(credits + 17, credits + 20);
+        testFileTransferUsageCounts(credits - 3, credits);
         String newOrderId = createOrder();
         createOrderLineItem(newOrderId);
         makeDummySuccessfulPayment(newOrderId);
-        testFileTransferUsageCounts(credits + 37, credits + 40);
+        credits = credits + TRANSFER_CREDITS_FOR_TEST_PACKAGE;
+        testFileTransferUsageCounts(credits - 3, credits);
     }
 
     private void testFileTransferUsageCounts(int availTransferCounts, int originalTransferCounts)
