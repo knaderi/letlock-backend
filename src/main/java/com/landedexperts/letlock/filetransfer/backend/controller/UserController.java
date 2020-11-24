@@ -125,6 +125,7 @@ public class UserController {
             returnMessage = answer.getReturnMessage();
 
             if ("SUCCESS".equals(returnCode)) {
+                handleFreeCredit(email, emailValidationResult);
                 logger.info("regsitered user with email " + email + " and with loginName " + loginName);
                 emailServiceFacade.sendConfirmSignupHTMLEmail(email, resetToken);
             }
@@ -603,16 +604,7 @@ public class UserController {
                         " return Message: " + returnMessage);
             } else {
                 EmailValidationResult emailValidationResult = validateEmail(email);
-                boolean isFreeSignupCreditForEmail = isFreeSignUPCreditForEmail(emailValidationResult);
-                if (isFreeSignupCreditForEmail) {
-                    IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); // TODO: This has to be done on behalf of
-                    if ("SUCCESS".contentEquals(addCreditResponse.getReturnCode())) { // admin/system
-                        logger.info("confirm signup free credit email: " + email);
-                        emailServiceFacade.sendWelcomeWithFreeCreditEmail(email);
-                    }
-                    logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(),
-                            addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId());
-                }
+              //  handleFreeCredit(email, emailValidationResult);
                 emailServiceFacade.sendAdminRegistrationNotification(email, requestData);
             }
         } catch (Exception e) {
@@ -625,6 +617,19 @@ public class UserController {
 
         return new BooleanResponse(result, returnCode, returnMessage);
 
+    }
+
+    private void handleFreeCredit(final String email, EmailValidationResult emailValidationResult) throws Exception {
+        boolean isFreeSignupCreditForEmail = isFreeSignUPCreditForEmail(emailValidationResult);
+        if (isFreeSignupCreditForEmail) {
+            IdVO addCreditResponse = userMapper.addFreeTransferCredit(1, email); // TODO: This has to be done on behalf of
+            if ("SUCCESS".contentEquals(addCreditResponse.getReturnCode())) { // admin/system
+                logger.info("confirm signup free credit email: " + email);
+                emailServiceFacade.sendWelcomeWithFreeCreditEmail(email);
+            }
+            logger.info("Adding free credits: returnCode: {} returnMessage: {}  orderId: {}", addCreditResponse.getReturnCode(),
+                    addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId());
+        }
     }
     
 
