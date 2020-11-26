@@ -49,16 +49,7 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
     @Transactional
     public void setUp() throws Exception {
         super.setUp();
-        Faker faker = new Faker();
-        boolean validLoginName = false;
-        while (!validLoginName) {
-            userLoginName = faker.name().firstName() + faker.name().lastName();
-            if(LoginNameValidator.isValid(userLoginName)) {
-                validLoginName = true;
-            }
-        }               
-        userEmail = faker.internet().emailAddress();
-        userPassword = userLoginName + '!';
+        setUpUserName();
     }
 
     /**
@@ -88,6 +79,21 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
 
         // test login fails at this point since reset-Token has not been confirmed.
         loginForInactiveUser();
+ 
+    }
+    
+    protected void setUpUserName()
+            throws Exception, UnsupportedEncodingException {
+        Faker faker = new Faker();
+        boolean validLoginName = false;
+        while (!validLoginName) {
+            userLoginName = faker.name().firstName() + faker.name().lastName();
+            if(LoginNameValidator.isValid(userLoginName)) {
+                validLoginName = true;
+            }
+        }               
+        userEmail = faker.internet().emailAddress();
+        userPassword = userLoginName + '!';
  
     }
     

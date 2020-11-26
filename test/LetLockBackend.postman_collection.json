@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8c9b50c7-922f-48f2-ba95-5f0c756f90c8",
+		"_postman_id": "658604c5-4af8-45aa-90ae-b7a3ec1dff7f",
 		"name": "LetLockBackend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1118,13 +1118,128 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "ListContacts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/contacts/list",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"contacts",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddContact",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "contactUserName",
+							"value": "{{bobloginname}}",
+							"type": "text"
+						},
+						{
+							"key": "contactLabel",
+							"value": "Boss",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/contacts/add",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"contacts",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateContact",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "contactUserName",
+							"value": "{{bobloginname}}",
+							"type": "text"
+						},
+						{
+							"key": "contactLabel",
+							"value": "Boss",
+							"type": "text"
+						},
+						{
+							"key": "deleted",
+							"value": "true",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/contacts/update",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"contacts",
+						"update"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "4946a351-de3d-47df-893c-b60098a347c0",
+				"id": "c4a11ee8-358a-4f24-9698-cf0dd9639e50",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1134,7 +1249,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "8698b7b0-2716-4101-9c14-83a573d6d1b8",
+				"id": "36a26e72-2613-4a5e-a42a-a2cf972f2c84",
 				"type": "text/javascript",
 				"exec": [
 					""

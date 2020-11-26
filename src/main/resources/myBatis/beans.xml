@@ -63,5 +63,8 @@
 		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.MgmtMapper"/>
 	</bean>
 	
+	<bean id="contactMapper" parent="baseMapper">
+		<property name="mapperInterface" value="com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.ContactMapper"/>
+	</bean>
 
 </beans>
