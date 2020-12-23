@@ -29,4 +29,14 @@ public class PhoneNumberValidator {
         }
         return false;
     }
+    
+    public static String getUnformatedNumber(String phoneNumber){
+        String str = phoneNumber.trim();
+        String digits = "";
+        for (int i = 0; i < str.length(); i++) {
+            char chrs = str.charAt(i);              
+            if (Character.isDigit(chrs)) digits = digits+chrs;
+        }
+        return digits;
+    }
 }
