@@ -1138,14 +1138,13 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/contacts/list",
+					"raw": "http://{{localhost}}/contacts",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"contacts",
-						"list"
+						"contacts"
 					]
 				}
 			},
@@ -1177,14 +1176,13 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/contacts/add",
+					"raw": "http://{{localhost}}/contacts",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"contacts",
-						"add"
+						"contacts"
 					]
 				}
 			},
@@ -1193,7 +1191,7 @@
 		{
 			"name": "UpdateContact",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "formdata",
@@ -1210,25 +1208,52 @@
 						},
 						{
 							"key": "contactLabel",
-							"value": "Boss",
-							"type": "text"
-						},
-						{
-							"key": "deleted",
-							"value": "true",
+							"value": "Friend",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/contacts/update",
+					"raw": "http://{{localhost}}/contacts",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"contacts",
-						"update"
+						"contacts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteContact",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "text"
+						},
+						{
+							"key": "contactUserName",
+							"value": "{{bobloginname}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{localhost}}/contacts",
+					"protocol": "http",
+					"host": [
+						"{{localhost}}"
+					],
+					"path": [
+						"contacts"
 					]
 				}
 			},
@@ -1239,7 +1264,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "c4a11ee8-358a-4f24-9698-cf0dd9639e50",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1249,13 +1273,11 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "36a26e72-2613-4a5e-a42a-a2cf972f2c84",
 				"type": "text/javascript",
 				"exec": [
 					""
 				]
 			}
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

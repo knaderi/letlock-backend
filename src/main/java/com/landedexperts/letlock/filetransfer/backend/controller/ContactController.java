@@ -9,8 +9,10 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +28,7 @@ public class ContactController {
     private ContactMapper contactMapper;
     private final Logger logger = LoggerFactory.getLogger(ContactController.class);
     
-    @RequestMapping(method = RequestMethod.POST, value = "/contacts/add", produces = { "application/JSON" })
+    @PostMapping(value = "/contacts", produces = { "application/JSON" })
     public BooleanResponse createContact(@RequestParam(value = "token") final String token,
             @RequestParam(value = "contactUserName") final String contactUserName,
             @RequestParam(value = "contactLabel") final String contactLabel
@@ -49,7 +51,7 @@ public class ContactController {
     }
     
     
-    @RequestMapping(method = RequestMethod.GET, value = "contacts/list", produces = { "application/JSON" })
+    @GetMapping(value = "contacts", produces = { "application/JSON" })
     public ContactResponse getUserContacts(@RequestParam(value = "token") final String token) throws Exception {
  
         logger.info("ContactController.getUserContacts called for token " + token + "\n");
@@ -70,11 +72,10 @@ public class ContactController {
     }
     
     
-    @RequestMapping(method = RequestMethod.POST, value = "/contacts/update", produces = { "application/JSON" })
+    @PutMapping(value = "/contacts", produces = { "application/JSON" })
     public BooleanResponse updateContact(@RequestParam(value = "token") final String token,
             @RequestParam(value = "contactUserName") final String contactUserName,
-            @RequestParam(value = "contactLabel") final String contactLabel,
-            @RequestParam(value = "deleted") final Boolean deleted
+            @RequestParam(value = "contactLabel") final String contactLabel
             ) throws Exception {
 
         logger.info("ContactController.updateContact called for token " + token + "\n");
@@ -85,7 +86,7 @@ public class ContactController {
 
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
-            ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, contactLabel, deleted);
+            ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, contactLabel, false);
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
         }
@@ -93,5 +94,25 @@ public class ContactController {
         return new BooleanResponse(result, returnCode, returnMessage);
     }
     
+    @DeleteMapping(value = "/contacts", produces = { "application/JSON" })
+    public BooleanResponse deleteContact(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "contactUserName") final String contactUserName
+            ) throws Exception {
+
+        logger.info("ContactController.deleteContact called for token " + token + "\n");
+        
+        Boolean result = false;
+        String returnCode = "TOKEN_INVALID";
+        String returnMessage = "Invalid token";
+
+        long userId = SessionManager.getInstance().getUserId(token);
+        if (userId > 0) {
+            ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, "", true);
+            returnCode = response.getReturnCode();
+            returnMessage = response.getReturnMessage();
+        }
+        result = returnCode.equals("SUCCESS");
+        return new BooleanResponse(result, returnCode, returnMessage);
+    }
     
 }

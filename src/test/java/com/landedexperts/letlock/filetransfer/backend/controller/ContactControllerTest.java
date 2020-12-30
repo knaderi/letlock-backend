@@ -36,7 +36,7 @@ public class ContactControllerTest extends BaseControllerTest{
     }
     
     private void addContact() throws Exception, UnsupportedEncodingException {
-        String uri = "/contacts/add";
+        String uri = "/contacts";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.post(uri).param("token", token)
                         .param("contactUserName", contactUserName).param("contactLabel", contactLabel)
@@ -58,7 +58,7 @@ public class ContactControllerTest extends BaseControllerTest{
     }
     
     private String listContacts() throws Exception, UnsupportedEncodingException {
-        String uri = "/contacts/list";
+        String uri = "/contacts";
         ResultActions resultAction = mvc
                 .perform(MockMvcRequestBuilders.get(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
@@ -68,10 +68,10 @@ public class ContactControllerTest extends BaseControllerTest{
     @Test
     public void updateContactTest() throws Exception {
         addContact();
-        String uri = "/contacts/update";
+        String uri = "/contacts";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("contactUserName", contactUserName)
-                        .param("contactLabel", "NewLabel").param("deleted", "false")
+                .perform(MockMvcRequestBuilders.put(uri).param("token", token).param("contactUserName", contactUserName)
+                        .param("contactLabel", "NewLabel")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
