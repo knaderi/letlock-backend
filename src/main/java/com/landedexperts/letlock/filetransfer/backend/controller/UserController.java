@@ -142,7 +142,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST, value = "/register/viapartner", produces = { "application/JSON" })
     public IdVO registerViaPartner(@RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "email") final String email, @RequestParam(value = "password") final String password,
-            @RequestParam(value = "redeemCode") final String redeemCode, 
+            @RequestParam(value = "redeemCode") final String redeemCode,
             @RequestParam(value = "partnerName") final String partnerName) {
         logger.info("UserController.register called for loginName " + loginName + " email " + email);
         String returnCode = "SUCCESS";
@@ -166,7 +166,7 @@ public class UserController {
                 return answer;
             }
             BooleanResponse isRedeemCodeValid = userMapper.isRedeemCodeValid(redeemCode, partnerName);
-            if(!isRedeemCodeValid.getResult().getValue()) {
+            if (!isRedeemCodeValid.getResult().getValue()) {
                 answer.setReturnCode(isRedeemCodeValid.getReturnCode());
                 answer.setReturnMessage(isRedeemCodeValid.getReturnMessage());
                 return answer;
@@ -178,7 +178,7 @@ public class UserController {
             returnMessage = answer.getReturnMessage();
 
             if ("SUCCESS".equals(returnCode)) {
-                               
+
                 logger.info("regsitered user with email " + email + " and with loginName " + loginName);
                 emailServiceFacade.sendConfirmViaPartnerSignupHTMLEmail(email, resetToken, partnerName);
             }
@@ -192,7 +192,6 @@ public class UserController {
         return answer;
 
     }
-
 
     private EmailValidationResult validateEmail(final String email) throws Exception {
         // defaults to valid email, not disposable, scam or spam.
@@ -209,8 +208,8 @@ public class UserController {
                 emailValidationResult.setReturnCode(EMAIL_VARIATION_EXIST);
                 emailValidationResult.setReturnMessage("Email address provided is already registed with a variation that will not be ");
             } else {
-                
-                //disabled Anideo email check as it makes the system too slow.
+
+                // disabled Anideo email check as it makes the system too slow.
 //                AntideoEmailValiationVO antideoValidationInfo = getAntideoValidationInfo(email);
 //                if (null != antideoValidationInfo.getError()) {
 //                    if (antideoValidationInfo.getError().getCode().equals(REACHED_MAXIMUM_ANTIDEO_CALL_CODE)) {
@@ -604,7 +603,7 @@ public class UserController {
                         " return Message: " + returnMessage);
             } else {
                 EmailValidationResult emailValidationResult = validateEmail(email);
-              //  handleFreeCredit(email, emailValidationResult);
+                // handleFreeCredit(email, emailValidationResult);
                 emailServiceFacade.sendAdminRegistrationNotification(email, requestData);
             }
         } catch (Exception e) {
@@ -631,7 +630,6 @@ public class UserController {
                     addCreditResponse.getReturnMessage(), addCreditResponse.getResult().getId());
         }
     }
-    
 
     @RequestMapping(method = RequestMethod.GET, value = "/validate_email", produces = { "application/JSON" })
     public JsonResponse<EmailValidationResult> emailFullValidate(@RequestParam(value = "email") final String email) {

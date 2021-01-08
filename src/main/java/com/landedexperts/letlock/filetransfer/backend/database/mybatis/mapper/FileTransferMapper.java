@@ -6,6 +6,7 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.ibatis.annotations.Param;
@@ -119,6 +120,7 @@ public interface FileTransferMapper {
             + " FROM gochain.get_file_transfer_sessions_for_user( #{ userId } )")
     FileTransferInfoRecordVO[] getFileTransferSessionsForUser(
             @Param("userId") long userId);
+
 
     @Select("SELECT"
             + " CAST( _wallet_address_uuid AS text ) AS gochainAddress,"

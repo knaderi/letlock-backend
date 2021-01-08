@@ -7,6 +7,7 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -21,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SetResponse;
 
 public class UserControllerTest extends BaseControllerTest {
 
@@ -146,7 +149,8 @@ public class UserControllerTest extends BaseControllerTest {
         userPassword = NEW_PASSWORD;
         login();
     }
-
+    
+    
     private void changePassword(String token, String loginName, String email, String oldPassword, String newPassword) throws Exception {
         String uri = "/user/change_password";
         ResultActions resultAction = mvc
@@ -297,7 +301,7 @@ public class UserControllerTest extends BaseControllerTest {
         String content = mvcResult.getResponse().getContentAsString();
 
         Assertions.assertTrue(content.contains("\"returnCode\":\"INVALID_PASSWORD\""), "Content have error");
-        Assertions.assertTrue(content.contains("\"returnMessage\":\"The user password provide is wrong\""),
+        Assertions.assertTrue(content.contains("\"returnMessage\":\"Current password does not match the existing profile password.\""),
                 "Content error message should be token is invalid");
         Assertions.assertTrue(content.contains("\"value\":false"), "Content value should be false");
     }

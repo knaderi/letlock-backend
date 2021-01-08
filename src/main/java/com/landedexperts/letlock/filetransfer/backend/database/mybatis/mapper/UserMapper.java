@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper;
 
+import java.util.Set;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -32,7 +34,7 @@ public interface UserMapper {
             + " FROM users.add_user( #{loginName}, #{email}, #{password}, #{resetToken})")
     IdVO register(@Param("loginName") String loginName, @Param("email") String email, @Param("password") String password,
             @Param("resetToken") String resetToken);
-    
+
     @Select("SELECT"
             + " _user_id AS id,"
             + " _return_code AS returnCode,"
@@ -40,7 +42,7 @@ public interface UserMapper {
             + " FROM users.add_user_via_partner( #{loginName}, #{email}, #{password}, #{resetToken}, #{redeemCode}, #{partnerName})")
     IdVO registerViaPartner(@Param("loginName") String loginName, @Param("email") String email, @Param("password") String password,
             @Param("resetToken") String resetToken, @Param("redeemCode") String redeemCode, @Param("partnerName") String partnerName);
-    
+
     @Select("SELECT"
             + " * "
             + " FROM users.is_redeem_code_valid( #{redeemCode}, #{partnerName})")
@@ -94,8 +96,7 @@ public interface UserMapper {
             + " _return_message AS \"returnMessage\""
             + " FROM users.record_signup_confirmation( #{email}, #{resetToken} )")
     BooleanResponse confirmSignup(@Param("email") String email, @Param("resetToken") String resetToken);
-    
-    
+
     @Select("SELECT"
             + " _result AS value,"
             + " _return_code AS returnCode,"
@@ -125,7 +126,7 @@ public interface UserMapper {
             + "cast(#{customerLoginName} AS users.name)"
             + ")")
     IdVO addFreeTransferCredit(@Param("userId") long userId, @Param("customerLoginName") String customerLoginName);
-    
+
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage,"
@@ -135,10 +136,18 @@ public interface UserMapper {
             + "redeem_code_id"
             + ")")
     IdVO addTransferCreditUsingRedeemCode(@Param("email") String email, @Param("redeem_code_id") String redeemCodeId);
-    
+
     @Select("SELECT"
             + " * "
             + " FROM users.is_email_registered( #{email})")
     BooleanResponse isEmailRegistered(@Param("email") String email);
+
+    @Select("SELECT"
+            + " CAST( file_transfer_uuid AS text ) AS fileTransferUuid,"
+            + " current_transfer_step_status AS fileTransferCurrentStepStatus,"
+            + " file_transfer_active_code AS fileTransferActiveCode"
+            + "FROM gochain.get_file_transfer_sessions_for_user( #{ userId }  )"
+            + "where current_transfer_step_status = 'started'")
+    Set<String> getChatRoomNames(@Param("userId") long userId);
 
 }

@@ -167,9 +167,14 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
 
     protected void login() throws Exception {
 
+      loginAsUser(userLoginName, userPassword);
+    }
+    
+    protected void loginAsUser(String userName, String password) throws Exception {
+
         String uri = "/login";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", userLoginName)
-                .param("password", userPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", userName)
+                .param("password", password).accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();

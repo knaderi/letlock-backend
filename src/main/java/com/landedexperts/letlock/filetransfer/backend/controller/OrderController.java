@@ -8,7 +8,6 @@ package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.util.Map;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,13 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersFileTransfersCountsResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.OrdersFileTransfersCountsVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UserProfileResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferOrderLineItemUsageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
+import com.landedexperts.letlock.filetransfer.backend.utils.LetLockAutheticationException;
 
 @RestController
-public class OrderController {
+public class OrderController extends BaseController{
     @Autowired
     private OrderMapper orderMapper;
     private final Logger logger = LoggerFactory.getLogger(OrderController.class);
@@ -107,11 +105,11 @@ public class OrderController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_locations", produces = { "application/JSON" })
-    public JsonResponse<String> getLocations(){
+    public JsonResponse<String> getLocations() {
         logger.info("OrderController.getLocations called");
         return new JsonResponse<String>(orderMapper.getLocations());
     }
-    
+
 //    @RequestMapping(method = RequestMethod.POST, value = "/upsert_order_line_item", produces = { "application/JSON" })
 //    public JsonResponse upsertOrderLineItem(@RequestParam(value = "token") final String token,
 //            @RequestParam(value = "orderId") final int orderId,
@@ -157,87 +155,85 @@ public class OrderController {
         }
         if (returnCode.equals("SUCCESS")) {
             return getUserOrder(token, orderId);
-        }else {
-            return new JsonResponse<String>("",returnCode, returnMessage) ;  
+        } else {
+            return new JsonResponse<String>("", returnCode, returnMessage);
         }
 
     }
-    
-    public JsonResponse<Map<String, String>> getUserOrdersForStatus(@RequestParam(value = "token") final String token, final String status) throws Exception {
+
+    public JsonResponse<Map<String, String>> getUserOrdersForStatus(@RequestParam(value = "token") final String token, final String status)
+            throws Exception {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
 
         JsonResponse<Map<String, String>> value = new JsonResponse<Map<String, String>>();
 
-        long userId = SessionManager.getInstance().getUserId(token);
+        long userId = mapToUserId(token);
         if (userId > 0) {
             value = orderMapper.getUserOrders(userId, status);
-        }else {
+        } else {
             value.setReturnCode("TOKEN_INVALID");
             value.setReturnMessage("Invalid token");
         }
-        if(null == value) {
+        if (null == value) {
             value = new JsonResponse<Map<String, String>>();
         }
 
         return value;
     }
-    
+
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders_by_status", produces = { "application/JSON" })
-    public JsonResponse<Map<String, String>> getUserOrdersByStatus(@RequestParam(value = "token") final String token, @RequestParam(value = "orderStatus") final String orderStatus) throws Exception {
+    public JsonResponse<Map<String, String>> getUserOrdersByStatus(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "orderStatus") final String orderStatus) throws Exception {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
         return getUserOrdersForStatus(token, orderStatus);
     }
-    
+
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_orders", produces = { "application/JSON" })
     public JsonResponse<Map<String, String>> getUserOrders(@RequestParam(value = "token") final String token) throws Exception {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
         return getUserOrdersForStatus(token, "completed");
     }
 
-   
-    
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_order", produces = { "application/JSON" })
     public JsonResponse<String> getUserOrder(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId) throws Exception {
         logger.info("OrderController.getUserOrders called for token " + token + "\n");
 
         JsonResponse<String> value = new JsonResponse<String>();
-        long userId = SessionManager.getInstance().getUserId(token);
+        long userId = mapToUserId(token);
         if (userId > 0) {
             value = orderMapper.getUserOrder(userId, orderId);
-        }else {
+        } else {
             value.setReturnCode("TOKEN_INVALID");
             value.setReturnMessage("Invalid token");
         }
 
         return value;
     }
-    
 
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_ft_order_usage_history", produces = { "application/JSON" })
     public OrderFileTransferUsagesResponse getUserOrderUsageHistroy(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId) throws Exception {
         logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
         FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
-        //TODO, should filter
+        // TODO, should filter
         OrdersFileTransfersCountsVO ordersFTCounts = new OrdersFileTransfersCountsVO();
         OrderFileTransferUsagesResponse response = null;
         long userId = SessionManager.getInstance().getUserId(token);
         if (userId > 0) {
             lineItemsUsageForOrderArray = orderMapper.getUsersFileTransferOrderUsageHistroy(userId, orderId);
-            ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId); 
-            if(null == ordersFTCounts) {
-                ordersFTCounts =  new OrdersFileTransfersCountsVO();
+            ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
+            if (null == ordersFTCounts) {
+                ordersFTCounts = new OrdersFileTransfersCountsVO();
             }
             response = new OrderFileTransferUsagesResponse(orderId, lineItemsUsageForOrderArray, ordersFTCounts);
-        }else {
-            response = new OrderFileTransferUsagesResponse(orderId,lineItemsUsageForOrderArray,ordersFTCounts);            
+        } else {
+            response = new OrderFileTransferUsagesResponse(orderId, lineItemsUsageForOrderArray, ordersFTCounts);
             response.setReturnCode("TOKEN_INVALID");
             response.setReturnMessage("Invalid token");
         }
         return response;
     }
-    
 
     @RequestMapping(method = RequestMethod.POST, value = "/buy_package_now", produces = { "application/JSON" })
     public JsonResponse buyPackageNow(@RequestParam(value = "token") final String token,
@@ -257,42 +253,43 @@ public class OrderController {
         }
         if (returnCode.equals("SUCCESS")) {
             return getUserOrder(token, orderId);
-        }else {
-            return new JsonResponse<Long>(orderId,returnCode, returnMessage) ;  
+        } else {
+            return new JsonResponse<Long>(orderId, returnCode, returnMessage);
         }
 
     }
-    
+
     @GetMapping(value = "/order/get_filetransfer_order_usage_counts", produces = { "application/JSON" })
-    public OrdersFileTransfersCountsResponse getFileTransferUsageCount(@RequestParam(value = "token") final String token, @RequestParam(value = "orderId") final long orderId) throws Exception  {
+    public OrdersFileTransfersCountsResponse getFileTransferUsageCount(@RequestParam(value = "token") final String token,
+            @RequestParam(value = "orderId") final long orderId) throws Exception {
         String returnCode = "SUCCESS";
         String returnMessage = "";
-        long userId = SessionManager.getInstance().getUserId(token);
         OrdersFileTransfersCountsVO fileTransferCounts = new OrdersFileTransfersCountsVO();
         try {
-            if (userId > 0) {
-                fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
-                if(null == fileTransferCounts) {
-                    fileTransferCounts = new OrdersFileTransfersCountsVO(returnCode, returnMessage  , 0, 0);
-                }else {
-                    returnCode = fileTransferCounts.getReturnCode();
-                    returnMessage = fileTransferCounts.getReturnMessage();
-                }
-            }else {
-                returnCode = "TOKEN_INVALID";
-                returnMessage = "Invalid token";
+            long userId = mapToUserId(token);
+            fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
+            if (null == fileTransferCounts) {
+                fileTransferCounts = new OrdersFileTransfersCountsVO(returnCode, returnMessage, 0, 0);
+            } else {
+                returnCode = fileTransferCounts.getReturnCode();
+                returnMessage = fileTransferCounts.getReturnMessage();
             }
 
+        } catch (LetLockAutheticationException lae) {
+            returnCode = "TOKEN_INVALID";
+            returnMessage = "Invalid token";
         } catch (Exception e) {
             returnCode = "ERROR";
             returnMessage = "getFileTransferUsageCount : " + e.getMessage();
             logger.error("UserMapper.getFileTransferUsageCount threw an Exception " + returnMessage);
-        } 
+        }
         return new OrdersFileTransfersCountsResponse(fileTransferCounts, returnCode, returnMessage);
     }
-    
+
+
+
     @GetMapping(value = "/order/get_filetransfer_usage_counts", produces = { "application/JSON" })
-    public OrdersFileTransfersCountsResponse getFileTransferUsageCount(@RequestParam(value = "token") final String token) throws Exception  {
+    public OrdersFileTransfersCountsResponse getFileTransferUsageCount(@RequestParam(value = "token") final String token) throws Exception {
         return getFileTransferUsageCount(token, -1);
     }
 
