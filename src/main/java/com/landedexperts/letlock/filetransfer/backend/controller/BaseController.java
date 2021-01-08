@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.LetLockAutheticationException;
 
@@ -36,29 +35,23 @@ public class BaseController {
 
     }
 
-    @GetMapping(value = "/autheticate_for_chat_room", produces = { "application/JSON" })
-    public JsonResponse<Set<String>> autheticateUserForChatRoom(
+    @GetMapping(value = "/authenticate_for_chat_room", produces = { "application/JSON" })
+    public BooleanResponse autheticateUserForChatRoom(
             @RequestParam(value = "token") final String token,
             @RequestParam(value = "roomKey") final String roomKey) throws Exception {
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-        Set<String> roomNames = Collections.emptySet();
+         Set<String> roomNames = Collections.emptySet();
 
-        JsonResponse<Set<String>> value = new JsonResponse<Set<String>>();
+
         long userId = SessionManager.getInstance().getUserId(token);
+         BooleanResponse value = new BooleanResponse(true, "Success", "");
         if (userId > 0) {
             roomNames = userMapper.getChatRoomNames(userId);
-            if (roomNames.contains(roomKey)) {
-                returnCode = "SUCCESS";
-                returnMessage = "";
-            }else {
-                returnCode = "ROOM_ACCESS_DENIED";
-                returnMessage = "User is not asscociated with the given chat room";
+            if (!roomNames.contains(roomKey)) {
+                value =  new BooleanResponse(false, "ROOM_ACCESS_DENIED", "User is not asscociated with the given chat room");
             }
+        }else {
+            value = new BooleanResponse(false, "TOKEN_INVALID", "Invalid token");
         }
-        value.setReturnCode(returnCode);
-        value.setReturnMessage(returnMessage);
-        value.setResult(roomNames);
         return value;
     }
 

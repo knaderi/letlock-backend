@@ -2,15 +2,34 @@ package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response
 
 import java.util.Set;
 
-public class SetResponse<T> extends ReturnCodeMessageResponse {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class SetResponse<T> {
+    @JsonProperty
+    protected String returnCode = "SUCCESS";
+    
+    @JsonProperty
+    protected String returnMessage = "";
+    
+    @JsonProperty
     private Set<T> result;
+
+    public void setResult(Set<T> result) {
+        this.result = result;
+    }
+
+    public String getReturnCode() {
+        return this.returnCode;
+    }
 
     public Set<T> getResult() {
         return result;
     }
-    
+
     public SetResponse(final Set<T> resultValue, final String returnCode, final String returnMessage) {
-        super(returnCode, returnMessage);        
+        this.returnCode = returnCode != null ? returnCode : "";
+        this.returnMessage = returnMessage != null ? returnMessage : "";
         this.result = resultValue;
     }
 }
+

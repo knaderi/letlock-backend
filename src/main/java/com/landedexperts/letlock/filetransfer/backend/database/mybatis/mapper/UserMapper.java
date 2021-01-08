@@ -146,8 +146,8 @@ public interface UserMapper {
             + " CAST( file_transfer_uuid AS text ) AS fileTransferUuid,"
             + " current_transfer_step_status AS fileTransferCurrentStepStatus,"
             + " file_transfer_active_code AS fileTransferActiveCode"
-            + "FROM gochain.get_file_transfer_sessions_for_user( #{ userId }  )"
-            + "where current_transfer_step_status = 'started'")
+            + " FROM gochain.get_file_transfer_sessions_for_user( #{ userId }  )"
+            + " where current_transfer_step_status = 'started' OR current_transfer_step_status IS NULL ")
     Set<String> getChatRoomNames(@Param("userId") long userId);
 
 }
