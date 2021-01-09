@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SetResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.LetLockAutheticationException;
 
@@ -51,6 +52,25 @@ public class BaseController {
             }
         }else {
             value = new BooleanResponse(false, "TOKEN_INVALID", "Invalid token");
+        }
+        return value;
+    }
+    
+    @GetMapping(value = "/get_user_rooms", produces = { "application/JSON" })
+    public SetResponse<Set<String>> getUserRooms(
+            @RequestParam(value = "token") final String token) throws Exception {
+         Set<String> roomNames = Collections.emptySet();
+
+
+        long userId = SessionManager.getInstance().getUserId(token);
+        SetResponse<Set<String>> value = new SetResponse(Collections.emptySet(), "Success", "");
+        if (userId > 0) {
+            roomNames = userMapper.getChatRoomNames(userId);
+
+                value =  new SetResponse(roomNames, "SUCCESS", "");
+
+        }else {
+            value = new SetResponse(roomNames, "TOKEN_INVALID", "Invalid token");
         }
         return value;
     }
