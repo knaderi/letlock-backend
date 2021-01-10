@@ -60,20 +60,5 @@ public class JsonResponse<T> extends ReturnCodeMessageResponse {
 
     }
     
-//    public static JsonResponse<Object> getResult(Object jsonString) throws JsonParseException, JsonMappingException, IOException {
-//        try {
-//            if (jsonString instanceof Map) {
-//                HashMap<String, String> hashMap = (HashMap<String, String>) jsonString;
-//                return  new JsonResponse<Object>(hashMap.get("value"));
-//            } else if (StringUtils.isEmpty(jsonString)){
-//               return new JsonResponse(jsonString);
-//            }else {
-//                JsonResponse response = new ObjectMapper().readValue(jsonString.toString(), JsonResponse.class);
-//                return (JsonResponse<Object>) getResult(response.getResult());
-//            }
-//        } catch (Exception e) {
-//            return new JsonResponse<Object>(jsonString, "SUCCESS", "");
-//        }
-//
-//    }
+
 }

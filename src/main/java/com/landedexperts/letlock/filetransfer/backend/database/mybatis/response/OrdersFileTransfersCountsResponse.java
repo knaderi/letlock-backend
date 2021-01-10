@@ -4,9 +4,10 @@ public class OrdersFileTransfersCountsResponse  extends ReturnCodeMessageRespons
 
     private OrdersFileTransfersCountsVO result = new OrdersFileTransfersCountsVO();
 
-    public OrdersFileTransfersCountsResponse(OrdersFileTransfersCountsVO fileTransferCounts, String returnCode, String returnMessage) {
-        super(returnCode, returnMessage);
+    public OrdersFileTransfersCountsResponse(OrdersFileTransfersCountsVO fileTransferCounts) {
         result = fileTransferCounts;
+        setReturnCode(fileTransferCounts.returnCode);
+        setReturnMessage(fileTransferCounts.returnMessage);
     }
 
     public OrdersFileTransfersCountsVO getResult() {
