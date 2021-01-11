@@ -597,12 +597,12 @@ public class UserController {
             returnCode = response.getReturnCode();
             returnMessage = response.getReturnMessage();
             result = true;
-            System.out.println("hello");
             if (!"SUCCESS".equals(returnCode)) {
                 logger.error("confirmSignup failed for email " + email + " error code: " + returnCode,
                         " return Message: " + returnMessage);
             } else {
-                EmailValidationResult emailValidationResult = validateEmail(email);
+                //disbaled for now as we are not doing any antideo email validation
+                //EmailValidationResult emailValidationResult = validateEmail(email);
                 // handleFreeCredit(email, emailValidationResult);
                 emailServiceFacade.sendAdminRegistrationNotification(email, requestData);
             }

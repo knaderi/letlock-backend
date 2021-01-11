@@ -106,8 +106,6 @@ public class S3StorageService implements RemoteStorageService {
             watch.stop();
             long uploadDuration = watch.getTotalTimeMillis();
             logger.debug("Object upload using TM completed in " + uploadDuration + " miliseconds");
-            System.out.println("Object upload using TM completed in " + uploadDuration + " miliseconds");
-
         } catch (AmazonServiceException e) {
             e.printStackTrace();
             // The call was transmitted successfully, but Amazon S3 couldn't process
