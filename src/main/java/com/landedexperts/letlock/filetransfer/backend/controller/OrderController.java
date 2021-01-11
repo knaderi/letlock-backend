@@ -184,9 +184,9 @@ public class OrderController extends BaseController {
             value.setReturnCode("TOKEN_INVALID");
             value.setReturnMessage("Invalid token");
         } catch (Exception e) {
-            logger.error("UserMapper.getFileTransferUsageCount threw an Exception " + e.getMessage());
+            logger.error("UserMapper.getUserOrder threw an Exception " + e.getMessage());
             value.setReturnCode("ERROR");
-            value.setReturnMessage("getFileTransferUsageCount : " + e.getMessage());
+            value.setReturnMessage("getUserOrder : " + e.getMessage());
         }
 
         return value;
@@ -249,13 +249,16 @@ public class OrderController extends BaseController {
         try {
             long userId = mapToUserId(token);
             fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
+            if(null == fileTransferCounts) {
+                fileTransferCounts = new OrdersFileTransfersCountsVO(); 
+            }
             value = new OrdersFileTransfersCountsResponse(fileTransferCounts);
         } catch (LetLockAuthTokenValidationException lae) {
             value.setReturnCode("TOKEN_INVALID");
             value.setReturnMessage("Invalid token");
             return value;
         } catch (Exception e) {
-            logger.error("UserMapper.getFileTransferUsageCount threw an Exception " + e.getMessage());
+            logger.error("UserMapper.getFileTransferUsageCount threw an Exception for order id " + orderId + " Exception: " +  e.getMessage());
             value.setReturnCode("ERROR");
             value.setReturnMessage("getFileTransferUsageCount : " + e.getMessage());
             return value;
