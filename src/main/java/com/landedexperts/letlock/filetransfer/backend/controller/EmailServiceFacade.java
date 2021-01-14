@@ -40,12 +40,14 @@ public class EmailServiceFacade {
     private static String WELCOME_TO_LETLOCK_FREE_CREDIT = "Welcome to Letlock file transfer!";
     private static String LETLOCK_REGISTERATION_CONFIRMATION_SUBJECT = "New user confirmed signup email!";
     private static String CHANGE_PASSWORD_EMAIL_SUBJECT = "Your password has changed";
+    private static String VERIFICATION_CODE_EMAIL_SUBJECT = "Verification code";
     static String USER_CONFIRM_TOKEN = "%USER_CONFIRM_TOKEN%";
     static String EMAIL_TOKEN = "%EMAIL_TOKEN%";
     static String VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN = "%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%";
     static String CONFIRM_SIGNUP_URL = "%CONFIRM_SIGNUP_URL%";
     static String LETLOCK_LOGO_URL_TOKEN = "%LETLOCK_LOGO_URL_TOKEN%";
     static String LETLOCK_FOOTER_LOGO_TOKEN = "%LETLOCK_FOOTER_LOGO_TOKEN%";
+    static String VERIFICATION_CODE_TOKEN = "%VERIFICATION_CODE_TOKEN%";
 
     @Value("${validate.reset.password.token.url}")
     String validateResetPasswordTokenURL;
@@ -92,6 +94,9 @@ public class EmailServiceFacade {
     @Value("${letlock.welcome.free.credit.email}")
     private String freeCreditWelcomeEmail;
     
+    @Value("${verification.code.email.template}")
+    private String verificationCodeEmailTemplate;
+    
     void sendForgotPasswordHTMLEmail(String recepientEmail, String resetEmailToken) throws Exception {
 
         LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
@@ -123,7 +128,7 @@ public class EmailServiceFacade {
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
     }
-
+    
     String readForgotPasswordEmailBody() throws IOException {
         URL url = Resources.getResource(forgotPasswordEmailTemplate);
         String emailBody = Resources.toString(url, Charsets.UTF_8);
@@ -196,6 +201,16 @@ public class EmailServiceFacade {
     String readWelcomeWithFreeCreditHTMLEmailBody() throws IOException {
         URL url = Resources.getResource(welcomeWithFreeCreditEmailTemplate);
         String emailBody = Resources.toString(url, Charsets.UTF_8);
+        return emailBody;
+    }
+    
+    String verificationCodeHTMLEmailBody(String recipientEmail, String code) throws Exception {
+        logger.info("recipientEmail: " + recipientEmail);
+        URL url = Resources.getResource(verificationCodeEmailTemplate);
+        String emailBody = Resources.toString(url, Charsets.UTF_8);
+        emailBody = emailBody.replace(VERIFICATION_CODE_TOKEN, code)
+                .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
+                .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
     }
 
@@ -339,11 +354,31 @@ public class EmailServiceFacade {
 
             email.setSubject(action + " failed");
             email.setMessageText(action + " failed with error message: " + errorMessage);
-            logger.info(email.getTo());
             letLockEmailService.sendHTMLMail(email);
         } else {
             logger.info("Email service is disabled in properties file.");
         }
     }
 
+    public void sendVerificationCode(String recipientEmail, String code) throws Exception {
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
+
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(recipientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                logger.info("replacing recipient email: " + recipientEmail);
+                email.setTo(nonProdReceipientEmail);
+            }
+
+            email.setSubject(VERIFICATION_CODE_EMAIL_SUBJECT);
+            email.setMessageText(verificationCodeHTMLEmailBody(recipientEmail, code));
+            letLockEmailService.sendHTMLMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
+        }
+    }
+    
 }

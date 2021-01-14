@@ -52,6 +52,9 @@ public class UserVO extends ReturnCodeMessageResponse{
 
 
     private String resetToken;
+    
+    
+    private Boolean twoFAEnabled;
 
 
     public String getEmail() {
@@ -133,6 +136,14 @@ public class UserVO extends ReturnCodeMessageResponse{
 
     public void setResetToken(String resetToken) {
         this.resetToken = resetToken;
+    }
+    
+    public Boolean getTwoFAEnabled() {
+        return twoFAEnabled;
+    }
+    
+    public void setTwoFAEnabled(Boolean twoFAEnabled) {
+        this.twoFAEnabled = twoFAEnabled;
     }
 
 }

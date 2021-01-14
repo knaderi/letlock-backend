@@ -36,14 +36,16 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ResetTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.LoginResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UserProfileResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.LoginVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ResetTokenVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 import com.landedexperts.letlock.filetransfer.backend.session.AppSettingsManager;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
+import com.landedexperts.letlock.filetransfer.backend.session.TwoFAManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.AntideoEmailValiationVO;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidationResult;
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
@@ -290,27 +292,29 @@ public class UserController extends BaseController {
     }
 
     @PostMapping(value = "/login", produces = { "application/JSON" })
-    public SessionTokenResponse login(
+    public LoginResponse login(
             @RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "password") final String password,
             HttpServletRequest request) throws Exception {
         RequestData requestData = buildRequestDataObj(request);
         logger.info("UserController.login called for loginName " + loginName);
 
-        String returnCode = "SUCCESS";
-        String returnMessage = "";
-        String token = "";
-        IdVO answer = userMapper.login(loginName, password, requestData.toJSON());
-
+        LoginVO answer = userMapper.login(loginName, password, requestData.toJSON());
         long userId = answer.getResult().getId();
-        returnCode = answer.getReturnCode();
-        returnMessage = answer.getReturnMessage();
+        boolean twoFARequired = answer.getResult().getTwoFARequired();
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
+        String token = "";
 
         if (returnCode.equals("SUCCESS")) {
-            token = SessionManager.getInstance().generateSessionToken(userId, requestData.getTokenPrefix());
+            if (twoFARequired) {
+                token = TwoFAManager.getInstance().generateAuthToken(userId);
+            } else {
+                token = SessionManager.getInstance().generateSessionToken(userId, requestData.getTokenPrefix());
+            }
         }
 
-        return new SessionTokenResponse(token, returnCode, returnMessage);
+        return new LoginResponse(token, twoFARequired, returnCode, returnMessage);
     }
 
     private RequestData buildRequestDataObj(HttpServletRequest request) {

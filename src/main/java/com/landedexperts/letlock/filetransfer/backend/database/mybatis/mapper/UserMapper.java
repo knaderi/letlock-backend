@@ -16,6 +16,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.AlgoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.LoginVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.ResetTokenVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UserVO;
 
@@ -58,10 +59,11 @@ public interface UserMapper {
 
     @Select("SELECT"
             + " _user_id AS id,"
+            + " _twofa_required as twoFARequired,"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
             + " FROM users.login( #{loginId}, #{password} , #{requestData})")
-    IdVO login(@Param("loginId") String loginId, @Param("password") String password, @Param("requestData") String requestData);
+    LoginVO login(@Param("loginId") String loginId, @Param("password") String password, @Param("requestData") String requestData);
 
     @Select("SELECT"
             + " _return_code AS returnCode,"
@@ -107,7 +109,17 @@ public interface UserMapper {
     @Select("SELECT _reset_token as resetToken, _user_id as userId  FROM  users.get_user_reset_token(#{email}, #{password})")
     ResetTokenVO getUserResetToken(@Param("email") String email, @Param("password") String password);
 
-    @Select("SELECT _login_name as loginName, _email as email, _reset_token as resetToken, _status as status, _status_dt as statusDate, _create_dt as createdDate, _last_login as lastLoginDate, _update_dt as updatedDate  FROM  users.get_user_profile(#{userId})")
+    @Select("SELECT "
+            + " _login_name as loginName,"
+            + " _email as email,"
+            + " _reset_token as resetToken,"
+            + " _status as status,"
+            + " _status_dt as statusDate,"
+            + " _create_dt as createdDate,"
+            + " _last_login as lastLoginDate,"
+            + " _update_dt as updatedDate,"
+            + " _twofa_enabled as twoFAEnabled  "
+            + "FROM  users.get_user_profile(#{userId})")
     UserVO getUserProfile(@Param("userId") long userId);
 
     @Update("UPDATE users.users"
