@@ -13,6 +13,7 @@ public class OrderFileTransferUsagesResponse extends ReturnCodeMessageResponse {
     private long orderId;
     private int availableTransferCounts = 0;
     private int originalTransferCounts = 0;
+    private String subscriptionExpireDate = "";
     public int getAvailableTransferCounts() {
         return availableTransferCounts;
     }
@@ -32,6 +33,13 @@ public class OrderFileTransferUsagesResponse extends ReturnCodeMessageResponse {
         this.originalTransferCounts = originalTransferCounts;
     }
 
+    public String getSubscriptionExpireDate() {
+        return this.subscriptionExpireDate;
+    }
+    public void setSubscriptionExpireDate(String subscriptionExpireDate) {
+        this.subscriptionExpireDate = subscriptionExpireDate;
+    }
+    
     private FileTransferOrderLineItemUsageVO[] result = new FileTransferOrderLineItemUsageVO[] {};
         
     
@@ -42,7 +50,8 @@ public class OrderFileTransferUsagesResponse extends ReturnCodeMessageResponse {
             setReturnMessage("");
         }
         availableTransferCounts = allOrdersFileTransferCounts.getAvailableTransferCounts();
-        originalTransferCounts =allOrdersFileTransferCounts.getOriginalTransferCounts();
+        originalTransferCounts = allOrdersFileTransferCounts.getOriginalTransferCounts();
+        subscriptionExpireDate = allOrdersFileTransferCounts.getSubscriptionExpireDate();
         this.result = result;
         this.orderId = orderId;
     }

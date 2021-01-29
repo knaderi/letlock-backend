@@ -12,15 +12,17 @@ public class OrdersFileTransfersCountsVO  {
 
     private int availableTransferCounts = 0;
     private int originalTransferCounts = 0;
+    private String subscriptionExpireDate = "";
     
     protected String returnCode = "SUCCESS";
     protected String returnMessage = "";
     
-    public OrdersFileTransfersCountsVO(String returnCode, String returnMessage, int availableTransferCounts, int originalTransferCounts) {
+    public OrdersFileTransfersCountsVO(String returnCode, String returnMessage, int availableTransferCounts, int originalTransferCounts, String subscriptionExpireDate) {
         this.returnCode = returnCode;
         this.returnMessage = returnMessage;
         this.availableTransferCounts = availableTransferCounts;
         this.originalTransferCounts = originalTransferCounts;
+        this.subscriptionExpireDate = subscriptionExpireDate;
     }
 
     public int getAvailableTransferCounts() {
@@ -36,7 +38,14 @@ public class OrdersFileTransfersCountsVO  {
     public void setOriginalTransferCounts(int originalTransferCounts) {
         this.originalTransferCounts = originalTransferCounts;
     }
-
+    
+    public String getSubscriptionExpireDate() {
+        return this.subscriptionExpireDate;
+    }
+    public void setSubscriptionExpireDate(String subscriptionExpireDate) {
+        this.subscriptionExpireDate = subscriptionExpireDate;
+    }
+    
     public OrdersFileTransfersCountsVO() {
     }
 

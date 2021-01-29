@@ -175,7 +175,7 @@ public class OrderController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_order", produces = { "application/JSON" })
     public JsonResponse<String> getUserOrder(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId) throws Exception {
-        logger.info("OrderController.getUserOrders called for token " + token + "\n");
+        logger.info("OrderController.getUserOrder called for token " + token + "\n");
         JsonResponse<String> value = new JsonResponse<String>();
         try {
             long userId = mapToUserId(token);
@@ -195,7 +195,7 @@ public class OrderController extends BaseController {
     @RequestMapping(method = RequestMethod.POST, value = "/get_user_ft_order_usage_history", produces = { "application/JSON" })
     public OrderFileTransferUsagesResponse getUserOrderUsageHistroy(@RequestParam(value = "token") final String token,
             @RequestParam(value = "orderId") final long orderId) throws Exception {
-        logger.info("OrderController.getUsersAllOrdersUsageHistroy called for token " + token + "\n");
+        logger.info("OrderController.getUserOrderUsageHistroy called for token " + token + "\n");
         FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = new FileTransferOrderLineItemUsageVO[] {};
         // TODO, should filter
         OrdersFileTransfersCountsVO ordersFTCounts = new OrdersFileTransfersCountsVO();
