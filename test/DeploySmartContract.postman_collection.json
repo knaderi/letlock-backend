@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "dcc95372-4268-4e47-a5aa-542c63e75f1a",
+		"_postman_id": "22a583ae-6d09-4add-bab2-724666a42008",
 		"name": "DeploySmartContract",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -33,10 +33,10 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{dev}}/login",
+					"raw": "http://{{localhost}}/login",
 					"protocol": "http",
 					"host": [
-						"{{dev}}"
+						"{{localhost}}"
 					],
 					"path": [
 						"login"
@@ -68,15 +68,16 @@
 						{
 							"key": "token",
 							"value": "NPh9dghWRTKuYXtSWCDhuNQVDoZtSqZ6G/G7TJCTpMPO5ttmv2s6ACkkfcRba2ffGHav08ICOGlQoKpxb6+Yb5bYM9FT07URcFdKDorMQLebdzHTmG4fbvE/zqPKU20prv/DAXj0Xwws6wZjO9vIqpD3OftN+HKxCZ4+VrHTd64=",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						}
 					]
 				},
 				"url": {
-					"raw": "http://{{dev}}/user_is_login_name_available",
+					"raw": "http://{{localhost}}/user_is_login_name_available",
 					"protocol": "http",
 					"host": [
-						"{{dev}}"
+						"{{localhost}}"
 					],
 					"path": [
 						"user_is_login_name_available"
@@ -88,6 +89,16 @@
 		{
 			"name": "startFileTransfer",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SenderToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -103,7 +114,8 @@
 						{
 							"key": "token",
 							"value": "suCnqh+66YI0yIxgNk2tLa0x2FILVdKnT24tcFDTwM7imnf+34nSf4TamQKKQf5OC60eNNStxxmyN/6GLkNVwA8bpfx5ZG/SWm9ZPdANfaKHSB2m6+U9NcvFu0SfNBVdfrwb60L0lat+lJBb/Nyv6Hh8vOdONIb/w8behVAocqc=",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "receiver_login_name",
@@ -133,6 +145,16 @@
 		{
 			"name": "setFileTransferInactive",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SenderToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -148,7 +170,8 @@
 						{
 							"key": "token",
 							"value": "suCnqh+66YI0yIxgNk2tLa0x2FILVdKnT24tcFDTwM7imnf+34nSf4TamQKKQf5OC60eNNStxxmyN/6GLkNVwA8bpfx5ZG/SWm9ZPdANfaKHSB2m6+U9NcvFu0SfNBVdfrwb60L0lat+lJBb/Nyv6Hh8vOdONIb/w8behVAocqc=",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "file_transfer_uuid",
@@ -179,6 +202,16 @@
 		{
 			"name": "setFileTransferActive",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SenderToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -194,11 +227,12 @@
 						{
 							"key": "token",
 							"value": "suCnqh+66YI0yIxgNk2tLa0x2FILVdKnT24tcFDTwM7imnf+34nSf4TamQKKQf5OC60eNNStxxmyN/6GLkNVwA8bpfx5ZG/SWm9ZPdANfaKHSB2m6+U9NcvFu0SfNBVdfrwb60L0lat+lJBb/Nyv6Hh8vOdONIb/w8behVAocqc=",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "file_transfer_uuid",
-							"value": "93dde395-7acc-4a91-8a68-460e2ab6dee7",
+							"value": "2f3aeb40-c5a7-43c4-bea4-0d6320174f3b",
 							"type": "text"
 						},
 						{
@@ -225,6 +259,16 @@
 		{
 			"name": "/get_file_transfer_sessions_for_user",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{SenderToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -240,7 +284,8 @@
 						{
 							"key": "token",
 							"value": "suCnqh+66YI0yIxgNk2tLa0x2FILVdKnT24tcFDTwM7imnf+34nSf4TamQKKQf5OC60eNNStxxmyN/6GLkNVwA8bpfx5ZG/SWm9ZPdANfaKHSB2m6+U9NcvFu0SfNBVdfrwb60L0lat+lJBb/Nyv6Hh8vOdONIb/w8behVAocqc=",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "receiver_login_name",
@@ -257,13 +302,12 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}//get_file_transfer_sessions_for_user",
+					"raw": "http://{{localhost}}/get_file_transfer_sessions_for_user",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"",
 						"get_file_transfer_sessions_for_user"
 					]
 				}
@@ -313,6 +357,16 @@
 		{
 			"name": "deploySmartContract",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ReceiverToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -327,13 +381,13 @@
 					"urlencoded": [
 						{
 							"key": "file_transfer_uuid",
-							"value": "ce0cfa85-e000-4278-b378-413f036a6b51\n",
+							"value": "2f3aeb40-c5a7-43c4-bea4-0d6320174f3b",
 							"description": "file transfer uuid",
 							"type": "text"
 						},
 						{
 							"key": "senderAddress",
-							"value": "0x0639e59f703874d116a67f66b95c5627e882f3ce",
+							"value": "0639e59f703874d116a67f66b95c5627e88213ce",
 							"description": "sender wallet address",
 							"type": "text"
 						},
@@ -347,69 +401,16 @@
 							"key": "token",
 							"value": "92tSney+M0FdNhIAzBXka4o7FPP7bXlXj/9Hfex4R158Or48rr/4D4l4/xpjunWtbGvx+i0shPl7f46YGyWH64hr4XDW+v6KoNANzyMqSQ8OJ7O2cbaO7Vo4vm4LEpF0ENJzeagw8+iaQ4x6ce/3F3cpgD61yJbChRJ0J9umyso=",
 							"description": "receiver token",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						}
 					]
 				},
 				"url": {
-					"raw": "http://{{dev}}/set_file_transfer_receiver_address",
+					"raw": "http://{{localhost}}/set_file_transfer_receiver_address",
 					"protocol": "http",
 					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"set_file_transfer_receiver_address"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "canstartstep",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "file_transfer_uuid",
-							"value": "ce0cfa85-e000-4278-b378-413f036a6b51\n",
-							"description": "file transfer uuid",
-							"type": "text"
-						},
-						{
-							"key": "senderAddress",
-							"value": "0x0639e59f703874d116a67f66b95c5627e882f3ce",
-							"description": "sender wallet address",
-							"type": "text"
-						},
-						{
-							"key": "wallet_address",
-							"value": "0x472c1f414713908f8389d01409f8eb16f9ccbef4",
-							"description": "Receiver wallet address",
-							"type": "text"
-						},
-						{
-							"key": "token",
-							"value": "92tSney+M0FdNhIAzBXka4o7FPP7bXlXj/9Hfex4R158Or48rr/4D4l4/xpjunWtbGvx+i0shPl7f46YGyWH64hr4XDW+v6KoNANzyMqSQ8OJ7O2cbaO7Vo4vm4LEpF0ENJzeagw8+iaQ4x6ce/3F3cpgD61yJbChRJ0J9umyso=",
-							"description": "receiver token",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://{{dev}}/set_file_transfer_receiver_address",
-					"protocol": "http",
-					"host": [
-						"{{dev}}"
+						"{{localhost}}"
 					],
 					"path": [
 						"set_file_transfer_receiver_address"
@@ -421,6 +422,16 @@
 		{
 			"name": "setFileTransferStep",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ReceiverToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -435,7 +446,7 @@
 					"urlencoded": [
 						{
 							"key": "fileTransferUuid",
-							"value": "d6c400bb-c274-4d8b-a70c-11bc4b558ba6",
+							"value": "2f3aeb40-c5a7-43c4-bea4-0d6320174f3b",
 							"description": "file transfer uuid",
 							"type": "text"
 						},
@@ -455,7 +466,8 @@
 							"key": "token",
 							"value": "Hory190CmHDI8YG2HIJuJ+80wuy9VuIa0/Yk4EHbWHgPoMfeTXST04eUsoGUhNytG5p9vly8atzVG718GcuDt2JBzi/4cNNIHJkzJUfX3Cvt4lYsJELYvs50bgfYal1Dv0VcSshxdoNU+tKW4CdkMV3moabowmrAL+ntoCG1Hgo=",
 							"description": "receiver token",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						}
 					]
 				},
@@ -475,6 +487,16 @@
 		{
 			"name": "getFileTransferStatus",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{ReceiverToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -488,98 +510,25 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "fileTransferUuid",
-							"value": "d6c400bb-c274-4d8b-a70c-11bc4b558ba6",
+							"key": "file_transfer_uuid",
+							"value": "2f3aeb40-c5a7-43c4-bea4-0d6320174f3b",
 							"description": "file transfer uuid",
-							"type": "text"
-						},
-						{
-							"key": "transferStep",
-							"value": "step1_receiver_accept",
-							"description": "sender wallet address",
-							"type": "text"
-						},
-						{
-							"key": "transferStepStatus",
-							"value": "completed",
-							"description": "Receiver wallet address",
-							"type": "text"
-						},
-						{
-							"key": "token",
-							"value": "Hory190CmHDI8YG2HIJuJ+80wuy9VuIa0/Yk4EHbWHgPoMfeTXST04eUsoGUhNytG5p9vly8atzVG718GcuDt2JBzi/4cNNIHJkzJUfX3Cvt4lYsJELYvs50bgfYal1Dv0VcSshxdoNU+tKW4CdkMV3moabowmrAL+ntoCG1Hgo=",
-							"description": "receiver token",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://{{localhost}}/set_transfer_step",
+					"raw": "http://{{localhost}}/get_file_transfer_status",
 					"protocol": "http",
 					"host": [
 						"{{localhost}}"
 					],
 					"path": [
-						"set_transfer_step"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getFileTransferSessionForUser",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "fileTransferUuid",
-							"value": "d6c400bb-c274-4d8b-a70c-11bc4b558ba6",
-							"description": "file transfer uuid",
-							"type": "text"
-						},
-						{
-							"key": "transferStep",
-							"value": "step1_receiver_accept",
-							"description": "sender wallet address",
-							"type": "text"
-						},
-						{
-							"key": "transferStepStatus",
-							"value": "completed",
-							"description": "Receiver wallet address",
-							"type": "text"
-						},
-						{
-							"key": "token",
-							"value": "Hory190CmHDI8YG2HIJuJ+80wuy9VuIa0/Yk4EHbWHgPoMfeTXST04eUsoGUhNytG5p9vly8atzVG718GcuDt2JBzi/4cNNIHJkzJUfX3Cvt4lYsJELYvs50bgfYal1Dv0VcSshxdoNU+tKW4CdkMV3moabowmrAL+ntoCG1Hgo=",
-							"description": "receiver token",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://{{localhost}}/set_transfer_step",
-					"protocol": "http",
-					"host": [
-						"{{localhost}}"
-					],
-					"path": [
-						"set_transfer_step"
+						"get_file_transfer_status"
 					]
 				}
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

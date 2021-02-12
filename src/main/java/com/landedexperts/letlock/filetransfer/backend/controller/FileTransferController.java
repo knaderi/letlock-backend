@@ -6,18 +6,15 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import java.util.Collections;
-import java.util.Set;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +26,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ConsumeResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.FileTransferSessionResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.FileTransferSessionsResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.UuidNameDate;
@@ -39,7 +35,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTr
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UuidNameDateVO;
-import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
 public class FileTransferController {
@@ -54,276 +49,206 @@ public class FileTransferController {
 
     private final Logger logger = LoggerFactory.getLogger(FileTransferController.class);
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/start_file_transfer_session",
-            produces = {
-                    "application/JSON" })
-    public ConsumeResponse startFileTransferSession(@RequestParam(value = "token") final String token,
+    @PostMapping(value = "/start_file_transfer_session", produces = { "application/JSON" })
+    public ConsumeResponse startFileTransferSession(
             @RequestParam(value = "wallet_address") final String walletAddress,
-            @RequestParam(value = "receiver_login_name") final String receiverLoginName) throws Exception {
-        logger.info("FileTransferController.startFileTransferSession called for token " + token);
-        String fileTransferUuid = null;
-        String walletAddressUuid = null;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+            @RequestParam(value = "receiver_login_name") final String receiverLoginName,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileTransferController.startFileTransferSession called for userId " + userId);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
-                    : walletAddress;
+        String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
+                : walletAddress;
 
-            FileTransferInfoVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId,
-                    walletAddressTrimmed, receiverLoginName, getBlockChainGateWayService().getType());
+        FileTransferInfoVO answer = fileTransferMapper.insertFileTransferSessionRecord(userId,
+                walletAddressTrimmed, receiverLoginName, getBlockChainGateWayService().getType());
 
-            fileTransferUuid = answer.getFileTransferUuid();
-            walletAddressUuid = answer.getReceiverWalletAddressUuid();
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
-
-        }
+        String fileTransferUuid = answer.getFileTransferUuid();
+        String walletAddressUuid = answer.getReceiverWalletAddressUuid();
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
 
         return new ConsumeResponse(fileTransferUuid, walletAddressUuid, returnCode, returnMessage);
     }
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/is_file_transfer_waiting_receiver_address",
-            produces = {
-                    "application/JSON" })
+    @PostMapping(value = "/is_file_transfer_waiting_receiver_address", produces = { "application/JSON" })
     public UuidNameDateArrayResponse isFileTransferWaitingForReceiverAddress(
-            @RequestParam(value = "token") final String token) {
-        logger.info("FileTransferController.isFileTransferWaitingForReceiverAddress called for token " + token);
-        UuidNameDate[] value = null;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileTransferController.isFileTransferWaitingForReceiverAddress called for userId " + userId);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            UuidNameDateVO[] answer = fileTransferMapper.retrieveSessionWaitingForReceiverAddress(userId);
+        UuidNameDateVO[] answer = fileTransferMapper.retrieveSessionWaitingForReceiverAddress(userId);
 
-            value = new UuidNameDate[answer.length];
-            for (int i = 0; i < answer.length; i++) {
-                value[i] = new UuidNameDate(UUID.fromString(answer[i].getUuid()), answer[i].getName(),
-                        answer[i].getCreate());
-            }
-            returnCode = "SUCCESS";
-            returnMessage = "";
+        UuidNameDate[] value = new UuidNameDate[answer.length];
+        for (int i = 0; i < answer.length; i++) {
+            value[i] = new UuidNameDate(UUID.fromString(answer[i].getUuid()), answer[i].getName(),
+                    answer[i].getCreate());
         }
 
-        return new UuidNameDateArrayResponse(value, returnCode, returnMessage);
+        return new UuidNameDateArrayResponse(value, "SUCCESS", "");
     }
 
     // TODO: write unit test for this.
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/set_file_transfer_active",
-            produces = {
-                    "application/JSON" })
-    public ReturnCodeMessageResponse setFileTransferActive(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileTransferController.setFileTransferAsActive called for token " + token);
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+    @PostMapping(value = "/set_file_transfer_active", produces = { "application/JSON" })
+    public ReturnCodeMessageResponse setFileTransferActive(
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileTransferController.setFileTransferActive called for userId " + userId);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferAsActive(userId, fileTransferUuid);
+        ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferAsActive(userId, fileTransferUuid);
 
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
-        }
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
 
         return new ReturnCodeMessageResponse(returnCode, returnMessage);
     }
 
     // TODO: write unit test for this.
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/set_file_transfer_inactive",
-            produces = {
-                    "application/JSON" })
-    public ReturnCodeMessageResponse setFileTransferInactive(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileTransferController.setFileTransferInactive called for token " + token);
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferInactive(userId, fileTransferUuid);
-
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
-        }
+    @PostMapping(value = "/set_file_transfer_inactive", produces = { "application/JSON" })
+    public ReturnCodeMessageResponse setFileTransferInactive(
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileTransferController.setFileTransferInactive called for userId " + userId);
+        
+        ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferInactive(userId, fileTransferUuid);
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
 
         return new ReturnCodeMessageResponse(returnCode, returnMessage);
     }
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/set_file_transfer_file_hashes",
-            produces = {
-                    "application/JSON" })
-    public ReturnCodeMessageResponse setFileTransferFileHashes(@RequestParam(value = "token") final String token,
+    @PostMapping(value = "/set_file_transfer_file_hashes", produces = { "application/JSON" })
+    public ReturnCodeMessageResponse setFileTransferFileHashes(
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "clearFileHash") final String clearFileHash,
-            @RequestParam(value = "encryptedFileHash") final String encryptedFileHash) throws Exception {
-        logger.info("FileTransferController.setFileTransferFilesHash called for token " + token);
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+            @RequestParam(value = "encryptedFileHash") final String encryptedFileHash,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileTransferController.setFileTransferFilesHash called for userId " + userId);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferFileHashes(userId, fileTransferUuid, clearFileHash,
-                    encryptedFileHash);
-
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
-        }
+        ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferFileHashes(
+                userId, fileTransferUuid, clearFileHash, encryptedFileHash);
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
 
         return new ReturnCodeMessageResponse(returnCode, returnMessage);
     }
 
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/get_file_transfer_sessions_for_user",
-            produces = {
-                    "application/JSON" })
+    @PostMapping(value = "/get_file_transfer_sessions_for_user", produces = { "application/JSON" })
     public FileTransferSessionsResponse getFileTransferSessionsForUser(
-            @RequestParam(value = "token") final String token) throws Exception {
-        FileTransferInfoRecordVO[] value = null;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+            HttpServletRequest request) throws Exception {
+ 
+        long userId = (long) request.getAttribute("user.id");
+        FileTransferInfoRecordVO[] value = fileTransferMapper.getFileTransferSessionsForUser(userId);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            value = fileTransferMapper.getFileTransferSessionsForUser(userId);
-            returnCode = "SUCCESS";
-            returnMessage = "";
-        }
-
-        return new FileTransferSessionsResponse(value, returnCode, returnMessage);
+        return new FileTransferSessionsResponse(value, "SUCCESS", "");
     }
 
     // TODO: write unit test
-    @RequestMapping(method = RequestMethod.POST, value = "/get_file_transfer_status", produces = { "application/JSON" })
-    public FileTransferSessionResponse getFileTransferStatus(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileTransferController.getFileTransferStatus called for token " + token);
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-        FileTransferInfoVO answer = new FileTransferInfoVO();
+    @PostMapping(value = "/get_file_transfer_status", produces = { "application/JSON" })
+    public FileTransferSessionResponse getFileTransferStatus(
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileTransferController.getFileTransferStatus called for userId " + userId);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            answer = fileTransferMapper.getUserFileTransferInfo(userId, fileTransferUuid);
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
-        }
+        FileTransferInfoVO answer = fileTransferMapper.getUserFileTransferInfo(userId, fileTransferUuid);
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
+
         logger.info("Returrning returnCode: " + returnCode + "  record " + answer.getFileTransferInfoRecord());
 
         return new FileTransferSessionResponse(answer.getFileTransferInfoRecord(), returnCode, returnMessage);
     }
 
     // TODO: Missing UNit test
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = "/set_file_transfer_receiver_address",
-            produces = {
-                    "application/JSON" })
-    public UuidResponse setFileTransferReceiverAddress(@RequestParam(value = "token") final String token,
+    @PostMapping(value = "/set_file_transfer_receiver_address", produces = { "application/JSON" })
+    public UuidResponse setFileTransferReceiverAddress(
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
-            @RequestParam(value = "wallet_address") final String walletAddress) throws Exception {
-        logger.info("FileTransferController.setFileTransferReceiverAddress called for token " + token);
-        UUID walletAddressUuid = null;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+            @RequestParam(value = "wallet_address") final String walletAddress,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileTransferController.setFileTransferReceiverAddress called for userId " + userId);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
-                    : walletAddress;
 
-            GochainAddressVO answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid,
-                    walletAddressTrimmed);
+        String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
+                : walletAddress;
 
-            walletAddressUuid = answer.getGochainAddress();
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
+        GochainAddressVO answer = fileTransferMapper.setReceiverAddress(userId, fileTransferUuid,
+                walletAddressTrimmed);
 
-            if (returnCode.equals("SUCCESS")) {
-                FileTransferInfoVO fileTransferInfo = fileTransferMapper.getUserFileTransferInfo(userId,
-                        fileTransferUuid);
-                String contractAddress = fileTransferInfo.getSmartContractAddress();
-                if (StringUtils.isEmpty(contractAddress)) {
-                    String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
-                    String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
-                    logger.info("FileTransferController.setFileTransferReceiverAddress is deploying smart contarct for Filetransferuid: "
-                            + fileTransferUuid);
-                    try {
-                        @SuppressWarnings("unused")
-                        boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
-                                "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
-                        if (!response) {
-                            throw new Exception("DeploySmartContract returned false");
-                        }
+        UUID walletAddressUuid = answer.getGochainAddress();
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
 
-                    } catch (Exception e) {
-                        if (e instanceof java.net.ConnectException) {
-                            returnCode = "BLOCKCHAIN_CONNECTION_EXCEPTION";
-                            returnMessage = "Connecting to Blockchain failed trying to deploy smart contract.";
-
-                        } else {
-                            returnCode = "BLOCKCHAIN_UKNOWN_EXCEPTION";
-                            returnMessage = "Deploy smart contract faild throwing an Exception.";
-                        }
-                        logger.error("Deploy smart contract failed returnCode: {} returnMessage: {}   Exception: {}", returnCode,
-                                returnMessage, e.getMessage());
-                        return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
+        if (returnCode.equals("SUCCESS")) {
+            FileTransferInfoVO fileTransferInfo = fileTransferMapper.getUserFileTransferInfo(userId,
+                    fileTransferUuid);
+            String contractAddress = fileTransferInfo.getSmartContractAddress();
+            if (StringUtils.isEmpty(contractAddress)) {
+                String senderWalletAddress = fileTransferInfo.getSenderWalletAddress();
+                String receiverWalletAddress = fileTransferInfo.getReceiverWalletAddress();
+                logger.info("FileTransferController.setFileTransferReceiverAddress is deploying smart contarct for Filetransferuid: "
+                        + fileTransferUuid);
+                try {
+                    @SuppressWarnings("unused")
+                    boolean response = getBlockChainGateWayService().deploySmartContract(fileTransferUuid,
+                            "0x" + senderWalletAddress, "0x" + receiverWalletAddress);
+                    if (!response) {
+                        throw new Exception("DeploySmartContract returned false");
                     }
-                } else {
-                    logger.info("smart contract was deployed and set previously.");
+
+                } catch (Exception e) {
+                    if (e instanceof java.net.ConnectException) {
+                        returnCode = "BLOCKCHAIN_CONNECTION_EXCEPTION";
+                        returnMessage = "Connecting to Blockchain failed trying to deploy smart contract.";
+
+                    } else {
+                        returnCode = "BLOCKCHAIN_UKNOWN_EXCEPTION";
+                        returnMessage = "Deploy smart contract faild throwing an Exception.";
+                    }
+                    logger.error("Deploy smart contract failed returnCode: {} returnMessage: {}   Exception: {}", returnCode,
+                            returnMessage, e.getMessage());
+                    return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
                 }
+            } else {
+                logger.info("smart contract was deployed and set previously.");
             }
         }
 
         return new UuidResponse(walletAddressUuid, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/get_txn_status", produces = { "application/JSON" })
-    public TransactionHashResponse searchTransactionHash(@RequestParam(value = "token") final String token,
+    @PostMapping(value = "/get_txn_status", produces = { "application/JSON" })
+    public TransactionHashResponse searchTransactionHash(
             @RequestParam(value = "transactionHash") final String transactionHash) throws Exception {
-        logger.info("FileTransferController.searchTransactionHash called for token " + token);
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-        long userId = SessionManager.getInstance().getUserId(token);
+        logger.info("FileTransferController.searchTransactionHash called for transactionHash " + transactionHash);
+        String returnCode = "";
+        String returnMessage = "";
         TransactionHashResponse transactionHashResponse = null;
-        if (userId > 0) {
-            try {
-                transactionHashResponse = getBlockChainGateWayService().getTransactionStatus(transactionHash);
-            } catch (Exception e) {
-                if (e instanceof java.net.ConnectException) {
-                    returnCode = "GOCHAIN_CONNECTION_EXCEPTION";
-                    returnMessage = "Connecting to Blockchain failed trying to get transaction status.";
 
-                } else {
-                    returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
-                    returnMessage = "Retrieving transaction status failed  throwing an Exception.";
-                }
-                logger.error("Retrieving transaction status failed returnCode: {}  returnMessage:  {}   Exception:{}", returnCode,
-                        returnMessage, e.getMessage());
+        try {
+            transactionHashResponse = getBlockChainGateWayService().getTransactionStatus(transactionHash);
+        } catch (Exception e) {
+            if (e instanceof java.net.ConnectException) {
+                returnCode = "GOCHAIN_CONNECTION_EXCEPTION";
+                returnMessage = "Connecting to Blockchain failed trying to get transaction status.";
+
+            } else {
+                returnCode = "GOCHAIN_UKNOWN_EXCEPTION";
+                returnMessage = "Retrieving transaction status failed  throwing an Exception.";
             }
-
-        } else
-
-        {
+            logger.error("Retrieving transaction status failed returnCode: {}  returnMessage:  {}   Exception:{}", returnCode,
+                    returnMessage, e.getMessage());
             transactionHashResponse = new TransactionHashResponse(returnCode, returnMessage);
         }
+
         return transactionHashResponse;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/add_funds", produces = { "application/JSON" })
+    @PostMapping(value = "/add_funds", produces = { "application/JSON" })
     public TransactionHashResponse addFunds(@RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "signed_transaction_hex") final String signedTransactionHex,
             @RequestParam(value = "step") final String step) throws Exception {
@@ -399,22 +324,16 @@ public class FileTransferController {
         return unPrefixedString;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/set_transfer_step", produces = { "application/JSON" })
-    public ReturnCodeMessageResponse setTransferStep(@RequestParam(value = "token") final String token,
+    @PostMapping(value = "/set_transfer_step", produces = { "application/JSON" })
+    public ReturnCodeMessageResponse setTransferStep(
             @RequestParam(value = "fileTransferUuid") final UUID fileTransferUuid,
             @RequestParam(value = "transferStep") final String transferStep,
-            @RequestParam(value = "transferStepStatus") final String transferStepStatus) throws Exception {
+            @RequestParam(value = "transferStepStatus") final String transferStepStatus
+            ) throws Exception {
         logger.info("FileTransferController.setTransferStep called for file_transfer_uuid " + fileTransferUuid);
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            return fileTransferMapper.setTransferStep(fileTransferUuid, transferStep,
-                    transferStepStatus);
-        } else {
-            return new ReturnCodeMessageResponse(returnCode, returnMessage);
-        }
+        return fileTransferMapper.setTransferStep(fileTransferUuid, transferStep,
+                transferStepStatus);
 
     }
 

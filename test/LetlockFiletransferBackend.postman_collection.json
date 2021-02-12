@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "338cb6dd-6423-42b4-ac0a-43631fb88811",
+		"_postman_id": "299d4dcb-f403-4287-93f2-98edd9aa5c3a",
 		"name": "LetlockFiletransferBackend",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -45,46 +45,6 @@
 					],
 					"path": [
 						"register"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getAliceUserInfo",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/x-www-form-urlencoded"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "email",
-							"value": "{{aliceloginname}}",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "{{alicepassword}}",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://{{localhost}}/get_user_object",
-					"protocol": "http",
-					"host": [
-						"{{localhost}}"
-					],
-					"path": [
-						"get_user_object"
 					]
 				}
 			},
@@ -216,46 +176,6 @@
 			"response": []
 		},
 		{
-			"name": "getBobUserInfo",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/x-www-form-urlencoded"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "email",
-							"value": "{{bobemail}}",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "{{bobpassword}}",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://{{localhost}}/get_user_object",
-					"protocol": "http",
-					"host": [
-						"{{localhost}}"
-					],
-					"path": [
-						"get_user_object"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "confirmBobSignup",
 			"request": {
 				"method": "POST",
@@ -338,6 +258,16 @@
 		{
 			"name": "createOrder",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -352,8 +282,9 @@
 					"urlencoded": [
 						{
 							"key": "token",
-							"value": "{{alicelogintoken}}",
-							"type": "text"
+							"value": "{{AliceSessionToken}}",
+							"type": "text",
+							"disabled": true
 						}
 					]
 				},
@@ -373,6 +304,16 @@
 		{
 			"name": "addOrderDeatil",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{alicelogintoken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -388,7 +329,8 @@
 						{
 							"key": "token",
 							"value": "{{alicelogintoken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "orderId",
@@ -428,6 +370,16 @@
 		{
 			"name": "Get user orders",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -443,7 +395,8 @@
 						{
 							"key": "token",
 							"value": "{{alicelogintoken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "orderStatus",
@@ -468,52 +421,16 @@
 		{
 			"name": "Order detail update",
 			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/x-www-form-urlencoded"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
+				"auth": {
+					"type": "bearer",
+					"bearer": [
 						{
 							"key": "token",
 							"value": "{{AliceSessionToken}}",
-							"type": "text"
-						},
-						{
-							"key": "order_detail_id",
-							"value": "1",
-							"type": "text"
-						},
-						{
-							"key": "quantity",
-							"value": "256",
-							"type": "text"
+							"type": "string"
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost:3000/update_order_detail",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"update_order_detail"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "isFreeSignUpCredit",
-			"request": {
 				"method": "POST",
 				"header": [
 					{
@@ -529,7 +446,8 @@
 						{
 							"key": "token",
 							"value": "{{AliceSessionToken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "order_detail_id",
@@ -560,6 +478,16 @@
 		{
 			"name": "Order detail delete",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -575,7 +503,8 @@
 						{
 							"key": "token",
 							"value": "{{AliceSessionToken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "order_detail_id",
@@ -601,6 +530,16 @@
 		{
 			"name": "Order status initiated to cancelled",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -616,7 +555,8 @@
 						{
 							"key": "token",
 							"value": "{{AliceSessionToken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "order_id",
@@ -642,6 +582,16 @@
 		{
 			"name": "Order status cancelled to initiated",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -657,7 +607,8 @@
 						{
 							"key": "token",
 							"value": "{{AliceSessionToken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "order_id",
@@ -683,6 +634,16 @@
 		{
 			"name": "insert_start_file_transfer_session_record",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -698,7 +659,8 @@
 						{
 							"key": "token",
 							"value": "{{alicesessiontoken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "wallet_address",
@@ -729,6 +691,16 @@
 		{
 			"name": "get_user_ft_history",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -744,7 +716,8 @@
 						{
 							"key": "token",
 							"value": "{{alicesessiontoken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "orderId",
@@ -769,6 +742,16 @@
 		{
 			"name": "Set receiver address",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BobSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -784,7 +767,8 @@
 						{
 							"key": "token",
 							"value": "{{BobSessionToken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						},
 						{
 							"key": "file_transfer_uuid",
@@ -815,6 +799,16 @@
 		{
 			"name": "LogoutAlice",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AliceSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -830,7 +824,8 @@
 						{
 							"key": "token",
 							"value": "{{alicelogintoken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						}
 					]
 				},
@@ -850,6 +845,16 @@
 		{
 			"name": "LogoutBob",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{BobSessionToken}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -865,7 +870,8 @@
 						{
 							"key": "token",
 							"value": "{{AliceSessionToken}}",
-							"type": "text"
+							"type": "text",
+							"disabled": true
 						}
 					]
 				},

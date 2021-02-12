@@ -38,8 +38,10 @@ public class ContactControllerTest extends BaseControllerTest{
     private void addContact() throws Exception, UnsupportedEncodingException {
         String uri = "/contacts";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token)
-                        .param("contactUserName", contactUserName).param("contactLabel", contactLabel)
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("contactUserName", contactUserName)
+                        .param("contactLabel", contactLabel)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -60,7 +62,9 @@ public class ContactControllerTest extends BaseControllerTest{
     private String listContacts() throws Exception, UnsupportedEncodingException {
         String uri = "/contacts";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         return mvcResult.getResponse().getContentAsString();
     }
@@ -70,7 +74,9 @@ public class ContactControllerTest extends BaseControllerTest{
         addContact();
         String uri = "/contacts";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.put(uri).param("token", token).param("contactUserName", contactUserName)
+                .perform(MockMvcRequestBuilders.put(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("contactUserName", contactUserName)
                         .param("contactLabel", "NewLabel")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);

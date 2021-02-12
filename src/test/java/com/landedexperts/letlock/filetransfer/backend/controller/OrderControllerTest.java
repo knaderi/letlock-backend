@@ -64,7 +64,9 @@ public class OrderControllerTest extends BaseControllerTest {
     private String createOrder() throws Exception, UnsupportedEncodingException {
         String uri = "/order_create";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -79,7 +81,10 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrder();
         String uri = "/update_order_status_to_cancelled";
         ResultActions resultAction = mvc.perform(
-                MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+                MockMvcRequestBuilders.post(uri)
+                .header("Authorization", "Bearer " + token)
+                .param("order_id", orderId)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -91,7 +96,10 @@ public class OrderControllerTest extends BaseControllerTest {
         updateOrderStatusFromInitiatedToCancelled();
         String uri = "/update_order_status_to_initiated";
         ResultActions resultAction = mvc.perform(
-                MockMvcRequestBuilders.post(uri).param("token", token).param("order_id", orderId).accept(MediaType.APPLICATION_JSON_VALUE));
+                MockMvcRequestBuilders.post(uri)
+                .header("Authorization", "Bearer " + token)
+                .param("order_id", orderId)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -120,8 +128,13 @@ public class OrderControllerTest extends BaseControllerTest {
         }
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", newOrderId).param("packageId", TEST_PACKAGE_ID)
-                        .param("quantity", "1").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", newOrderId)
+                        .param("packageId", TEST_PACKAGE_ID)
+                        .param("quantity", "1")
+                        .param("locationId", "1")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -132,8 +145,13 @@ public class OrderControllerTest extends BaseControllerTest {
     private void updateOrderLineItem() throws Exception {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", TEST_PACKAGE_ID)
-                        .param("quantity", "1").param("locationId", "3").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", orderId)
+                        .param("packageId", TEST_PACKAGE_ID)
+                        .param("quantity", "1")
+                        .param("locationId", "3")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -146,9 +164,13 @@ public class OrderControllerTest extends BaseControllerTest {
     public void deleteOrderLineItem() throws Exception {
         String uri = "/upsert_order_line_item";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId).param("packageId", TEST_PACKAGE_ID)
-                        .param("quantity", "0").param("locationId", "1").accept(MediaType.APPLICATION_JSON_VALUE));// set the quantity to
-                                                                                                                   // zero
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", orderId)
+                        .param("packageId", TEST_PACKAGE_ID)
+                        .param("quantity", "0") // set the quantity to zero
+                        .param("locationId", "1")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -173,7 +195,9 @@ public class OrderControllerTest extends BaseControllerTest {
     private String getUserOrdersContent() throws Exception {
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         return mvcResult.getResponse().getContentAsString();
@@ -185,7 +209,9 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem(orderId);
         String uri = "/get_user_orders_by_status";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderStatus", "initiated")
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderStatus", "initiated")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -211,7 +237,9 @@ public class OrderControllerTest extends BaseControllerTest {
     public void buyPackageNowTest() throws Exception {
         String uri = "/buy_package_now";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("packageId", "1")
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("packageId", "1")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -229,7 +257,9 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem(orderId);
         String uri = "/get_user_orders";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -244,7 +274,9 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem(orderId);
         String uri = "/get_user_order";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", orderId)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -284,7 +316,8 @@ public class OrderControllerTest extends BaseControllerTest {
         // check the usage history
         String uri = "/get_file_transfer_sessions_for_user";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token)
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -319,7 +352,10 @@ public class OrderControllerTest extends BaseControllerTest {
     private int getFreeCreditsCount() throws Exception {
         String uri = "/order/get_filetransfer_order_usage_counts";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).param("token", token).param("orderId", orderId).accept(MediaType.APPLICATION_JSON_VALUE));       
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", orderId)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));       
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -331,7 +367,9 @@ public class OrderControllerTest extends BaseControllerTest {
         // check the usage history
         String uri = "/get_user_ft_order_usage_history";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", orderId)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -380,7 +418,9 @@ public class OrderControllerTest extends BaseControllerTest {
         // check the usage history
         String uri = "/order/get_filetransfer_usage_counts";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
        
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -414,7 +454,9 @@ public class OrderControllerTest extends BaseControllerTest {
         createOrderLineItem(orderId);
         String uri = "/paypal/make/payment";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId)
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", orderId)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -426,9 +468,13 @@ public class OrderControllerTest extends BaseControllerTest {
     public void CompletePaymentTest() throws Exception {
         String uri = "/paypal/complete/payment";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("orderId", orderId + "")
-                        .param("paypalToken", "EC-08C0391618037304B").param("paypalPaymentId", "PAYID-LZG53DA0ST70322U14705837&")
-                        .param("paypalPayerId", "TNF9ZSF9L9YL4").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("orderId", orderId + "")
+                        .param("paypalToken", "EC-08C0391618037304B")
+                        .param("paypalPaymentId", "PAYID-LZG53DA0ST70322U14705837&")
+                        .param("paypalPayerId", "TNF9ZSF9L9YL4")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
         Assertions.assertTrue(!StringUtils.isBlank(content));

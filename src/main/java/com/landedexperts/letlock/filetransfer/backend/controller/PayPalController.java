@@ -13,8 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,11 +26,10 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderPaymentVO;
 import com.landedexperts.letlock.filetransfer.backend.payment.PayPalClient;
-import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
 @RequestMapping(value = "/paypal")
-public class PayPalController {
+public class PayPalController extends BaseController{
     @Autowired
     private PaymentMapper paymentMapper;
 
@@ -38,79 +38,64 @@ public class PayPalController {
 
     private final Logger logger = LoggerFactory.getLogger(PayPalController.class);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/make/payment", produces = { "application/JSON" })
-    public InitiatePaypalPaymentResponse initiatePayment(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "orderId") final long orderId) throws Exception {
-        logger.info("OrderController.createOrder called for token " + token);
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        InitiatePaypalPaymentResponse response = new InitiatePaypalPaymentResponse("SUCCESS", "");
-        if (userId > 0) {
-            IdVO paymentIDVO = paymentMapper.setPaymentInitiate(userId, orderId, "paypal");
-            long paymentId = paymentIDVO.getResult().getId();
-            if (paymentId > 0) {
-                OrderPaymentVO paymentVO = paymentMapper.getUserOrderPayment(userId, orderId);
-                if(!paymentVO.isValid()) {
-                    return new InitiatePaypalPaymentResponse("PAMENT_INFO_NOT_VALID", "payment info retrived from db is not valid.");
-                }
-                response = new InitiatePaypalPaymentResponse(paymentVO.getReturnCode(), paymentVO.getReturnMessage());
-                if (response.getReturnCode().equals("SUCCESS")) {
-                    Map<String, Object> initiationMap = payPalClient.initiatePayment(token, paymentVO);
-                    if (isSuccess(initiationMap)) {
-                        response.setResponseMap(initiationMap);
-                    }else {
-                        paymentMapper.setPaymentProcessFailure(userId, orderId, "");//set failure only if paypal api fails.
-                        response = new InitiatePaypalPaymentResponse("PAYPAL_INITIATE_PAYMENT_FAILED", "Paypal initiate payment failed.");
-                    }
-                }
-
-            } else {
-                response = new InitiatePaypalPaymentResponse(paymentIDVO.getReturnCode(), paymentIDVO.getReturnMessage());
+    @PostMapping(value = "/make/payment", produces = { "application/JSON" })
+    public InitiatePaypalPaymentResponse initiatePayment(
+            @RequestParam(value = "orderId") final long orderId,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("PayPalController.initiatePayment called for userId " + userId);
+        
+        IdVO paymentIDVO = paymentMapper.setPaymentInitiate(userId, orderId, "paypal");
+        long paymentId = paymentIDVO.getResult().getId();
+        InitiatePaypalPaymentResponse response = new InitiatePaypalPaymentResponse(paymentIDVO.getReturnCode(), paymentIDVO.getReturnMessage());
+        if (paymentId > 0) {
+            OrderPaymentVO paymentVO = paymentMapper.getUserOrderPayment(userId, orderId);
+            if (!paymentVO.isValid()) {
+                return new InitiatePaypalPaymentResponse("PAMENT_INFO_NOT_VALID", "payment info retrived from db is not valid.");
             }
-
-        } else {
-            response = new InitiatePaypalPaymentResponse("USER_NOT_FOUND", "user does not exist.");
+            response = new InitiatePaypalPaymentResponse(paymentVO.getReturnCode(), paymentVO.getReturnMessage());
+            if (paymentVO.getReturnCode().equals("SUCCESS")) {
+                Map<String, Object> initiationMap = payPalClient.initiatePayment(getToken(request), paymentVO);
+                if (isSuccess(initiationMap)) {
+                    response.setResponseMap(initiationMap);
+                } else {
+                    paymentMapper.setPaymentProcessFailure(userId, orderId, "");//set failure only if paypal api fails.
+                    response = new InitiatePaypalPaymentResponse("PAYPAL_INITIATE_PAYMENT_FAILED", "Paypal initiate payment failed.");
+                }
+            }
         }
         return response;
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/complete/payment", produces = { "application/JSON" })
-    public CompletePayPalPaymentResponse completePayPalPayment(HttpServletRequest request,
-            @RequestParam(value = "token") final String token,
+    @PostMapping(value = "/complete/payment", produces = { "application/JSON" })
+    public CompletePayPalPaymentResponse completePayPalPayment(
             @RequestParam(value = "orderId") final long orderId,
             @RequestParam(value = "paypalToken") final String paypalToken,
             @RequestParam(value = "paypalPayerId") final String paypalPayerId,
-            @RequestParam(value = "paypalPaymentId") final String paypalPaymentId) throws Exception {
-        long userId = SessionManager.getInstance().getUserId(token);
-        CompletePayPalPaymentResponse response = new CompletePayPalPaymentResponse("SUCCESS", "");
-        if (userId > 0) {
-            logger.info("OrderController.setPaymentSuccess called for token " + token);
-            response = paymentMapper.setPaymentProcessSuccess(userId, orderId, paypalPaymentId);
-            if(response.getReturnCode().equals("SUCCESS")) {
-                Map<String, Object> completeMap = payPalClient.completePayment(request);
-                if (isSuccess(completeMap)) {
-                    response.setResponseMap(completeMap);
-                }else {
-                    paymentMapper.setPaymentProcessFailure(userId, orderId, "-1");//set failure only if paypal api fails.
-                    response = new CompletePayPalPaymentResponse("PAYPAL_PAYMENT_FAILED", "Paypal  complete payment failed.");
-                }
-            }else {
-                response = new CompletePayPalPaymentResponse(response.getReturnCode(), response.getReturnMessage());
+            @RequestParam(value = "paypalPaymentId") final String paypalPaymentId,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("PayPalController.setPaymentSuccess called for orderId " + orderId);
+        CompletePayPalPaymentResponse response = paymentMapper.setPaymentProcessSuccess(userId, orderId, paypalPaymentId);
+        if (response.getReturnCode().equals("SUCCESS")) {
+            Map<String, Object> completeMap = payPalClient.completePayment(request);
+            if (isSuccess(completeMap)) {
+                response.setResponseMap(completeMap);
+            } else {
+                paymentMapper.setPaymentProcessFailure(userId, orderId, "-1");//set failure only if paypal api fails.
+                response = new CompletePayPalPaymentResponse("PAYPAL_PAYMENT_FAILED", "Paypal  complete payment failed.");
             }
- 
-        } else {
-            response = new CompletePayPalPaymentResponse("USER_NOT_FOUND", "user does not exist.");
         }
         //TODO: log the value of Payment Json object to the database upon successful payment.
         return response;
     }
     
-    @RequestMapping(method = RequestMethod.GET, value = "/cancel", produces = { "application/JSON" })
+    @GetMapping(value = "/cancel", produces = { "application/JSON" })
     public BooleanResponse handleCancelPayment() throws Exception {
         return new BooleanResponse(true, "Success", "");
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/return", produces = { "application/JSON" })
+    @GetMapping(value = "/return", produces = { "application/JSON" })
     public BooleanResponse handleReturnLink() throws Exception {
         return new BooleanResponse(true, "Success", "");
     }

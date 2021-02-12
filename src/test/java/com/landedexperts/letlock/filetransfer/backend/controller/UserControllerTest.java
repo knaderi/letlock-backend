@@ -37,8 +37,11 @@ public class UserControllerTest extends BaseControllerTest {
     @Test
     public void registerTest() throws Exception {
         String uri = "/register";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", userLoginName)
-                .param("email", userEmail).param("password", userPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .param("loginName", userLoginName)
+                .param("email", userEmail)
+                .param("password", userPassword)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();
@@ -52,7 +55,9 @@ public class UserControllerTest extends BaseControllerTest {
         login();
         String uri = "/user/get_user_profile";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         
         resultAction.andExpect(ok); 
         MvcResult mvcResult = resultAction.andReturn();
@@ -66,7 +71,9 @@ public class UserControllerTest extends BaseControllerTest {
         login();
         String uri = "/user/get_user_profile";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).param("token", "123").accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .header("Authorization", "Bearer 123")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
         
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -79,8 +86,11 @@ public class UserControllerTest extends BaseControllerTest {
         createLoggedInActiveUser();
 
         String uri = "/user_is_login_name_available";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", userLoginName)
-                .param("password", userPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .param("loginName", userLoginName)
+                        .param("password", userPassword)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -96,7 +106,9 @@ public class UserControllerTest extends BaseControllerTest {
 
         String uri = "/user/logout";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -113,7 +125,9 @@ public class UserControllerTest extends BaseControllerTest {
     public void logoutTestForBadToken() throws Exception {
         String uri = "/user/logout";
         ResultActions resultAction = mvc.perform(
-                MockMvcRequestBuilders.post(uri).param("token", "badToken").accept(MediaType.APPLICATION_JSON_VALUE));
+                MockMvcRequestBuilders.post(uri)
+                .header("Authorization", "Bearer badToken")
+                .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -154,8 +168,13 @@ public class UserControllerTest extends BaseControllerTest {
     private void changePassword(String token, String loginName, String email, String oldPassword, String newPassword) throws Exception {
         String uri = "/user/change_password";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("token", token).param("loginName", loginName).param("email", email)
-                        .param("oldPassword", oldPassword).param("newPassword", newPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .header("Authorization", "Bearer " + token)
+                        .param("loginName", loginName)
+                        .param("email", email)
+                        .param("oldPassword", oldPassword)
+                        .param("newPassword", newPassword)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -204,7 +223,9 @@ public class UserControllerTest extends BaseControllerTest {
 
     private void testtResetToken() throws Exception, UnsupportedEncodingException, JSONException {
         ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post("/get_reset_token").param("email", userEmail).param("password", userPassword)
+                .perform(MockMvcRequestBuilders.post("/get_reset_token")
+                        .param("email", userEmail)
+                        .param("password", userPassword)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
@@ -222,7 +243,9 @@ public class UserControllerTest extends BaseControllerTest {
 
         String uri2 = "/validate_reset_password_token";
         ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post(uri2).param("email", userEmail).param("token", resetToken)
+                .perform(MockMvcRequestBuilders.post(uri2)
+                        .param("email", userEmail)
+                        .param("token", resetToken)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
@@ -239,8 +262,10 @@ public class UserControllerTest extends BaseControllerTest {
         handleForgotPassword();
 
         String uri2 = "/reset_password";
-        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2).param("token", resetToken)
-                .param("email", userEmail).param("newPassword", "passw0rd!")
+        ResultActions resultAction2 = mvc.perform(MockMvcRequestBuilders.post(uri2)
+                .param("token", resetToken)
+                .param("email", userEmail)
+                .param("newPassword", "passw0rd!")
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
@@ -258,7 +283,9 @@ public class UserControllerTest extends BaseControllerTest {
         String uri2 = "/validate_reset_password_token";
         String wrongToken = "1234567213";
         ResultActions resultAction2 = mvc
-                .perform(MockMvcRequestBuilders.post(uri2).param("email", userEmail).param("token", wrongToken)
+                .perform(MockMvcRequestBuilders.post(uri2)
+                        .param("email", userEmail)
+                        .param("token", wrongToken)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction2.andExpect(ok);
@@ -275,7 +302,9 @@ public class UserControllerTest extends BaseControllerTest {
     private void handleForgotPassword() throws Exception, UnsupportedEncodingException, JSONException {
         String uri = "/handle_forgot_password";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.post(uri).param("email", userEmail).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.post(uri)
+                        .param("email", userEmail)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -291,9 +320,11 @@ public class UserControllerTest extends BaseControllerTest {
         createLoggedInActiveUser();
         handleForgotPassword();
         String uri = "/reset_password";
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("token", resetToken)
-                .param("email", userEmail).param("newPassword", "")
-                .accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri)
+                    .param("token", resetToken)
+                    .param("email", userEmail).param("newPassword", "")
+                    .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -311,7 +342,8 @@ public class UserControllerTest extends BaseControllerTest {
         createNorConfirmedUser();
         String uri = "/resend_signup_email";
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri)
-                .param("loginId", userEmail).param("password", userPassword)
+                .param("loginId", userEmail)
+                .param("password", userPassword)
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
@@ -327,7 +359,8 @@ public class UserControllerTest extends BaseControllerTest {
         createLoggedInActiveUser();
         String uri = "/resend_signup_email";
         ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri)
-                .param("loginId", userEmail).param("password", userPassword)
+                .param("loginId", userEmail)
+                .param("password", userPassword)
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
@@ -340,8 +373,12 @@ public class UserControllerTest extends BaseControllerTest {
 
     private void registerUserAgain(String uri, String senderLoginName, String senderEmail, String senderPassword)
             throws Exception, UnsupportedEncodingException {
-        ResultActions resultAction = mvc.perform(MockMvcRequestBuilders.post(uri).param("loginName", senderLoginName)
-                .param("email", senderEmail).param("password", senderPassword).accept(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.post(uri)
+                    .param("loginName", senderLoginName)
+                    .param("email", senderEmail)
+                    .param("password", senderPassword)
+                    .accept(MediaType.APPLICATION_JSON_VALUE));
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
         String content = mvcResult.getResponse().getContentAsString();

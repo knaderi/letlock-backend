@@ -56,7 +56,11 @@ public class MgmtControllerTest extends BaseControllerTest {
         String isFreeSignUPCreditResponse = "";
         if(isFreeSignup) {
            ResultActions resultAction = mvc
-                   .perform(MockMvcRequestBuilders.post(updateSettingURL).param("token", token).param("key", "signup_free_credit").param("value","false").param("app", "all_apps")
+                   .perform(MockMvcRequestBuilders.post(updateSettingURL)
+                           .header("Authorization", "Bearer " + token)
+                           .param("key", "signup_free_credit")
+                           .param("value","false")
+                           .param("app", "all_apps")
                            .accept(MediaType.APPLICATION_JSON_VALUE));
            resultAction.andExpect(ok);
            MvcResult mvcResult = resultAction.andReturn();
@@ -66,7 +70,11 @@ public class MgmtControllerTest extends BaseControllerTest {
            assertFalse(appsSettingsManager.isFreeSignUpCreditForapps());
         }else {
             ResultActions resultAction = mvc
-                    .perform(MockMvcRequestBuilders.post(updateSettingURL).param("token", token).param("key", "signup_free_credit").param("value","true").param("app", "all_apps")
+                    .perform(MockMvcRequestBuilders.post(updateSettingURL)
+                            .header("Authorization", "Bearer " + token)
+                            .param("key", "signup_free_credit")
+                            .param("value","true")
+                            .param("app", "all_apps")
                             .accept(MediaType.APPLICATION_JSON_VALUE));
             resultAction.andExpect(ok);
             MvcResult mvcResult = resultAction.andReturn();
@@ -81,7 +89,8 @@ public class MgmtControllerTest extends BaseControllerTest {
     public void testIsFreeSignUpCreditForWrongAppName() throws Exception {
         String uri = "/setting/is_free_signup_credit_for_app";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).param("appName", "sfdsafds")
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .param("appName", "sfdsafds")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
@@ -99,7 +108,8 @@ public class MgmtControllerTest extends BaseControllerTest {
     private String isFreeSignUpCredit() throws Exception, UnsupportedEncodingException {
         String uri = "/setting/is_free_signup_credit";
         ResultActions resultAction = mvc
-                .perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON_VALUE));
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
 
         resultAction.andExpect(ok);
         MvcResult mvcResult = resultAction.andReturn();
@@ -131,7 +141,8 @@ public class MgmtControllerTest extends BaseControllerTest {
 //        
 //        
 //        ResultActions addReddemCodeAction = mvc.perform(
-//                MockMvcRequestBuilders.post(uri).param("token",token)
+//                MockMvcRequestBuilders.post(uri)
+//                        .header("Authorization", "Bearer " + token)
 //                        .param("packageId","3")
 //                        .param("redeemCode",UUID.randomUUID().toString())
 //                        .param("partnerName","AppSumo")

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 public class FileControllerTest extends BaseControllerTest {
 
@@ -36,27 +37,36 @@ public class FileControllerTest extends BaseControllerTest {
     }
 
     private UUID testUUId = getUuid();
-
+    
     @Test
     public void testUploadFileWithNoTransferSession() throws Exception {
-        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
         MultipartFile localFile = new MockMultipartFile(TEST_FILE_NAME, TEST_FILE_CONTENT.getBytes());
-        String token = response.getResult().getToken();
-        BooleanResponse uploadResponse = fileController.uploadFile(token, testUUId, localFile);
+        MockHttpServletRequest request = getRequest();
+        BooleanResponse uploadResponse = fileController.uploadFile(testUUId, localFile, request);
         Assertions.assertFalse(uploadResponse.getResult().getValue(), "upload should fail as there is no transfer session");
     }
 
     @Test
     public void testDownloadFileFailingForNoTransferSession() throws Exception {
-        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
-        String token = response.getResult().getToken();
-        ResponseEntity<Resource> fileDownloadResponse = fileController.downloadFile(token, testUUId);
+        MockHttpServletRequest request = getRequest();
+        ResponseEntity<Resource> fileDownloadResponse = fileController.downloadFile(testUUId, request);
         // download should fail.
         Assertions.assertEquals(FileController.DOWNLOAD_FAILED, fileDownloadResponse.getBody().toString(), "download should fail");
     }
 
     private UUID getUuid() {
         return UUID.randomUUID();
+    }
+    
+    private MockHttpServletRequest getRequest() throws Exception{
+        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
+        String token = response.getResult().getToken();
+        long userId = SessionManager.getInstance().getUserId(token);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addParameter("Authorization", "Bearer " + token);
+        request.setAttribute("user.id", userId);
+
+        return request;
     }
 
 }

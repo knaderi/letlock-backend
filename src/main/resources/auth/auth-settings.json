@@ -1,0 +1,33 @@
+{
+    "openEndpoints" : [
+    	"/health",
+        "/get_packages",
+        "/get_locations",
+        "/add_funds",
+        "/setting/is_free_signup_credit_for_app",
+        "/setting/is_free_signup_credit",
+        "/login",
+        "/user_is_login_name_available",
+        "/register",
+        "/register/viapartner",
+        "/resend_signup_email",
+        "/user/logout",
+        "/handle_forgot_password",
+        "/getUserPasswordAlgo",
+        "/reset_password",
+        "/validate_reset_password_token",
+        "/get_reset_token",
+        "/confirm_signup",
+        "/validate_email",
+        "/user/message",
+        "/paypal/cancel",
+        "/paypal/return"
+    ],
+    "adminEndpoints" : [
+        "/user/transferCredit",
+        "/setting/refresh_app_settings",
+        "/setting/add_redeem_code",
+        "/setting/update_apps_setting"
+    ]
+
+}

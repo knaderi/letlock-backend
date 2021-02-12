@@ -15,6 +15,8 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -24,8 +26,8 @@ import org.springframework.core.io.DescriptiveResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +39,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.Boolea
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.service.FileUploadException;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
-import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
 public class FileController {
@@ -57,54 +58,46 @@ public class FileController {
     @Autowired
     RemoteStorageServiceFactory remoteStorageService;
 
-    @RequestMapping(method = RequestMethod.POST, value = "/upload_file", produces = { "application/JSON" })
-    public BooleanResponse uploadFile(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid, @RequestParam(value = "file") final MultipartFile file)
-            throws Exception {
-        logger.info("FileController.upload_file called for token " + token);
-        boolean result = false;
+    @PostMapping(value = "/upload_file", produces = { "application/JSON" })
+    public BooleanResponse uploadFile(
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            @RequestParam(value = "file") final MultipartFile file,
+            HttpServletRequest request) throws Exception {
         String returnCode = "SUCCESS";
         String returnMessage = "";
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            // Get the path of the uploaded file
-            String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
-            if(StringUtils.isBlank(localFilePath)) {
-                throw new Exception("local file path");
-            }
-            String remotePathName = UUID.randomUUID().toString(); // we use the uuid as the pathname to the file. This is used a the key
-                                                                  // name on s3.
-            // Set the expiry date
-            Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileController.upload_file called for userId " + userId);
 
-            try {
-               // saveFileOnDisk(file, localFilePath);
-                remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(file, remotePathName);
-            } catch (FileUploadException e) {
-                e.printStackTrace();
-                logger.error("FileController.upload_file Could not upload the file due to: " + e.getMessage());
-                returnCode = "FILE_UPLOAD_ERROR";
-                returnMessage = "Could not upload the file due to: " + e.getMessage();
-            }
-            
-            if(!returnCode.contentEquals("FILE_UPLOAD_ERROR")) {
-                IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remotePathName, expires);
-                result = returnCode.equals("SUCCESS");
-                if (result) {
-                    returnCode = answer.getReturnCode();
-                    returnMessage = answer.getReturnMessage();
-                }
-            }
-
-        }else {
-            returnCode = "TOKEN_INVALID";
-            returnMessage = "Invalid token";
-        }
+        // Get the path of the uploaded file
         
-        logger.info("FileController.uploadFile returning response with result " + result);
+        //String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
+        //if(StringUtils.isBlank(localFilePath)) {
+        //    throw new Exception("local file path");
+        //}
+        String remotePathName = UUID.randomUUID().toString(); // We use the UUID as the pathname to the file.
+                                                              // This is used as the key name on S3.
+        // Set the expire date
+        Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
 
-        return new BooleanResponse(result, returnCode, returnMessage);
+        try {
+           // saveFileOnDisk(file, localFilePath);
+            remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(file, remotePathName);
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+            logger.error("FileController.upload_file could not upload the file due to: " + e.getMessage());
+            returnCode = "FILE_UPLOAD_ERROR";
+            returnMessage = "Could not upload the file due to: " + e.getMessage();
+        }
+        if (returnCode.equals("SUCCESS")) {
+            IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remotePathName, expires);
+            returnCode = answer.getReturnCode();
+            returnMessage = answer.getReturnMessage();
+        }
+
+        logger.info("FileController.uploadFile returning response with result " + returnCode.equals("SUCCESS"));
+
+        return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, returnMessage);
     }
 
     public void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
@@ -119,65 +112,53 @@ public class FileController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/can_download_file")
-    public BooleanResponse canDownloadFile(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.canDownloadFile called for token " + token);
-        boolean result = false;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+    @GetMapping(value = "/can_download_file", produces = { "application/JSON" })
+    public BooleanResponse canDownloadFile(
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            HttpServletRequest request) throws Exception {
+        logger.info("FileController.canDownloadFile called for file transfer " + fileTransferUuid);
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
+        long userId = (long) request.getAttribute("user.id");
+        BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
 
-            result = isAllowed.getValue();
-            returnCode = isAllowed.getReturnCode();
-            returnMessage = isAllowed.getReturnMessage();
-        }
+        boolean result = isAllowed.getValue();
+        String returnCode = isAllowed.getReturnCode();
+        String returnMessage = isAllowed.getReturnMessage();
+
         logger.info("FileController.canDownloadFile returning response " + result);
         return new BooleanResponse(result, returnCode, returnMessage);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/download_file")
-    public ResponseEntity<Resource> downloadFile(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.downloadFile called for token " + token);
-        @SuppressWarnings("unused")
-        String returnCode = "TOKEN_INVALID";
-        @SuppressWarnings("unused")
-        String returnMessage = "Invalid token";
+    @PostMapping(value = "/download_file")
+    public ResponseEntity<Resource> downloadFile(
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            HttpServletRequest request) throws Exception {
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
-            if (isAllowed.getValue()) {
-                return remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).downloadRemoteFile(isAllowed.getPathName());
-            }
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileController.downloadFile called for userId " + userId);
+        
+        BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
+        if (isAllowed.getValue()) {
+            return remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).downloadRemoteFile(isAllowed.getPathName());
         }
-        logger.error("Cannot download file(s). No authenticated user was found for given token: " + token);
         return ResponseEntity.badRequest().contentLength(0).contentType(MediaType.TEXT_PLAIN)
                 .body(new DescriptiveResource(DOWNLOAD_FAILED));
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/delete_file", produces = { "application/JSON" })
-    public BooleanResponse deleteFile(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid) throws Exception {
-        logger.info("FileController.deleteFile called for token " + token);
-        boolean result = false;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
+    @PostMapping(value = "/delete_file", produces = { "application/JSON" })
+    public BooleanResponse deleteFile(
+            @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
+            HttpServletRequest request) throws Exception {
 
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            ReturnCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
+        long userId = (long) request.getAttribute("user.id");
+        logger.info("FileController.deleteFile called for userId " + userId);
 
-            returnCode = answer.getReturnCode();
-            returnMessage = answer.getReturnMessage();
+        ReturnCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);
 
-            result = returnCode.equals("SUCCESS");
+        String returnCode = answer.getReturnCode();
+        String returnMessage = answer.getReturnMessage();
+        boolean result = returnCode.equals("SUCCESS");
 
-        }
         logger.info("FileController.deleteFile returning response " + result);
         return new BooleanResponse(result, returnCode, returnMessage);
     }

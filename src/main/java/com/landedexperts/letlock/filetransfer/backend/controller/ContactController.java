@@ -6,13 +6,14 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,99 +21,52 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Co
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ContactResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
+@RequestMapping(value = "/contacts", produces = { "application/JSON" })
 public class ContactController {
     @Autowired
     private ContactMapper contactMapper;
-    private final Logger logger = LoggerFactory.getLogger(ContactController.class);
     
-    @PostMapping(value = "/contacts", produces = { "application/JSON" })
-    public BooleanResponse createContact(@RequestParam(value = "token") final String token,
+    @PostMapping
+    public BooleanResponse createContact(
             @RequestParam(value = "contactUserName") final String contactUserName,
-            @RequestParam(value = "contactLabel") final String contactLabel
-            ) throws Exception {
-
-        logger.info("ContactController.createContact called for token " + token + "\n");
-
-        Boolean result = false;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            ReturnCodeMessageResponse response = contactMapper.createContact(userId, contactUserName, contactLabel);
-            returnCode = response.getReturnCode();
-            returnMessage = response.getReturnMessage();
-        }
-        result = returnCode.equals("SUCCESS");
-        return new BooleanResponse(result, returnCode, returnMessage);
+            @RequestParam(value = "contactLabel") final String contactLabel,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        ReturnCodeMessageResponse response = contactMapper.createContact(userId, contactUserName, contactLabel);
+        String returnCode = response.getReturnCode();
+        return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, response.getReturnMessage());
     }
     
     
-    @GetMapping(value = "contacts", produces = { "application/JSON" })
-    public ContactResponse getUserContacts(@RequestParam(value = "token") final String token) throws Exception {
- 
-        logger.info("ContactController.getUserContacts called for token " + token + "\n");
-
-        ContactResponse result = new ContactResponse();
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            result = contactMapper.getUserContacts(userId);
-        } else {
-            result.setReturnCode("TOKEN_INVALID");
-            result.setReturnMessage("Invalid token");
-        }
-        if (null == result) {
-            result = new ContactResponse();
-        }
-        return result;
+    @GetMapping
+    public ContactResponse getUserContacts(HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        return contactMapper.getUserContacts(userId);
     }
     
     
-    @PutMapping(value = "/contacts", produces = { "application/JSON" })
-    public BooleanResponse updateContact(@RequestParam(value = "token") final String token,
+    @PutMapping
+    public BooleanResponse updateContact(
             @RequestParam(value = "contactUserName") final String contactUserName,
-            @RequestParam(value = "contactLabel") final String contactLabel
-            ) throws Exception {
-
-        logger.info("ContactController.updateContact called for token " + token + "\n");
-        
-        Boolean result = false;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, contactLabel, false);
-            returnCode = response.getReturnCode();
-            returnMessage = response.getReturnMessage();
-        }
-        result = returnCode.equals("SUCCESS");
-        return new BooleanResponse(result, returnCode, returnMessage);
+            @RequestParam(value = "contactLabel") final String contactLabel,
+            HttpServletRequest request) throws Exception {
+        long userId = (long) request.getAttribute("user.id");
+        ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, contactLabel, false);
+        String returnCode = response.getReturnCode();
+        return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, response.getReturnMessage());
     }
     
-    @DeleteMapping(value = "/contacts", produces = { "application/JSON" })
-    public BooleanResponse deleteContact(@RequestParam(value = "token") final String token,
-            @RequestParam(value = "contactUserName") final String contactUserName
-            ) throws Exception {
-
-        logger.info("ContactController.deleteContact called for token " + token + "\n");
+    @DeleteMapping
+    public BooleanResponse deleteContact(
+            @RequestParam(value = "contactUserName") final String contactUserName,
+            HttpServletRequest request) throws Exception {
         
-        Boolean result = false;
-        String returnCode = "TOKEN_INVALID";
-        String returnMessage = "Invalid token";
-
-        long userId = SessionManager.getInstance().getUserId(token);
-        if (userId > 0) {
-            ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, "", true);
-            returnCode = response.getReturnCode();
-            returnMessage = response.getReturnMessage();
-        }
-        result = returnCode.equals("SUCCESS");
-        return new BooleanResponse(result, returnCode, returnMessage);
+        long userId = (long) request.getAttribute("user.id");
+        ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, "", true);
+        String returnCode = response.getReturnCode();
+        return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, response.getReturnMessage());
     }
     
 }

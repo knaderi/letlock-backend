@@ -22,7 +22,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Mg
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.AppSettingsManager;
-import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 @RestController
 public class MgmtController {
@@ -46,8 +45,8 @@ public class MgmtController {
         if ("NOT_FOUND".equals(settingValueStr)) {
             return new JsonResponse<Boolean>(false, "APP_SETTING_NOT_FOUND",
                     "Did not find any active setting for the specified app.");
-        }else {
-            if(settingValueStr.contentEquals("true")){
+        } else {
+            if (settingValueStr.contentEquals("true")){
                 settingValue = true;
             }
             
@@ -62,24 +61,18 @@ public class MgmtController {
     }
 
     @GetMapping(value = "/setting/refresh_app_settings", produces = { "application/JSON" })
-    public BooleanResponse refreshAppSettings(@RequestParam(value = "token") final String token) {
+    public BooleanResponse refreshAppSettings() {
 
-        logger.info("UserController.refreshAppSettings called");
+        logger.info("MgmtController.refreshAppSettings called");
         String returnCode = "SUCCESS";
         String returnMessage = "";
-        long userId = SessionManager.getInstance().getUserId(token);
-        boolean result = true;
+        boolean result = false;
         try {
-            if (userId > 0 && userId == 1) {// TODO: check for admin role later
-                appSettingManager.loadAppsSettings();
-            } else {
-                returnCode = "ADMIN_USER_EXPECTED";
-                returnMessage = "Admin user is required to add free credit.";
-                result = false;
-            }
+            appSettingManager.loadAppsSettings();
+            result = true;
         } catch (Exception e) {
-            returnCode = "ADD_TRANSFER_CREDIT_ERROR";
-            logger.error("UserController.refreshAppSettings failed."
+            returnCode = "REFRESH_SETTINGS_ERROR";
+            logger.error("MgmtController.refreshAppSettings failed."
                     + " returnCode: "
                     + returnCode
                     + " returnMessage: "
@@ -89,10 +82,9 @@ public class MgmtController {
 
     }
     
-    //TODO: Not integreated or working - check the unit tests and debug the integration
+    //TODO: Not integrated or working - check the unit tests and debug the integration
     @RequestMapping(method = RequestMethod.POST, value = "/setting/add_redeem_code", produces = { "application/JSON" })
     public BooleanResponse addRedeemCode(
-            @RequestParam(value = "token") final String token,
             @RequestParam(value = "packageId") final int packageId,
             @RequestParam(value = "redeemCode") final String redeemCode,
             @RequestParam(value = "partnerName") final String partnerName,
@@ -101,27 +93,19 @@ public class MgmtController {
             @RequestParam(value = "discountValue") final BigDecimal discountValue,
             @RequestParam(value = "discountUnit") final String discountUnit) {
 
-        logger.info("UserController.refreshAppSettings called");
+        logger.info("MgmtController.addRedeemCode called");
+        if (!action.contentEquals("SIGNUP") && !action.contentEquals("CHECKOUT")) {
+            return new BooleanResponse(false, "INVALID_ACTION", "Valid actions are signup or checkout");
+        }
         String returnCode = "SUCCESS";
         String returnMessage = "";
-        long userId = SessionManager.getInstance().getUserId(token);
-        boolean result = true;
+        boolean result = false;
         try {
-            if(!action.contentEquals("SIGNUP") && !action.contentEquals("CHECKOUT")) {
-                returnCode = "INVALID_ACTION";
-                returnMessage = "valid actions are signup or checkout";
-                result = false;
-            } if (userId > 0 && userId == 1) {// TODO: check for admin role later
-                mgmtMapper.addRedeemCode(packageId, redeemCode, partnerName, action, validUntil, discountValue, discountUnit);
-
-            } else {
-                returnCode = "ADMIN_USER_EXPECTED";
-                returnMessage = "Admin user is required to add free credit.";
-                result = false;
-            }
+            mgmtMapper.addRedeemCode(packageId, redeemCode, partnerName, action, validUntil, discountValue, discountUnit);
+            result = true;
         } catch (Exception e) {
-            returnCode = "ADD_TRANSFER_CREDIT_ERROR";
-            logger.error("UserController.refreshAppSettings failed."
+            returnCode = "ADD_REDEEM_CODE_ERROR";
+            logger.error("MgmtController.addRedeemCode failed."
                     + " returnCode: "
                     + returnCode
                     + " returnMessage: "
@@ -133,27 +117,20 @@ public class MgmtController {
     
     @RequestMapping(method = RequestMethod.POST, value = "/setting/update_apps_setting", produces = { "application/JSON" })
     public BooleanResponse updateAppsSetting(
-            @RequestParam(value = "token") final String token,
             @RequestParam(value = "key") final String key,
             @RequestParam(value = "value") final String value,
             @RequestParam(value = "app") final String app) {
-        logger.info("UserController.updateAppsSetting called");
+        logger.info("MgmtController.updateAppsSetting called");
         String returnCode = "SUCCESS";
         String returnMessage = "";
-        long userId = SessionManager.getInstance().getUserId(token);
-        boolean result = true;
+        boolean result = false;
         try {
-           if (userId > 0 && userId == 1) {// TODO: check for admin role later
-                mgmtMapper.updateAppSettings(key, value, app);
-                appSettingManager.loadAppsSettings(); //load the new settings.
-            } else {
-                returnCode = "UPDATE_SETTINGS_FAIED";
-                returnMessage = "Updating app settings failed";
-                result = false;
-            }
+            mgmtMapper.updateAppSettings(key, value, app);
+            appSettingManager.loadAppsSettings(); //load the new settings.
+            result = true;
         } catch (Exception e) {
             returnCode = "UPDATE_SETTINGS_ERROR";
-            logger.error("UserController.updateAppsSetting failed."
+            logger.error("MgmtController.updateAppsSetting failed."
                     + " returnCode: "
                     + returnCode
                     + " returnMessage: "

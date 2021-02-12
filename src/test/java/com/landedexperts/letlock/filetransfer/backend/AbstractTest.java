@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.landedexperts.letlock.filetransfer.backend.session.AuthenticationFilter;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = LetlockFiletransferBackendApplication.class)
@@ -46,7 +47,8 @@ public abstract class AbstractTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
     
     protected void setUp() throws Exception {
-        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        AuthenticationFilter authFilter = new AuthenticationFilter();
+        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilter(authFilter, "/*").build();
     }
 
     protected String mapToJson(Object obj) throws JsonProcessingException {
