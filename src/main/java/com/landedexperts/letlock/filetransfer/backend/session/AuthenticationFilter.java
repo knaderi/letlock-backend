@@ -20,7 +20,11 @@ public class AuthenticationFilter extends HttpFilter {
 
         List<String> openEndpoints = AuthenticationManager.getInstance().getOpenEndpoints();
         List<String> adminEndpoints = AuthenticationManager.getInstance().getAdminEndpoints();
-        if (!openEndpoints.contains(req.getRequestURI())) {
+        String path = req.getServletPath();
+        if (path == null || path.isEmpty()) { // for tests
+            path = req.getRequestURI();
+        }
+        if (!openEndpoints.contains(path)) {
             // Authenticate
             long userId = SessionManager.getInstance().getUserId(getToken(req));
             if (userId == -1) {
@@ -33,7 +37,7 @@ public class AuthenticationFilter extends HttpFilter {
             }
             
             //Authorize for admin role
-            if (adminEndpoints.contains(req.getServletPath()) && !(userId == 1)) {// TODO: check for admin role later
+            if (adminEndpoints.contains(path) && !(userId == 1)) {// TODO: check for admin role later
                 ReturnCodeMessageResponse response = new ReturnCodeMessageResponse("ADMIN_USER_EXPECTED", "Admin user is required to perform this action");
                 res.setContentType("application/JSON;charset=UTF-8");
                 // res.setStatus(HttpServletResponse.SC_FORBIDDEN); //403

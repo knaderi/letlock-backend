@@ -8,15 +8,19 @@ package com.landedexperts.letlock.filetransfer.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+//import org.springframework.web.servlet.config.annotation.CorsRegistry;
+//import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @SpringBootApplication
 public class LetlockFiletransferBackendApplication {
-
-    @Bean
+ /*
+   @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
@@ -29,6 +33,26 @@ public class LetlockFiletransferBackendApplication {
         };
     }
 
+*/   
+   
+   @SuppressWarnings("rawtypes")
+@Bean
+   public FilterRegistrationBean corsFilter() {
+       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+       CorsConfiguration config = new CorsConfiguration();
+       config.setAllowCredentials(false);
+       //ToDo: Investigate if we can restrict allowed origins. Current concern is the desktop app calls.
+       config.addAllowedOrigin("*");
+       config.addAllowedHeader("*");
+       config.addAllowedMethod("*");
+       source.registerCorsConfiguration("/**", config);
+       @SuppressWarnings("unchecked")
+       FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+       //Setting order to 0 so it will precede AuthenticationFilter
+       bean.setOrder(0);
+       return bean;
+   }
+   
     public static void main(String[] args) {
         SpringApplication.run(LetlockFiletransferBackendApplication.class, args);
     }

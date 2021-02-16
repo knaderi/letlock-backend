@@ -527,7 +527,7 @@ public class UserController extends BaseController {
         }
     }
 
-    @PostMapping(value = "/validate_email", produces = { "application/JSON" })
+    @GetMapping(value = "/validate_email", produces = { "application/JSON" })
     public JsonResponse<EmailValidationResult> emailFullValidate(
             @RequestParam(value = "email") final String email) throws Exception {
         logger.info("UserController.emailFullValidate called for email " + email);

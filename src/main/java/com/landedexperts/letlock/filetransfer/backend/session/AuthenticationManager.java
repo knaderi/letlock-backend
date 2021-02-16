@@ -35,6 +35,7 @@ public class AuthenticationManager {
     @SuppressWarnings("unchecked")
     private void readSettings() {
         try {
+            //ToDo: move the settings to DB
             LinkedHashMap<String, Object> authSettings = new JSONParser(new FileReader(SETTINGS_FILE_NAME)).parseObject();
             openEndpoints = (List<String>) authSettings.get("openEndpoints");
             adminEndpoints = (List<String>) authSettings.get("adminEndpoints");
