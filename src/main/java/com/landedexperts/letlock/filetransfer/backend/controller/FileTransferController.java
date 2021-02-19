@@ -35,6 +35,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTr
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UuidNameDateVO;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class FileTransferController {
@@ -54,7 +55,7 @@ public class FileTransferController {
             @RequestParam(value = "wallet_address") final String walletAddress,
             @RequestParam(value = "receiver_login_name") final String receiverLoginName,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileTransferController.startFileTransferSession called for userId " + userId);
 
         String walletAddressTrimmed = walletAddress.substring(0, 2).equals("0x") ? walletAddress.substring(2)
@@ -74,7 +75,7 @@ public class FileTransferController {
     @PostMapping(value = "/is_file_transfer_waiting_receiver_address", produces = { "application/JSON" })
     public UuidNameDateArrayResponse isFileTransferWaitingForReceiverAddress(
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileTransferController.isFileTransferWaitingForReceiverAddress called for userId " + userId);
 
         UuidNameDateVO[] answer = fileTransferMapper.retrieveSessionWaitingForReceiverAddress(userId);
@@ -93,7 +94,7 @@ public class FileTransferController {
     public ReturnCodeMessageResponse setFileTransferActive(
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileTransferController.setFileTransferActive called for userId " + userId);
 
         ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferAsActive(userId, fileTransferUuid);
@@ -109,7 +110,7 @@ public class FileTransferController {
     public ReturnCodeMessageResponse setFileTransferInactive(
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileTransferController.setFileTransferInactive called for userId " + userId);
         
         ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferInactive(userId, fileTransferUuid);
@@ -125,7 +126,7 @@ public class FileTransferController {
             @RequestParam(value = "clearFileHash") final String clearFileHash,
             @RequestParam(value = "encryptedFileHash") final String encryptedFileHash,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileTransferController.setFileTransferFilesHash called for userId " + userId);
 
         ReturnCodeMessageResponse answer = fileTransferMapper.setFileTransferFileHashes(
@@ -140,7 +141,7 @@ public class FileTransferController {
     public FileTransferSessionsResponse getFileTransferSessionsForUser(
             HttpServletRequest request) throws Exception {
  
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         FileTransferInfoRecordVO[] value = fileTransferMapper.getFileTransferSessionsForUser(userId);
 
         return new FileTransferSessionsResponse(value, "SUCCESS", "");
@@ -151,7 +152,7 @@ public class FileTransferController {
     public FileTransferSessionResponse getFileTransferStatus(
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileTransferController.getFileTransferStatus called for userId " + userId);
 
         FileTransferInfoVO answer = fileTransferMapper.getUserFileTransferInfo(userId, fileTransferUuid);
@@ -169,7 +170,7 @@ public class FileTransferController {
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "wallet_address") final String walletAddress,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileTransferController.setFileTransferReceiverAddress called for userId " + userId);
 
 

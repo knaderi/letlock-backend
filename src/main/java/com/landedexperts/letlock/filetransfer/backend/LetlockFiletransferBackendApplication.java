@@ -41,7 +41,7 @@ public class LetlockFiletransferBackendApplication {
        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
        CorsConfiguration config = new CorsConfiguration();
        config.setAllowCredentials(false);
-       //ToDo: Investigate if we can restrict allowed origins. Current concern is the desktop app calls.
+       //TODO: Investigate if we can restrict allowed origins. Current concern is the desktop app calls.
        config.addAllowedOrigin("*");
        config.addAllowedHeader("*");
        config.addAllowedMethod("*");

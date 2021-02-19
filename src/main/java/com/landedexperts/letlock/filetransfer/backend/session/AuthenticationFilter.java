@@ -8,54 +8,69 @@ import java.io.IOException;
 import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
+
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
+import com.landedexperts.letlock.filetransfer.backend.utils.ResponseCode;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @Component
 public class AuthenticationFilter extends HttpFilter {
 
     private static final long serialVersionUID = 1L;
+    private static final List<String> openEndpoints = AuthenticationManager.getInstance().getOpenEndpoints();
+    private static final List<String> adminEndpoints = AuthenticationManager.getInstance().getAdminEndpoints();
 
     @Override
-    protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+    protected void doFilter(final HttpServletRequest req, final HttpServletResponse res, final FilterChain chain) throws IOException, ServletException {
 
-        List<String> openEndpoints = AuthenticationManager.getInstance().getOpenEndpoints();
-        List<String> adminEndpoints = AuthenticationManager.getInstance().getAdminEndpoints();
         String path = req.getServletPath();
         if (path == null || path.isEmpty()) { // for tests
             path = req.getRequestURI();
         }
-        if (!openEndpoints.contains(path)) {
+        
+        if (authenticationRequired(path)) {
             // Authenticate
-            long userId = SessionManager.getInstance().getUserId(getToken(req));
+            long userId = getUserId(req);
             if (userId == -1) {
-                ReturnCodeMessageResponse response = new ReturnCodeMessageResponse("TOKEN_INVALID", "Invalid token");
-                res.setContentType("application/JSON;charset=UTF-8");
-                // res.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //401
-                res.setStatus(HttpServletResponse.SC_OK); //200
-                res.getWriter().print(new ObjectMapper().writeValueAsString(response));
+                setResponse(res, ResponseCode.TOKEN_INVALID);
                 return;
             }
             
-            //Authorize for admin role
-            if (adminEndpoints.contains(path) && !(userId == 1)) {// TODO: check for admin role later
-                ReturnCodeMessageResponse response = new ReturnCodeMessageResponse("ADMIN_USER_EXPECTED", "Admin user is required to perform this action");
-                res.setContentType("application/JSON;charset=UTF-8");
-                // res.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
-                res.setStatus(HttpServletResponse.SC_OK); //200
-                res.getWriter().print(new ObjectMapper().writeValueAsString(response));
+            // Authorize
+            if (!userHasPermissions(path, userId)) {
+                setResponse(res, ResponseCode.ADMIN_USER_EXPECTED);
                 return;
             }
-            
-            req.setAttribute("user.id", userId);
+
+            req.setAttribute(USER_ID, userId);
         }
         
         chain.doFilter(req, res);
     }
-    
-    String getToken (HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        return token == null ? "" : token.replace("Bearer ", "");
-    }
 
+    private Boolean authenticationRequired (final String path) {
+        return !openEndpoints.contains(path);
+    }
+    
+    private long getUserId (final HttpServletRequest req) {
+        String token = req.getHeader("Authorization");
+        token = StringUtils.isBlank(token) ? "" : token.replace("Bearer ", "");
+        long userId = SessionManager.getInstance().getUserId(token);
+        return userId;
+    }
+    
+    private Boolean userHasPermissions (final String path, final long userId) {
+        //  Check if admin privileges are required for the endpoint and if the user is admin (userId = 1)
+        // TODO: Move settings to DB and check user's roles later
+        return !(adminEndpoints.contains(path) && userId != 1);
+    }
+    
+    private void setResponse (final HttpServletResponse res, final ResponseCode code) throws IOException, ServletException {
+        ReturnCodeMessageResponse response = new ReturnCodeMessageResponse(code);
+        res.setContentType("application/JSON;charset=UTF-8");
+        res.setStatus(HttpServletResponse.SC_OK);
+        res.getWriter().print(new ObjectMapper().writeValueAsString(response));
+    }
     
 }

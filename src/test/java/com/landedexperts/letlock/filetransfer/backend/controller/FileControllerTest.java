@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 public class FileControllerTest extends BaseControllerTest {
 
@@ -64,7 +65,7 @@ public class FileControllerTest extends BaseControllerTest {
         long userId = SessionManager.getInstance().getUserId(token);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("Authorization", "Bearer " + token);
-        request.setAttribute("user.id", userId);
+        request.setAttribute(USER_ID, userId);
 
         return request;
     }

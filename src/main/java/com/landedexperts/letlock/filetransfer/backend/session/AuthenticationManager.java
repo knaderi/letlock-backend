@@ -1,15 +1,11 @@
 package com.landedexperts.letlock.filetransfer.backend.session;
 
 import java.io.FileReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.tomcat.util.json.JSONParser;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 
 
 public class AuthenticationManager {
@@ -35,7 +31,6 @@ public class AuthenticationManager {
     @SuppressWarnings("unchecked")
     private void readSettings() {
         try {
-            //ToDo: move the settings to DB
             LinkedHashMap<String, Object> authSettings = new JSONParser(new FileReader(SETTINGS_FILE_NAME)).parseObject();
             openEndpoints = (List<String>) authSettings.get("openEndpoints");
             adminEndpoints = (List<String>) authSettings.get("adminEndpoints");

@@ -25,8 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,6 +47,7 @@ import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidationResul
 import com.landedexperts.letlock.filetransfer.backend.utils.EmailValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.LoginNameValidator;
 import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class UserController extends BaseController {
@@ -477,7 +476,7 @@ public class UserController extends BaseController {
 
     @GetMapping(value = "/user/get_user_profile", produces = { "application/JSON" })
     public UserProfileResponse getUserProfile(HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         UserVO userVO = userMapper.getUserProfile(userId);
         return new UserProfileResponse(userVO, "SUCCESS", "");
     }
@@ -574,7 +573,7 @@ public class UserController extends BaseController {
             @RequestParam(value = "customerLoginName") final String customerLoginName,
             HttpServletRequest request) throws Exception{
         logger.info("UserController.addFreeTransferCredit called for user " + customerLoginName);
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         IdVO answer = userMapper.addFreeTransferCredit(userId, customerLoginName);
         String returnCode = answer.getReturnCode();
         String returnMessage = answer.getReturnMessage();

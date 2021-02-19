@@ -6,7 +6,6 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,7 +16,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +37,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.Boolea
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.service.FileUploadException;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class FileController {
@@ -66,7 +65,7 @@ public class FileController {
         String returnCode = "SUCCESS";
         String returnMessage = "";
 
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileController.upload_file called for userId " + userId);
 
         // Get the path of the uploaded file
@@ -118,7 +117,7 @@ public class FileController {
             HttpServletRequest request) throws Exception {
         logger.info("FileController.canDownloadFile called for file transfer " + fileTransferUuid);
 
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
 
         boolean result = isAllowed.getValue();
@@ -134,7 +133,7 @@ public class FileController {
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             HttpServletRequest request) throws Exception {
 
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileController.downloadFile called for userId " + userId);
         
         BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
@@ -150,7 +149,7 @@ public class FileController {
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             HttpServletRequest request) throws Exception {
 
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileController.deleteFile called for userId " + userId);
 
         ReturnCodeMessageResponse answer = fileMapper.deleteFile(userId, fileTransferUuid);

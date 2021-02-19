@@ -26,6 +26,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderPaymentVO;
 import com.landedexperts.letlock.filetransfer.backend.payment.PayPalClient;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 @RequestMapping(value = "/paypal")
@@ -42,7 +43,7 @@ public class PayPalController extends BaseController{
     public InitiatePaypalPaymentResponse initiatePayment(
             @RequestParam(value = "orderId") final long orderId,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("PayPalController.initiatePayment called for userId " + userId);
         
         IdVO paymentIDVO = paymentMapper.setPaymentInitiate(userId, orderId, "paypal");
@@ -74,7 +75,7 @@ public class PayPalController extends BaseController{
             @RequestParam(value = "paypalPayerId") final String paypalPayerId,
             @RequestParam(value = "paypalPaymentId") final String paypalPaymentId,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("PayPalController.setPaymentSuccess called for orderId " + orderId);
         CompletePayPalPaymentResponse response = paymentMapper.setPaymentProcessSuccess(userId, orderId, paypalPaymentId);
         if (response.getReturnCode().equals("SUCCESS")) {

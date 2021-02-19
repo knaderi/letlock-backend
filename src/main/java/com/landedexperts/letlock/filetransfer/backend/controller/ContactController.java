@@ -21,6 +21,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Co
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ContactResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 @RequestMapping(value = "/contacts", produces = { "application/JSON" })
@@ -33,7 +34,7 @@ public class ContactController {
             @RequestParam(value = "contactUserName") final String contactUserName,
             @RequestParam(value = "contactLabel") final String contactLabel,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         ReturnCodeMessageResponse response = contactMapper.createContact(userId, contactUserName, contactLabel);
         String returnCode = response.getReturnCode();
         return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, response.getReturnMessage());
@@ -42,7 +43,7 @@ public class ContactController {
     
     @GetMapping
     public ContactResponse getUserContacts(HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         return contactMapper.getUserContacts(userId);
     }
     
@@ -52,7 +53,7 @@ public class ContactController {
             @RequestParam(value = "contactUserName") final String contactUserName,
             @RequestParam(value = "contactLabel") final String contactLabel,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, contactLabel, false);
         String returnCode = response.getReturnCode();
         return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, response.getReturnMessage());
@@ -63,7 +64,7 @@ public class ContactController {
             @RequestParam(value = "contactUserName") final String contactUserName,
             HttpServletRequest request) throws Exception {
         
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         ReturnCodeMessageResponse response = contactMapper.updateContact(userId, contactUserName, "", true);
         String returnCode = response.getReturnCode();
         return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, response.getReturnMessage());

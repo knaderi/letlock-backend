@@ -20,6 +20,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class OrderDetailController {
@@ -34,7 +35,7 @@ public class OrderDetailController {
             @RequestParam(value = "quantity") final short quantity,
             HttpServletRequest request) throws Exception {
         logger.info("OrderDetailController.addOrderDetail called for orderId " + orderId + " productId " + productId);
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
 
         IdVO answer = orderLineItemMapper.addOrderLineItem(userId, orderId, productId, quantity);
         long orderLineItemId = answer.getResult().getId();
@@ -50,7 +51,7 @@ public class OrderDetailController {
             @RequestParam(value = "quantity") final short quantity,
             HttpServletRequest request) throws Exception {
         logger.info("OrderDetailController.updateOrderLineItem called for orderLineItemId " + orderLineItemId + " quantity " + quantity);
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
 
         ReturnCodeMessageResponse answer = orderLineItemMapper.updateOrderLineItem(userId, orderLineItemId, quantity);
         String returnCode = answer.getReturnCode();

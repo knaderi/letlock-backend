@@ -5,6 +5,7 @@
  *  Written by Kazem Naderi - 2019
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.database.mybatis.response;
+import com.landedexperts.letlock.filetransfer.backend.utils.ResponseCode;
 
 public class ReturnCodeMessageResponse {
 
@@ -19,6 +20,11 @@ public class ReturnCodeMessageResponse {
 
     public ReturnCodeMessageResponse() {
 
+    }
+
+    public ReturnCodeMessageResponse(ResponseCode code) {
+        this.returnCode = code.name();
+        this.returnMessage = code.getMessage();
     }
 
     public String getReturnCode() {

@@ -28,6 +28,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferOrderLineItemUsageVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class OrderController {
@@ -38,7 +39,7 @@ public class OrderController {
     @PostMapping(value = "/order_create", produces = { "application/JSON" })
     public CreateOrderResponse createOrder(
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("OrderController.createOrder called for userId " + userId);
         
         IdVO answer = orderMapper.orderCreate(userId);
@@ -54,7 +55,7 @@ public class OrderController {
             @RequestParam(value = "order_id") final String orderId,
             HttpServletRequest request) throws Exception {
         logger.info("OrderController.updateOrderStatusInitiatedToCancelled called for OrderId " + orderId);
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
 
         ReturnCodeMessageResponse answer = orderMapper.changeStatusInitiatedToCancelled(userId, Integer.parseInt(orderId));
         String returnCode = answer.getReturnCode();
@@ -69,7 +70,7 @@ public class OrderController {
             @RequestParam(value = "orderId") final int orderId,
             HttpServletRequest request) throws Exception {
         logger.info("OrderController.UpdateOrderStatusCancelledToInitiated called for OrderId " + orderId);
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
 
         ReturnCodeMessageResponse answer = orderMapper.changeStatusCancelledToInitiated(userId, orderId);
         String returnCode = answer.getReturnCode();
@@ -100,7 +101,7 @@ public class OrderController {
             @RequestParam(value = "locationId") final short locationId,
             HttpServletRequest request) throws Exception {
         logger.info("OrderController.upsertOrderLineItem called for OrderId " + orderId);
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         ReturnCodeMessageResponse answer = orderMapper.upsertOrderLineItem(userId, orderId, packageId, quantity, locationId);
         String returnCode = answer.getReturnCode();
         String returnMessage = answer.getReturnMessage();
@@ -115,7 +116,7 @@ public class OrderController {
     public JsonResponse<Map<String, String>> getUserOrdersByStatus(
             @RequestParam(value = "orderStatus") final String orderStatus,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("OrderController.getUserOrdersByStatus called for userId " + userId + " and status " + orderStatus);
 
         JsonResponse<Map<String, String>> value = orderMapper.getUserOrders(userId, orderStatus);
@@ -137,7 +138,7 @@ public class OrderController {
             @RequestParam(value = "orderId") final long orderId,
             HttpServletRequest request) throws Exception {
         logger.info("OrderController.getUserOrder called for orderId " + orderId + "\n");
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         JsonResponse<String> value = orderMapper.getUserOrder(userId, orderId);
         return value;
     }
@@ -147,7 +148,7 @@ public class OrderController {
             @RequestParam(value = "orderId") final long orderId,
             HttpServletRequest request) throws Exception {
         logger.info("OrderController.getUserOrderUsageHistroy called for orderId " + orderId + "\n");
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         
         FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = orderMapper.getUsersFileTransferOrderUsageHistroy(userId, orderId);
         // TODO, should filter
@@ -163,7 +164,7 @@ public class OrderController {
     public JsonResponse<String> buyPackageNow(
             @RequestParam(value = "packageId") final int packageId,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
         logger.info("OrderController.buyPackageNow called for userId " + userId);
         
         CreateOrderResponse answer = orderMapper.buyPackageNow(userId, packageId);
@@ -181,7 +182,7 @@ public class OrderController {
     public OrdersFileTransfersCountsResponse getFileTransferUsageCount(
             @RequestParam(value = "orderId") final long orderId,
             HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute("user.id");
+        long userId = (long) request.getAttribute(USER_ID);
 
         OrdersFileTransfersCountsVO fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
         if (null == fileTransferCounts) {
