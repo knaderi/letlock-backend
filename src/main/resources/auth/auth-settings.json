@@ -21,7 +21,9 @@
         "/validate_email",
         "/user/message",
         "/paypal/cancel",
-        "/paypal/return"
+        "/paypal/return",
+        "/installer/windows",
+        "/installer/mac"
     ],
     "adminEndpoints" : [
         "/user/transferCredit",

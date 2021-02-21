@@ -325,4 +325,25 @@ public class EmailServiceFacade {
         }
     }
     
+    public void sendAdminFailureNotification(String action, String errorMessage) throws Exception {
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
+
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(letlockContactUsRecipientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                email.setTo(nonProdReceipientEmail);
+            }
+
+            email.setSubject(action + " failed");
+            email.setMessageText(action + " failed with error message: " + errorMessage);
+            logger.info(email.getTo());
+            letLockEmailService.sendHTMLMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
+        }
+    }
+
 }
