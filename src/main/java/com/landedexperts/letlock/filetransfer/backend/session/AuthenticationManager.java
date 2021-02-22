@@ -1,21 +1,22 @@
 package com.landedexperts.letlock.filetransfer.backend.session;
 
-import java.io.FileReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
 import org.apache.tomcat.util.json.JSONParser;
 
 
 public class AuthenticationManager {
     
-    static final String SETTINGS_FILE_NAME = "auth/auth-settings.json";
+    private static final String SETTINGS_FILE_NAME = "auth/auth-settings.json";
 
     private static AuthenticationManager singleInstance = null;
-    
+
     public static AuthenticationManager getInstance() {
         if (singleInstance == null) {
             singleInstance = new AuthenticationManager();
@@ -34,8 +35,7 @@ public class AuthenticationManager {
     @SuppressWarnings("unchecked")
     private void readSettings() {
         try {
-            Resource settings = new ClassPathResource(SETTINGS_FILE_NAME);
-            LinkedHashMap<String, Object> authSettings = new JSONParser(new FileReader(settings.getFile())).parseObject();
+            LinkedHashMap<String, Object> authSettings = getSettings();
             openEndpoints = (List<String>) authSettings.get("openEndpoints");
             adminEndpoints = (List<String>) authSettings.get("adminEndpoints");
         } catch (Exception e) {
@@ -50,6 +50,15 @@ public class AuthenticationManager {
 
     public List<String> getAdminEndpoints() {
         return adminEndpoints;
+    }
+    
+    private LinkedHashMap<String, Object> getSettings() throws Exception{
+        LinkedHashMap<String, Object> authSettings = new LinkedHashMap<String, Object>();
+        URL url = Resources.getResource(SETTINGS_FILE_NAME);
+        String contentStr = Resources.toString(url, Charsets.UTF_8);
+        authSettings = new JSONParser(contentStr).parseObject();
+        return authSettings;
+
     }
     
 }
