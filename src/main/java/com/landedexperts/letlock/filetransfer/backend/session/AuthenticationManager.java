@@ -1,5 +1,6 @@
 package com.landedexperts.letlock.filetransfer.backend.session;
 
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -9,7 +10,8 @@ import org.apache.tomcat.util.json.JSONParser;
 
 
 public class AuthenticationManager {
-    static final String SETTINGS_FILE_NAME = "src/main/resources/auth/auth-settings.json";
+    static final String SETTINGS_FILE_NAME = new File("src/main/resources/auth/auth-settings.json")
+            .getAbsolutePath();
     
     private static AuthenticationManager singleInstance = null;
 
