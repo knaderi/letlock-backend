@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +28,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.OrderPaymentVO;
 import com.landedexperts.letlock.filetransfer.backend.payment.PayPalClient;
-import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 @RequestMapping(value = "/paypal")

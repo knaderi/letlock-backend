@@ -23,7 +23,8 @@
         "/paypal/cancel",
         "/paypal/return",
         "/installer/windows",
-        "/installer/mac"
+        "/installer/mac",
+        "/installer"
     ],
     "adminEndpoints" : [
         "/user/transferCredit",

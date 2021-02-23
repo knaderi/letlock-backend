@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Co
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ContactResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
-import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 @RequestMapping(value = "/contacts", produces = { "application/JSON" })

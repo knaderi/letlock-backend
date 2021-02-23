@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
-import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 public class FileControllerTest extends BaseControllerTest {
 

@@ -6,52 +6,46 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.StringUtils;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.JsonResponse;
 
 public class InstallerControllerTest extends BaseControllerTest {
-
-    @Autowired
-    private InstallerController adminController;
-
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
-
-
-    @Test
-    public void testGetWinInstallersList() throws Exception {
-//        createLoggedInActiveUser();
-//        login();
-//        JsonResponse<List<S3ObjectSummary>> installersResponse = adminController.getWindowsInstallers(token);
-//        Assertions.assertNotNull(installersResponse.getResult(), "There should be alist of installers.");
-    }
-
-    @Test
-    public void testGetMacInstallersList() throws Exception {
-//        createLoggedInActiveUser();
-//        login();
-//        JsonResponse<List<S3ObjectSummary>> installersResponse = adminController.getMacInstallers(token);       
-//        Assertions.assertNotNull(installersResponse.getResult(), "There should be alist of installers.");
-    }
     
     @Test
     public void testDownloadWindowsInstaller() throws Exception {
-//        createLoggedInActiveUser();
-//        login();
-//        ResponseEntity<Resource> fileDownloadResponse = adminController.downloadWindowsInstaller(token);
-//        Assertions.assertNotNull(fileDownloadResponse);
+        String uri = "/installer/windows";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.get(uri)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        Assertions.assertFalse(StringUtils.isEmpty(getValuesForGivenKey(content,"result")),"Installer download link is empty");
     }
+    
+    @Test
+    public void testResetInstallersCache() throws Exception {
+        String uri = "/installer";
+        ResultActions resultAction = mvc
+                .perform(MockMvcRequestBuilders.put(uri)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+        resultAction.andExpect(ok);
+        MvcResult mvcResult = resultAction.andReturn();
+        String content = mvcResult.getResponse().getContentAsString();
+        assertForNoError("testResetInstallersCache", content);
+    }
+
 }

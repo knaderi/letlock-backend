@@ -1,16 +1,16 @@
-package com.landedexperts.letlock.filetransfer.backend.utils;
+package com.landedexperts.letlock.filetransfer.backend.installer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LatestInstallersInfo {
+public class InstallersInfo {
     private String version = "";
     private List<InstallerInfoFile> files = new ArrayList<InstallerInfoFile>();
     private String path = "";
     private String sha512 = "";
     private String releaseDate = "";
     
-    public LatestInstallersInfo() {
+    public InstallersInfo() {
     }
     
     public String getVersion() {

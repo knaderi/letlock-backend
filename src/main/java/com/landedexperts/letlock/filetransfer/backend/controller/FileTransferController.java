@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,7 +37,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTr
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.FileTransferInfoVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.GochainAddressVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.UuidNameDateVO;
-import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class FileTransferController {

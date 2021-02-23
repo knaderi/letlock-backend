@@ -6,6 +6,8 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,7 +39,6 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.Boolea
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
 import com.landedexperts.letlock.filetransfer.backend.service.FileUploadException;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
-import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class FileController {

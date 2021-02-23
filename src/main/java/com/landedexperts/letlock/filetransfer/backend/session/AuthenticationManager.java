@@ -4,16 +4,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-
 import org.apache.tomcat.util.json.JSONParser;
-
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.AUTH_SETTINGS_FILE_NAME;
 
 public class AuthenticationManager {
-    
-    private static final String SETTINGS_FILE_NAME = "auth/auth-settings.json";
 
     private static AuthenticationManager singleInstance = null;
 
@@ -54,7 +50,7 @@ public class AuthenticationManager {
     
     private LinkedHashMap<String, Object> getSettings() throws Exception{
         LinkedHashMap<String, Object> authSettings = new LinkedHashMap<String, Object>();
-        URL url = Resources.getResource(SETTINGS_FILE_NAME);
+        URL url = Resources.getResource(AUTH_SETTINGS_FILE_NAME);
         String contentStr = Resources.toString(url, Charsets.UTF_8);
         authSettings = new JSONParser(contentStr).parseObject();
         return authSettings;

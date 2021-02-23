@@ -4,6 +4,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+
 import java.io.IOException;
 import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.utils.ResponseCode;
-import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @Component
 public class AuthenticationFilter extends HttpFilter {

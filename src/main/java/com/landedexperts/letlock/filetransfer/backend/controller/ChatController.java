@@ -1,5 +1,7 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.UserMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SetResponse;
-import static com.landedexperts.letlock.filetransfer.backend.utils.BackendConstants.USER_ID;
 
 @RestController
 public class ChatController {

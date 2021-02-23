@@ -1,4 +1,4 @@
-package com.landedexperts.letlock.filetransfer.backend.utils;
+package com.landedexperts.letlock.filetransfer.backend.installer;
 
 public class InstallerInfoFile {
     private String url = "";
