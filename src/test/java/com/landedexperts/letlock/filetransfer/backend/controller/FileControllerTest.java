@@ -21,7 +21,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.SessionTokenResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.LoginResponse;
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 
 public class FileControllerTest extends BaseControllerTest {
@@ -61,7 +61,7 @@ public class FileControllerTest extends BaseControllerTest {
     }
     
     private MockHttpServletRequest getRequest() throws Exception{
-        SessionTokenResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
+        LoginResponse response = userController.login(TEST_USER_ID, TEST_PASSWORD, new MockHttpServletRequest());
         String token = response.getResult().getToken();
         long userId = SessionManager.getInstance().getUserId(token);
         MockHttpServletRequest request = new MockHttpServletRequest();

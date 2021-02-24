@@ -2,6 +2,8 @@ package com.landedexperts.letlock.filetransfer.backend.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.paypal.base.rest.JSONFormatter;
 
 public class RequestData {
@@ -36,14 +38,14 @@ public class RequestData {
         return origin;
     }
 
-    public RequestData(String ipAddress, String origin, String userAgent) {
-        this.ipAddress = ipAddress;
-        this.origin = origin;
-        this.userAgent = userAgent;
+    public RequestData(HttpServletRequest req) {
+        this.ipAddress = req.getRemoteAddr();
+        this.origin = req.getHeader("origin");
+        this.userAgent = req.getHeader("User-Agent");
         setDeviceType();
         setAppType();
         setTokenPrefix();
-    }    
+    }
     
     public String getAppType() {
         return appType;

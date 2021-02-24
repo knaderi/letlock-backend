@@ -6,10 +6,13 @@
      ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.session;
 
-    import java.util.Base64;
-    import java.util.HashMap;
-    import java.util.Map;
-    import java.util.Random;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.TEMP_TOKEN_PREFIX;
+import com.landedexperts.letlock.filetransfer.backend.utils.Verify2FACodeResult;
 
     public class TwoFAManager {
         private static final long VERIFICATION_CODE_SIZE = 6;
@@ -37,7 +40,7 @@ package com.landedexperts.letlock.filetransfer.backend.session;
             /* Generate the token */
             byte[] randomBytes = new byte[128];
             random.nextBytes(randomBytes);
-            String token = "TEMP" + Base64.getEncoder().encodeToString(randomBytes);
+            String token = TEMP_TOKEN_PREFIX + Base64.getEncoder().encodeToString(randomBytes);
 
             /* Generate the user's authentication session and associate it the token */
             twoFATokens.put(token, new AuthSession(userId));
@@ -91,10 +94,10 @@ package com.landedexperts.letlock.filetransfer.backend.session;
          * Verify the code provided by the user with the given token
          * Return verification result including number of wrong attempts
          */
-        public VerificationResult verifyCode(final String token, final String code) {
-            VerificationResult result = twoFATokens.get(token).verifyCode(code);
+        public Verify2FACodeResult verifyCode(final String token, final String code) {
+            Verify2FACodeResult result = twoFATokens.get(token).verifyCode(code);
             
-            if (result.getValid()) {
+            if (result.getValid() || result.getAttempts() > 2) {
                 cleanSession(token);
             }
             return result;

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.TEMP_TOKEN_PREFIX;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,7 +59,12 @@ public class AuthenticationFilter extends HttpFilter {
     private long getUserId (final HttpServletRequest req) {
         String token = req.getHeader("Authorization");
         token = StringUtils.isBlank(token) ? "" : token.replace("Bearer ", "");
-        long userId = SessionManager.getInstance().getUserId(token);
+        long userId = -1;
+        if (token.startsWith(TEMP_TOKEN_PREFIX)) {
+            userId = TwoFAManager.getInstance().getUserId(token);
+        } else {
+            userId = SessionManager.getInstance().getUserId(token);
+        }
         return userId;
     }
     

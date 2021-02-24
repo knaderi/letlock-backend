@@ -8,6 +8,7 @@ package com.landedexperts.letlock.filetransfer.backend.session;
 
 import java.util.Date;
 
+import com.landedexperts.letlock.filetransfer.backend.utils.Verify2FACodeResult;
 
 public class AuthSession {
     private static long timeout = 3600000L; /*Timeout in milliseconds, 60min*/
@@ -36,11 +37,10 @@ public class AuthSession {
         return userId;
     }
     
-    public VerificationResult verifyCode(String code) {
+    public Verify2FACodeResult verifyCode(String code) {
         attempts++;
         Boolean valid = code.equals(this.code);
-        if (attempts > 3) valid = false;
-        return new VerificationResult(valid, attempts);
+        return new Verify2FACodeResult(valid, attempts);
     }
 
     public Boolean isActive() {

@@ -296,7 +296,7 @@ public class UserController extends BaseController {
             @RequestParam(value = "loginName") final String loginName,
             @RequestParam(value = "password") final String password,
             HttpServletRequest request) throws Exception {
-        RequestData requestData = buildRequestDataObj(request);
+        RequestData requestData = new RequestData(request);
         logger.info("UserController.login called for loginName " + loginName);
 
         LoginVO answer = userMapper.login(loginName, password, requestData.toJSON());
@@ -314,17 +314,7 @@ public class UserController extends BaseController {
             }
         }
 
-        return new LoginResponse(token, twoFARequired, returnCode, returnMessage);
-    }
-
-    private RequestData buildRequestDataObj(HttpServletRequest request) {
-        String origin = request.getHeader("origin");
-        String ipAddress = request.getRemoteAddr();
-        String userAgent = request.getHeader("User-Agent");
-        RequestData requestData = new RequestData(ipAddress, origin, userAgent);
-
-        logger.info("Origin: {}, ipAddress: {}, userAgent: {}", origin, ipAddress, userAgent);
-        return requestData;
+        return new LoginResponse(token, twoFARequired, 0, returnCode, returnMessage);
     }
 
     private boolean isLoginCriteriaAnEmail(final String loginNameOrEmail) {
@@ -339,7 +329,7 @@ public class UserController extends BaseController {
             @RequestParam(value = "newPassword") final String newPassword,
             HttpServletRequest request) throws Exception {
         logger.info("UserController.changePassword called for a user");
-        RequestData requestData = buildRequestDataObj(request);
+        RequestData requestData = new RequestData(request);
 
         boolean result = false;
         ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword, requestData.toJSON());
@@ -493,7 +483,7 @@ public class UserController extends BaseController {
             HttpServletRequest request) throws Exception {
         logger.info("UserController.confirm_signup called for email " + email);
 
-        RequestData requestData = buildRequestDataObj(request);
+        RequestData requestData = new RequestData(request);
         BooleanResponse response = userMapper.confirmSignup(email, resetToken);
         String returnCode = response.getReturnCode();
         String returnMessage = response.getReturnMessage();

@@ -1,10 +1,10 @@
-package com.landedexperts.letlock.filetransfer.backend.session;
+package com.landedexperts.letlock.filetransfer.backend.utils;
 
-public class VerificationResult {
+public class Verify2FACodeResult {
     private Boolean valid;
     private int attempts;
     
-    public VerificationResult(Boolean valid, int attempts) {
+    public Verify2FACodeResult(Boolean valid, int attempts) {
         this.valid = valid;
         this.attempts = attempts;
     }
