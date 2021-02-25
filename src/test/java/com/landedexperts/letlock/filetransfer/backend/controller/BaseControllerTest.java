@@ -7,6 +7,7 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,5 +187,36 @@ public abstract class BaseControllerTest extends AbstractTest implements Backend
         Assertions.assertTrue(content.length() > 0, "loginTest: content length should be larger than zero");
         Assertions.assertTrue(content.contains("\"returnCode\":\"SUCCESS\""), "loginTest: returnCode should be SUCCESS");
     }
+    
+    public String makeMockRequest(String uri, String method, Map<String,String> params, Boolean expectOk
+            ) throws Exception {
+        MockHttpServletRequestBuilder req;
+        switch (method) {
+        case "post":
+            req = MockMvcRequestBuilders.post(uri);
+            break;
+        case "get":
+            req = MockMvcRequestBuilders.get(uri);
+            break;
+        case "put":
+            req = MockMvcRequestBuilders.put(uri);
+            break;
+        case "delete":
+            req = MockMvcRequestBuilders.delete(uri);
+            break;
+        default: 
+            throw new Exception("Unknown method");
+        };
+        req.header("Authorization", "Bearer " + token);
+        params.forEach((k,v) -> req.param(k, v));
+        req.accept(MediaType.APPLICATION_JSON_VALUE);
+        ResultActions resultAction = mvc.perform(req);
+        if (expectOk) {
+            resultAction.andExpect(ok);
+        }
+        MvcResult mvcResult = resultAction.andReturn();
+        return mvcResult.getResponse().getContentAsString();
+    }
+
 
 }

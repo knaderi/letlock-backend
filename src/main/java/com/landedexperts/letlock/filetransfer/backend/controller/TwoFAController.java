@@ -24,6 +24,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.
 import com.landedexperts.letlock.filetransfer.backend.session.SessionManager;
 import com.landedexperts.letlock.filetransfer.backend.session.TwoFAManager;
 import com.landedexperts.letlock.filetransfer.backend.utils.RequestData;
+import com.landedexperts.letlock.filetransfer.backend.utils.ResponseCode;
 import com.landedexperts.letlock.filetransfer.backend.utils.Verify2FACodeResult;
 
 @RestController
@@ -88,8 +89,7 @@ public class TwoFAController extends BaseController {
             HttpServletRequest request) throws Exception {
         long userId = (long) request.getAttribute(USER_ID);
         logger.info("TwoFAController.verify2FALoginCode called for userId " + userId);
-        String returnCode = "SUCCESS";
-        String returnMessage = "";
+        ResponseCode response;
         String new_token = "";
         int attemptsAvailable = 0;
 
@@ -97,15 +97,14 @@ public class TwoFAController extends BaseController {
         if (result.getValid()) {
             RequestData requestData = new RequestData(request);
             new_token = SessionManager.getInstance().generateSessionToken(userId, requestData.getTokenPrefix());
+            response = ResponseCode.SUCCESS;
         } else if (result.getAttempts() < 3) {
-            returnCode = "CODE_INVALID";
-            returnMessage = "Verification code invalid";
             attemptsAvailable = 3 - result.getAttempts();
+            response = ResponseCode.CODE_INVALID;
         } else {
-            returnCode = "TOO_MANY_ATTEMPTS";
-            returnMessage = "Wrong verification code was entered too many times";
+            response = ResponseCode.TOO_MANY_ATTEMPTS;
         }
 
-        return new LoginResponse(new_token, null, attemptsAvailable, returnCode, returnMessage);
+        return new LoginResponse(new_token, null, attemptsAvailable, response.name(), response.getMessage());
     }
 }
