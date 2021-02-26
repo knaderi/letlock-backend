@@ -332,12 +332,15 @@ public class UserController extends BaseController {
         RequestData requestData = new RequestData(request);
 
         boolean result = false;
-        ReturnCodeMessageResponse answer = userMapper.updateUserPassword(loginName, oldPassword, newPassword, requestData.toJSON());
+        ReturnCodeMessageResponse answer = userMapper.updateUserPassword(
+                loginName, email, oldPassword, newPassword, requestData.toJSON());
         String returnCode = answer.getReturnCode();
         String returnMessage = answer.getReturnMessage();
         if ("SUCCESS".equals(returnCode)) {
-            // TODO: enable after LLW-249 is implemented in sprint 16
-            // emailServiceFacade.sendChangePasswordEmail(email);
+            try {
+                emailServiceFacade.sendChangePasswordEmail(email);
+            } catch (Exception e) {
+            }
             result = true;
         } else {
             logger.error("UserController.changePassword for email "

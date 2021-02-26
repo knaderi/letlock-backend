@@ -68,9 +68,11 @@ public interface UserMapper {
     @Select("SELECT"
             + " _return_code AS returnCode,"
             + " _return_message AS returnMessage"
-            + " FROM users.update_user_password( #{ loginName } , #{ oldPassword } , #{ newPassword }, #{requestData} )")
-    ReturnCodeMessageResponse updateUserPassword(@Param("loginName") String loginName, @Param("oldPassword") String oldPassword,
-            @Param("newPassword") String newPassword, @Param("requestData") String requestData);
+            + " FROM users.update_user_password("
+            + " #{ loginName } , #{ email } , #{ oldPassword } , #{ newPassword }, #{requestData} )")
+    ReturnCodeMessageResponse updateUserPassword(@Param("loginName") String loginName, @Param("email") String email,
+            @Param("oldPassword") String oldPassword, @Param("newPassword") String newPassword,
+            @Param("requestData") String requestData);
 
     @Select("SELECT"
             + " _return_code AS returnCode,"
