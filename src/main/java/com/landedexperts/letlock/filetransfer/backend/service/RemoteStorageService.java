@@ -10,15 +10,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-
 public interface RemoteStorageService {
 
     ResponseEntity<Resource> downloadRemoteFile(final String remotePathName);
     
     void uploadFileToRemote(final MultipartFile file, final String remoteStoragePath );
 
-    S3ObjectInputStream getInstallersInfo(String remotePathName);
+    String getInstallersInfo(String remotePathName);
     
     String getInstallerUrl(String remotePathName);
     

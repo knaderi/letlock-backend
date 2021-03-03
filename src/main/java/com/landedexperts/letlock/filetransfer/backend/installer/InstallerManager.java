@@ -8,8 +8,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.landedexperts.letlock.filetransfer.backend.service.RemoteStorageServiceFactory;
@@ -31,9 +29,8 @@ public class InstallerManager {
     public String getDownloadLink(final InstallerPlatform platform) throws Exception {
         String downloadLink = "";
         try {
-            S3ObjectInputStream latestIS = remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE)
+            String latestStr = remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE)
                     .getInstallersInfo(platform.getConfig());
-            String latestStr = IOUtils.toString(latestIS);
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             InstallersInfo latest = mapper.readValue(latestStr, InstallersInfo.class);
             

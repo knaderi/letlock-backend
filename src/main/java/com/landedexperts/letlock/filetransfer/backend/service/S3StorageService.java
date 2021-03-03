@@ -6,6 +6,7 @@
  ******************************************************************************/
 package com.landedexperts.letlock.filetransfer.backend.service;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.amazonaws.util.IOUtils;
 
 @Service
 public class S3StorageService implements RemoteStorageService {
@@ -53,39 +55,55 @@ public class S3StorageService implements RemoteStorageService {
     @Value("${s3.app.installer.storage.bucket}")
     private String s3InstallersBucket;
     
-    private Regions clientRegion = Regions.DEFAULT_REGION;
-    private AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(clientRegion).build();
-    private long contentLength = 0;
-    
     @Override
     public ResponseEntity<Resource> downloadRemoteFile(String remotePathName) {
         return getResource(s3Bucket, remotePathName);
     }
     
     @Override
-    public S3ObjectInputStream getInstallersInfo(String remotePathName) {
+    public String getInstallersInfo(String remotePathName) {
         return  getContent(s3InstallersBucket, remotePathName);
     }
 
     private ResponseEntity<Resource> getResource(String bucketName, String remotePathName)  {
-        S3ObjectInputStream objectContent = getContent(bucketName, remotePathName);
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+        S3Object fullObject = null, objectPortion = null;
+        fullObject = s3Client.getObject(new GetObjectRequest(bucketName, remotePathName));
+        GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, remotePathName)
+                .withRange(0, fullObject.getObjectMetadata().getContentLength());
+        objectPortion = s3Client.getObject(rangeObjectRequest);
+        S3ObjectInputStream objectContent = objectPortion.getObjectContent();
         InputStreamResource isr = new InputStreamResource(objectContent);
-        return ResponseEntity.ok().contentLength(contentLength)
+        return ResponseEntity.ok().contentLength(fullObject.getObjectMetadata().getContentLength())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM).body(isr);
     }
     
-    private S3ObjectInputStream getContent(String bucketName, String remotePathName) {
-        S3Object fullObject = null, objectPortion = null;
-        fullObject = s3Client.getObject(new GetObjectRequest(bucketName, remotePathName));
-        contentLength = fullObject.getObjectMetadata().getContentLength();
-        GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucketName, remotePathName)
-                .withRange(0, contentLength);
-        objectPortion = s3Client.getObject(rangeObjectRequest);
-        return objectPortion.getObjectContent();
+    private String getContent(String bucketName, String remotePathName) {
+        String contentStr = null;
+        S3Object s3object = null;
+        try {
+            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+            s3object = s3Client.getObject(new GetObjectRequest(bucketName, remotePathName));
+            S3ObjectInputStream content = s3object.getObjectContent();
+            contentStr = IOUtils.toString(content);
+        } catch (Exception e) {
+            logger.error("Unable to get S3 object content: ", e.getMessage());
+        } finally {
+            if (s3object != null) {
+                try {
+                    // Close S3 object
+                    s3object.close();
+                  } catch (IOException e) {
+                    logger.error("Unable to close S3 object: ", e.getMessage());
+                  }
+            }
+        }
+        return contentStr;
     }
     
     @Override
     public String getInstallerUrl(String remotePathName) {
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
         return s3Client.getUrl(s3InstallersBucket, remotePathName).toString();
     }
 
