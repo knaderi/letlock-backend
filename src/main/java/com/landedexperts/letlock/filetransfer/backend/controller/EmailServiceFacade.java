@@ -46,6 +46,8 @@ public class EmailServiceFacade {
     static String CONFIRM_SIGNUP_URL = "%CONFIRM_SIGNUP_URL%";
     static String LETLOCK_LOGO_URL_TOKEN = "%LETLOCK_LOGO_URL_TOKEN%";
     static String LETLOCK_FOOTER_LOGO_TOKEN = "%LETLOCK_FOOTER_LOGO_TOKEN%";
+    static String EMAIL = "%EMAIL%";
+    static String TOKEN = "%TOKEN%";
 
     @Value("${validate.reset.password.token.url}")
     String validateResetPasswordTokenURL;
@@ -105,7 +107,7 @@ public class EmailServiceFacade {
                 logger.info("replacing recipient email: " + recepientEmail);
                 email.setTo(nonProdReceipientEmail);
             }
-
+            
             email.setSubject(FORGOT_PASSWORD_EMAIL_SUBJECT);
             email.setMessageText(getForgotPasswordHTMLEmailBody(resetEmailToken, recepientEmail));
             letLockEmailService.sendHTMLMail(email);
@@ -117,8 +119,9 @@ public class EmailServiceFacade {
     String getForgotPasswordHTMLEmailBody(String resetEmailToken, String recepientEmail) throws Exception {
         String emailBody = readForgotPasswordEmailBody();
         emailBody = emailBody.replace(VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN, validateResetPasswordTokenURL)
+                .replace(TOKEN, resetEmailToken)
                 .replace(USER_CONFIRM_TOKEN, resetEmailToken)
-                .replace(EMAIL_TOKEN, URLEncoder.encode(recepientEmail,"UTF8"))
+                .replace(EMAIL, URLEncoder.encode(recepientEmail,"UTF8"))
                 .replace(LETLOCK_LOGO_URL_TOKEN, letlockLogoURL)
                 .replace(LETLOCK_FOOTER_LOGO_TOKEN, letlockFooterLogoURL);
         return emailBody;
