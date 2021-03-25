@@ -13,10 +13,17 @@ public class AdminNotification {
     
     public void actionFailure(final String action, final Exception e) {
         try {
-            System.out.println(e.getMessage());
             emailServiceFacade.sendAdminFailureNotification(action, e.getMessage());
         } catch (Exception err) {
         }
     return;
+    }
+
+    public void appBalanceThresholdReached(final AppAccountBalance balanceInfo) {
+        try {
+            emailServiceFacade.sendAppBalanceNotification(balanceInfo.getAddress(), balanceInfo.getBalance());
+        } catch (Exception err) {
+
+        }
     }
 }
