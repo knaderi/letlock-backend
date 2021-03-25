@@ -27,6 +27,7 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.WalletAddress;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayService;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.utils.AppAccountBalance;
 
 @Service
 public class GoChainGatewayService extends BlockChainGatewayService {
@@ -167,5 +168,25 @@ public class GoChainGatewayService extends BlockChainGatewayService {
     public String getType() throws Exception {
         return BlockChainGatewayServiceTypeEnum.GOCHAIN_GATEWAY.getValue();
     }
-
+    
+    @Override
+    public AppAccountBalance getAppAccountBalance() throws Exception {
+        HttpURLConnection urlConnection = getURLConnection(goChainURL + "/get_app_account_balance");
+        AppAccountBalance balanceInfo = null;
+        String responseStr;
+        try {
+            OutputStream output = urlConnection.getOutputStream();
+            output.close();
+            responseStr = readInputStreamIntoJsonString(urlConnection);
+            logger.debug("getAppAccountBalance: " + responseStr);
+            ObjectMapper objectMapper = new ObjectMapper();            
+            balanceInfo = objectMapper.readValue(responseStr, AppAccountBalance.class);
+        } finally {
+            cleanUpStreams(urlConnection);
+        }
+        if (balanceInfo == null) {
+            balanceInfo = new AppAccountBalance();
+        }
+        return balanceInfo;
+    }
 }

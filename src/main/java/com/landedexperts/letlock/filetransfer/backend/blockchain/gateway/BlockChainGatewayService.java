@@ -9,6 +9,7 @@ package com.landedexperts.letlock.filetransfer.backend.blockchain.gateway;
 import java.util.UUID;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.utils.AppAccountBalance;
 
 public abstract class BlockChainGatewayService {
 
@@ -69,5 +70,13 @@ public abstract class BlockChainGatewayService {
      * @throws Exception
      */
     public abstract String getType() throws Exception;
+
+    
+    /**
+     * 
+     * @return
+     * @throws Exception
+     */
+    public abstract AppAccountBalance getAppAccountBalance() throws Exception;
 
 }

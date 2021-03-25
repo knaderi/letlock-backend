@@ -40,6 +40,7 @@ public class EmailServiceFacade {
     private static String WELCOME_TO_LETLOCK_FREE_CREDIT = "Welcome to Letlock file transfer!";
     private static String LETLOCK_REGISTERATION_CONFIRMATION_SUBJECT = "New user confirmed signup email!";
     private static String CHANGE_PASSWORD_EMAIL_SUBJECT = "Your password has changed";
+    private static String BALANCE_THRESHOLD_MASSAGE = "Account balance threshold reached";
     static String USER_CONFIRM_TOKEN = "%USER_CONFIRM_TOKEN%";
     static String EMAIL_TOKEN = "%EMAIL_TOKEN%";
     static String VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN = "%VALIDATE_RESET_PASSWORD_SERVICE_URL_TOKEN%";
@@ -343,10 +344,31 @@ public class EmailServiceFacade {
             email.setSubject(action + " failed");
             email.setMessageText(action + " failed with error message: " + errorMessage);
             logger.info(email.getTo());
-            letLockEmailService.sendHTMLMail(email);
+            letLockEmailService.sendMail(email);
         } else {
             logger.info("Email service is disabled in properties file.");
         }
     }
+    
+    public void sendAppBalanceNotification(String address, String balance) throws Exception {
+        LetLockBackendEnv constants = LetLockBackendEnv.getInstance();
+        if ("prd".equals(constants.getEnv()) || "true".contentEquals(nonProdEmailActive)) {
+            Email email = new Email();
+            email.setFrom(letlockNotificationEmail);
 
+            if ("prd".equals(constants.getEnv())) {
+                email.setTo(letlockContactUsRecipientEmail);
+            } else if ("true".contentEquals(nonProdEmailActive)) {
+                email.setTo(nonProdReceipientEmail);
+            }
+
+            email.setSubject(BALANCE_THRESHOLD_MASSAGE);
+            email.setMessageText("Balance of LetLock GoChain account " + address + " is " + balance + " GO.");
+            logger.info(email.getTo());
+            letLockEmailService.sendMail(email);
+        } else {
+            logger.info("Email service is disabled in properties file.");
+        }
+    }
+    
 }

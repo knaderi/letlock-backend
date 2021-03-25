@@ -20,6 +20,7 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Fi
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
+import com.landedexperts.letlock.filetransfer.backend.utils.AppAccountBalance;
 
 @Service
 public class DBGatewayService extends BlockChainGatewayService {
@@ -146,4 +147,8 @@ public class DBGatewayService extends BlockChainGatewayService {
         return BlockChainGatewayServiceTypeEnum.DB_GATEWAY.getValue();
     }
 
+    @Override
+    public AppAccountBalance getAppAccountBalance() throws Exception {
+        return null;
+    }
 }

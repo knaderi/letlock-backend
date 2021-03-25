@@ -13,7 +13,8 @@ import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockCh
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceFactory;
 import com.landedexperts.letlock.filetransfer.backend.blockchain.gateway.BlockChainGatewayServiceTypeEnum;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.OrderMapper;
-import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.TransactionHashResponse;
+import com.landedexperts.letlock.filetransfer.backend.utils.AdminNotification;
+import com.landedexperts.letlock.filetransfer.backend.utils.AppAccountBalance;
 
 
 @RestController
@@ -26,8 +27,14 @@ public class UtilsController {
     @Autowired
     BlockChainGatewayServiceFactory blockChainGatewayServiceFactory;
     
+    @Autowired
+    AdminNotification adminNotification;
+    
     @Value("${blockchain.gateway.type}")
     private String blockchainGatewayType;
+    
+    @Value("${app.blockchain.account.threshold}")
+    private int appAccountThreshold;
     
     @GetMapping(value = "/health")
     public ResponseEntity<String> healthCheck() throws Exception {
@@ -35,20 +42,23 @@ public class UtilsController {
         String body = "";
         // Trying to get packages to check DB connection
         try {
+            @SuppressWarnings("unused")
             String value = orderMapper.getPackages(false, false);
         } catch(Exception e) {
             logger.info("DB connection check error: {}", e.getMessage());
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             body = "DB connection check error: " + e.getMessage() + "\n";
         }
-        // Trying to get transaction status to check Blockchain connection
+        // Trying to get the LetLock GoCahin account balance
         try {
-            TransactionHashResponse transactionHashResponse = getBlockChainGateWayService()
-                    .getTransactionStatus("0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789");
+            AppAccountBalance balanceInfo = getBlockChainGateWayService().getAppAccountBalance();
+            float balance = Float.parseFloat(balanceInfo.getBalance());
+            if (balance < appAccountThreshold) {
+                adminNotification.appBalanceThresholdReached(balanceInfo);
+            }
         } catch (Exception e) {
             logger.info("Blockchain engine check error: {}", e.getMessage());
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-            body = body + "Blockchain engine check error: " + e.getMessage();
+            adminNotification.actionFailure("Get balance for LetLock GoChain account", e);
         }
         return ResponseEntity.status(status).body(body);
     }
