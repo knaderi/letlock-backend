@@ -21,16 +21,14 @@
         "/validate_email",
         "/user/message",
         "/paypal/cancel",
-        "/paypal/return",
-        "/installer/windows",
-        "/installer/mac",
-        "/installer"
+        "/paypal/return"
     ],
     "adminEndpoints" : [
         "/user/transferCredit",
         "/setting/refresh_app_settings",
         "/setting/add_redeem_code",
-        "/setting/update_apps_setting"
+        "/setting/update_apps_setting",
+        "/installer"
     ]
 
 }
