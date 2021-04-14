@@ -70,9 +70,9 @@ public interface OrderMapper {
             @Param("orderStatus") String orderStatus);
     
     @Select("SELECT *"
-            + " FROM orders.get_orders_file_transfer_counts( #{ userId }, #{ orderId })")
+            + " FROM orders.get_orders_file_transfer_counts( #{ userId }, #{itemTypeName}, #{ orderId } )")
     OrdersFileTransfersCountsVO getOrdersFileTransferUsageCounts(
-            @Param("userId") long userId, @Param("orderId") long orderId);
+            @Param("userId") long userId, @Param("orderId") long orderId, @Param("itemTypeName") String itemTypeName);
     
     
     @Select("SELECT *"
