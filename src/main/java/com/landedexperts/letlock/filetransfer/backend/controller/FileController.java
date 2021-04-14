@@ -26,14 +26,15 @@ import org.springframework.core.io.DescriptiveResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.FileMapper;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.BooleanResponse;
+import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.FileUploadResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.response.ReturnCodeMessageResponse;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.BooleanPathnameVO;
 import com.landedexperts.letlock.filetransfer.backend.database.mybatis.vo.IdVO;
@@ -63,34 +64,19 @@ public class FileController {
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,
             @RequestParam(value = "file") final MultipartFile file,
             HttpServletRequest request) throws Exception {
-        String returnCode = "SUCCESS";
-        String returnMessage = "";
-
         long userId = (long) request.getAttribute(USER_ID);
         logger.info("FileController.upload_file called for userId " + userId);
 
-        // Get the path of the uploaded file
-        
         //String localFilePath = System.getProperty("user.home") + File.separator + UUID.randomUUID().toString();
         //if(StringUtils.isBlank(localFilePath)) {
         //    throw new Exception("local file path");
         //}
-        String remotePathName = UUID.randomUUID().toString(); // We use the UUID as the pathname to the file.
-                                                              // This is used as the key name on S3.
-        // Set the expire date
-        Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
-
-        try {
-           // saveFileOnDisk(file, localFilePath);
-            remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(file, remotePathName);
-        } catch (FileUploadException e) {
-            e.printStackTrace();
-            logger.error("FileController.upload_file could not upload the file due to: " + e.getMessage());
-            returnCode = "FILE_UPLOAD_ERROR";
-            returnMessage = "Could not upload the file due to: " + e.getMessage();
-        }
+        FileUploadResponse response = saveFileOnRemote(file);
+        String returnCode = response.getReturnCode();
+        String returnMessage = response.getReturnMessage();
         if (returnCode.equals("SUCCESS")) {
-            IdVO answer = fileMapper.insertFileUploadRecord(userId, fileTransferUuid, remotePathName, expires);
+            IdVO answer = fileMapper.insertFileUploadRecord(
+                    userId, fileTransferUuid, response.getRemotePathName(), response.getExpires());
             returnCode = answer.getReturnCode();
             returnMessage = answer.getReturnMessage();
         }
@@ -98,6 +84,27 @@ public class FileController {
         logger.info("FileController.uploadFile returning response with result " + returnCode.equals("SUCCESS"));
 
         return new BooleanResponse(returnCode.equals("SUCCESS"), returnCode, returnMessage);
+    }
+    
+    public FileUploadResponse saveFileOnRemote(final MultipartFile file) {
+        String returnCode = "SUCCESS";
+        String returnMessage = "";
+        
+        // Get the path of the uploaded file
+        String remotePathName = UUID.randomUUID().toString(); // We use the UUID as the pathname to the file.
+                                                              // This is used as the key name on S3.
+        // Set the expire date
+        Date expires = new Date((new Date()).getTime() + FileController.fileLifespan);
+        
+        try {
+            remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).uploadFileToRemote(file, remotePathName);
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+            logger.error("FileController.saveFileOnRemote could not upload the file due to: " + e.getMessage());
+            returnCode = "FILE_UPLOAD_ERROR";
+            returnMessage = "Could not upload the file due to: " + e.getMessage();
+        }
+        return new FileUploadResponse(remotePathName, expires, returnCode, returnMessage);
     }
 
     public void saveFileOnDisk(final MultipartFile localFile, String localFilePath) throws IOException, FileNotFoundException {
@@ -138,13 +145,18 @@ public class FileController {
         logger.info("FileController.downloadFile called for userId " + userId);
         
         BooleanPathnameVO isAllowed = fileMapper.isAllowedToDownloadFile(userId, fileTransferUuid);
+        return getFileFromRemote(isAllowed);
+
+    }
+
+    public ResponseEntity<Resource> getFileFromRemote(BooleanPathnameVO isAllowed) {
         if (isAllowed.getValue()) {
             return remoteStorageService.getRemoteStorageService(DEFAULT_REMOTE_STORAGE).downloadRemoteFile(isAllowed.getPathName());
         }
         return ResponseEntity.badRequest().contentLength(0).contentType(MediaType.TEXT_PLAIN)
                 .body(new DescriptiveResource(DOWNLOAD_FAILED));
     }
-
+    
     @PostMapping(value = "/delete_file", produces = { "application/JSON" })
     public BooleanResponse deleteFile(
             @RequestParam(value = "file_transfer_uuid") final UUID fileTransferUuid,

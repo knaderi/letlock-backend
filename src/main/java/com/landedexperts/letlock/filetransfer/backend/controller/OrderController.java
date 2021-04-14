@@ -7,6 +7,7 @@
 package com.landedexperts.letlock.filetransfer.backend.controller;
 
 import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.USER_ID;
+import static com.landedexperts.letlock.filetransfer.backend.BackendConstants.FILE_TRANSFER_PRODUCT_NAME;
 
 import java.util.Map;
 
@@ -153,7 +154,7 @@ public class OrderController {
         
         FileTransferOrderLineItemUsageVO[] lineItemsUsageForOrderArray = orderMapper.getUsersFileTransferOrderUsageHistroy(userId, orderId);
         // TODO, should filter
-        OrdersFileTransfersCountsVO ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
+        OrdersFileTransfersCountsVO ordersFTCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId, FILE_TRANSFER_PRODUCT_NAME);
         if (null == ordersFTCounts) {
             ordersFTCounts = new OrdersFileTransfersCountsVO();
         }
@@ -185,7 +186,8 @@ public class OrderController {
             HttpServletRequest request) throws Exception {
         long userId = (long) request.getAttribute(USER_ID);
 
-        OrdersFileTransfersCountsVO fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(userId, orderId);
+        OrdersFileTransfersCountsVO fileTransferCounts = orderMapper.getOrdersFileTransferUsageCounts(
+                userId, orderId, FILE_TRANSFER_PRODUCT_NAME);
         if (null == fileTransferCounts) {
             fileTransferCounts = new OrdersFileTransfersCountsVO(); 
         }
