@@ -101,7 +101,6 @@ public class LiteFileTransferController {
         if (null == fileTransferCounts) {
             fileTransferCounts = new OrdersFileTransfersCountsVO(); 
         }
-        logger.info("LiteFileTransferController.getFileTransferStatus response " + fileTransferCounts.getReturnCode());
         return new OrdersFileTransfersCountsResponse(fileTransferCounts);
     }
     
@@ -132,11 +131,8 @@ public class LiteFileTransferController {
             @RequestParam final String publicKey,
             HttpServletRequest request) throws Exception {
         long userId = (long) request.getAttribute(USER_ID);
-        logger.info("LiteFileTransferController.setFileTransferReceiverAccept called for fileTransferUuid: " + fileTransferUuid
-                + ", publicKey: " + publicKey);
-        ReturnCodeMessageResponse result = liteFileTransferMapper.setFileTransferReceiverAccept(userId, fileTransferUuid, publicKey);
-        logger.info(result.getReturnCode() + " - " + result.getReturnMessage());
-        return result;
+        logger.info("LiteFileTransferController.setFileTransferReceiverAccept called for fileTransferUuid: " + fileTransferUuid);
+        return liteFileTransferMapper.setFileTransferReceiverAccept(userId, fileTransferUuid, publicKey);
     }
     
     @GetMapping(value = "/public_key")
@@ -147,12 +143,9 @@ public class LiteFileTransferController {
         logger.info("LiteFileTransferController.getFileTransferPublicKey called for fileTransferUuid " + fileTransferUuid);
         
         LiteFileTransferInfoVO answer = liteFileTransferMapper.getFileTransferPublicKey(userId, fileTransferUuid);
-        String returnCode = answer.getReturnCode();
-        String returnMessage = answer.getReturnMessage();
 
-        logger.info("returnCode: " + returnCode + "  record " + answer.getFileTransferInfoRecord());
-
-        return new LiteFileTransferSessionResponse(answer.getFileTransferInfoRecord(), returnCode, returnMessage);
+        return new LiteFileTransferSessionResponse(answer.getFileTransferInfoRecord(),
+                answer.getReturnCode(), answer.getReturnMessage());
     }
 
     @PostMapping(value = "/document_info")
@@ -163,9 +156,7 @@ public class LiteFileTransferController {
             @RequestParam final String encryptedDocumentKey,
             HttpServletRequest request) throws Exception {
         long userId = (long) request.getAttribute(USER_ID);
-        logger.info("LiteFileTransferController.setFileTransferDocumentInfo called for fileTransferUuid: " + fileTransferUuid + 
-                ", documentHash: " + documentHash + ", encryptedDocumentHash: " + encryptedDocumentHash +
-                ", encryptedDocumentKey: " + encryptedDocumentKey);
+        logger.info("LiteFileTransferController.setFileTransferDocumentInfo called for fileTransferUuid: " + fileTransferUuid);
 
         return liteFileTransferMapper.setFileTransferDocumentInfo(
                 userId, fileTransferUuid, documentHash, encryptedDocumentHash, encryptedDocumentKey);
@@ -239,26 +230,4 @@ public class LiteFileTransferController {
         return fileController.getFileFromRemote(check);
     }
     
-    
-    /*
-    @PostMapping(value = "/is_file_transfer_waiting_receiver_address", produces = { "application/JSON" })
-    public UuidNameDateArrayResponse isFileTransferWaitingForReceiverAddress(
-            HttpServletRequest request) throws Exception {
-        long userId = (long) request.getAttribute(USER_ID);
-        logger.info("FileTransferController.isFileTransferWaitingForReceiverAddress called for userId " + userId);
-
-        UuidNameDateVO[] answer = fileTransferMapper.retrieveSessionWaitingForReceiverAddress(userId);
-
-        UuidNameDate[] value = new UuidNameDate[answer.length];
-        for (int i = 0; i < answer.length; i++) {
-            value[i] = new UuidNameDate(UUID.fromString(answer[i].getUuid()), answer[i].getName(),
-                    answer[i].getCreate());
-        }
-
-        return new UuidNameDateArrayResponse(value, "SUCCESS", "");
-    }
-
-
-
-    */
 }
