@@ -73,15 +73,10 @@ public interface OrderMapper {
             + " FROM orders.get_orders_file_transfer_counts( #{ userId }, #{itemTypeName}, #{ orderId } )")
     OrdersFileTransfersCountsVO getOrdersFileTransferUsageCounts(
             @Param("userId") long userId, @Param("orderId") long orderId, @Param("itemTypeName") String itemTypeName);
-    
-    
-    @Select("SELECT *"
-            + " FROM gochain.get_file_transfer_user_orders_usages( #{ userId })")
-    FileTransferOrderLineItemUsageVO[] getUsersAllFileTransferOrdersUsageHistroy(
-            @Param("userId") long userId);
+
     
     @Select("SELECT *"
-            + " FROM gochain.get_file_transfer_user_order_usage( #{ userId }, #{ orderId })")
+            + " FROM orders.get_order_file_transfer_usage( #{ userId }, #{ orderId })")
     FileTransferOrderLineItemUsageVO[] getUsersFileTransferOrderUsageHistroy(
             @Param("userId") long userId, @Param("orderId") long orderId);
     
