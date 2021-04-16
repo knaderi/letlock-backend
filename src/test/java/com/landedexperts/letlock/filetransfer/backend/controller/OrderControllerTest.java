@@ -379,7 +379,7 @@ public class OrderControllerTest extends BaseControllerTest {
         Assertions.assertTrue(content.contains(
                 "\"availableTransferCounts\":" + availTransferCounts + ",\"originalTransferCounts\":" + originalTransferCounts + ""),"The number of file transfers and avialble ones are not correct.");
         if (availTransferCounts < originalTransferCounts) {
-            Assertions.assertTrue(content.contains("\"senderId\":" + userId), "There should be a sender " + content);
+            Assertions.assertTrue(content.contains("\"senderLoginName\":\"" + userLoginName + "\""), "There should be a sender " + content);
         }
     }
     

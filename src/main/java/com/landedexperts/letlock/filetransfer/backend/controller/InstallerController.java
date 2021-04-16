@@ -37,6 +37,18 @@ public class InstallerController {
         return new JsonResponse<String>(downloadLink, "SUCCESS", "");
     }
     
+    @GetMapping(value = "/windows_lite")
+    public JsonResponse<String> getWindowsLiteInstallers() throws Exception {
+        String downloadLink = installerManager.getDownloadLink(InstallerPlatform.WIN_LITE);
+        return new JsonResponse<String>(downloadLink, "SUCCESS", "");
+    }
+    
+    @GetMapping(value = "/mac_lite")
+    public JsonResponse<String> getMacLiteInstallers() throws Exception {
+        String downloadLink = installerManager.getDownloadLink(InstallerPlatform.MAC_LITE);
+        return new JsonResponse<String>(downloadLink, "SUCCESS", "");
+    }
+    
     @PutMapping
     @Scheduled(fixedDelay = INSTALLERS_CACHE_RESET_INTERVAL, initialDelay = 1000)
     public JsonResponse<Boolean> resetInstallersCache() throws Exception {
