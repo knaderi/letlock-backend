@@ -148,5 +148,12 @@ public interface UserMapper {
             + " FROM gochain.get_file_transfer_sessions_for_user( #{ userId }  )"
             + " where file_transfer_active_code = 'ACTIVE'")
     Set<String> getActiveFileTransferUUIDs(@Param("userId") long userId);
+    
+    @Select("SELECT"
+            + " CAST( file_transfer_uuid AS text ) AS fileTransferUuid,"
+            + " active_code AS file_transfer_active_code"
+            + " FROM ft_lite.get_file_transfer_sessions_for_user( #{ userId }  )"
+            + " where active_code = 'ACTIVE'")
+    Set<String> getActiveLiteFileTransferUUIDs(@Param("userId") long userId);
 
 }

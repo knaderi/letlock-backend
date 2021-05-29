@@ -34,16 +34,21 @@ public class ChatController {
          BooleanResponse value = new BooleanResponse(true, "Success", "");
          long userId = (long) request.getAttribute(USER_ID);
          Set<String> roomNames = userMapper.getActiveFileTransferUUIDs(userId);
-         if (!roomNames.contains(roomKey)) {
+         Set<String> LiteApproomNames = userMapper.getActiveLiteFileTransferUUIDs(userId);
+         if (!roomNames.contains(roomKey) && !LiteApproomNames.contains(roomKey)) {
              value =  new BooleanResponse(false, "ROOM_ACCESS_DENIED", "User is not asscociated with the given chat room");
          }
         return value;
     }
     
+
+    
     @GetMapping(value = "/get_user_rooms", produces = { "application/JSON" })
     public SetResponse<String> getUserRooms(HttpServletRequest request) throws Exception {
          long userId = (long) request.getAttribute(USER_ID);
          Set<String> roomNames = userMapper.getActiveFileTransferUUIDs(userId);
+         Set<String> LiteApproomNames = userMapper.getActiveLiteFileTransferUUIDs(userId);
+         roomNames.addAll(LiteApproomNames);
          SetResponse<String> value = new SetResponse<String>(roomNames, "SUCCESS", "");
          return value;
     }
