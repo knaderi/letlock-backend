@@ -16,53 +16,57 @@ import com.landedexperts.letlock.filetransfer.backend.database.mybatis.mapper.Or
 import com.landedexperts.letlock.filetransfer.backend.utils.AdminNotification;
 import com.landedexperts.letlock.filetransfer.backend.utils.AppAccountBalance;
 
-
 @RestController
 public class UtilsController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
-    
+
     @Autowired
     OrderMapper orderMapper;
-    
+
     @Autowired
     BlockChainGatewayServiceFactory blockChainGatewayServiceFactory;
-    
+
     @Autowired
     AdminNotification adminNotification;
-    
+
     @Value("${blockchain.gateway.type}")
     private String blockchainGatewayType;
-    
+
     @Value("${app.blockchain.account.threshold}")
     private int appAccountThreshold;
-    
+
+    @Value("${healthcheck.enabled}")
+    private String healthCheckEnabled;
+
     @GetMapping(value = "/health")
     public ResponseEntity<String> healthCheck() throws Exception {
         HttpStatus status = HttpStatus.OK;
         String body = "";
-        // Trying to get packages to check DB connection
-        try {
-            @SuppressWarnings("unused")
-            String value = orderMapper.getPackages(false, false);
-        } catch(Exception e) {
-            logger.info("DB connection check error: {}", e.getMessage());
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-            body = "DB connection check error: " + e.getMessage() + "\n";
-        }
-        // Trying to get the LetLock GoCahin account balance
-        try {
-            AppAccountBalance balanceInfo = getBlockChainGateWayService().getAppAccountBalance();
-            float balance = Float.parseFloat(balanceInfo.getBalance());
-            if (balance < appAccountThreshold) {
-                adminNotification.appBalanceThresholdReached(balanceInfo);
+        if ("true".contentEquals(healthCheckEnabled)) {
+            // Trying to get packages to check DB connection
+            try {
+                @SuppressWarnings("unused")
+                String value = orderMapper.getPackages(false, false);
+            } catch (Exception e) {
+                logger.info("DB connection check error: {}", e.getMessage());
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+                body = "DB connection check error: " + e.getMessage() + "\n";
             }
-        } catch (Exception e) {
-            logger.info("Blockchain engine check error: {}", e.getMessage());
-            adminNotification.actionFailure("Get balance for LetLock GoChain account", e);
+            // Trying to get the LetLock GoCahin account balance
+            try {
+                AppAccountBalance balanceInfo = getBlockChainGateWayService().getAppAccountBalance();
+                float balance = Float.parseFloat(balanceInfo.getBalance());
+                if (balance < appAccountThreshold) {
+                    adminNotification.appBalanceThresholdReached(balanceInfo);
+                }
+            } catch (Exception e) {
+                logger.info("Blockchain engine check error: {}", e.getMessage());
+                adminNotification.actionFailure("Get balance for LetLock GoChain account", e);
+            }
         }
         return ResponseEntity.status(status).body(body);
     }
-    
+
     private BlockChainGatewayService getBlockChainGateWayService() {
         BlockChainGatewayServiceTypeEnum blockchainGatewayServiceType = BlockChainGatewayServiceTypeEnum
                 .fromValue(blockchainGatewayType);
