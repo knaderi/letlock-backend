@@ -1,8 +1,8 @@
 package com.landedexperts.letlock.filetransfer.backend.installer;
 
 public enum InstallerPlatform {
-        WIN ("latest.yml"),
-        MAC ("latest-mac.yml");
+        WIN ("latest-lite.yml"),
+        MAC ("latest-lite-mac.yml");
         
         private final String config;
         
